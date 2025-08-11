@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Density Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Analyze keyword density in your text to improve SEO and content optimization.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .results-card { display: none; }
+        .keyword-row { cursor: pointer; }
+        .keyword-row:hover { background-color: #f8f9fa; }
+        .progress { height: 1.5rem; }
+        .progress-bar { transition: width 0.5s ease; }
+        .highlight { background-color: #fff3cd; padding: 0 2px; }
+        #textInput { min-height: 200px; }
+        .stats-card { border-left: 4px solid #0d6efd; }
+        .word-count { font-size: 1.2rem; font-weight: bold; }
+        .density-meter { height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden; }
+        .density-fill { height: 100%; background-color: #20c997; width: 0%; transition: width 0.5s ease; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-chart-pie me-3"></i>Keyword Density Checker</h1>
+            <p class="lead">Analyze keyword density to optimize your content for search engines</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Enter Your Text</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="textInput" class="form-label">Paste your article, blog post, or any text content</label>
+                                <textarea class="form-control" id="textInput" rows="10" placeholder="Paste your content here to analyze keyword density..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button id="analyzeBtn" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Analyze Text
+                                    </button>
+                                    <button id="clearBtn" class="btn btn-outline-secondary ms-2">
+                                        <i class="fas fa-trash-alt me-2"></i>Clear
+                                    </button>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="ignoreCommonWords" checked>
+                                    <label class="form-check-label" for="ignoreCommonWords">Ignore common words</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card results-card" id="resultsCard">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Keyword Analysis Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="card h-100 stats-card">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Total Words</h6>
+                                            <div class="word-count text-primary" id="totalWords">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 stats-card">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Unique Words</h6>
+                                            <div class="word-count text-success" id="uniqueWords">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 stats-card">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Keyword Density</h6>
+                                            <div class="density-meter mb-2">
+                                                <div class="density-fill" id="densityMeter"></div>
+                                            </div>
+                                            <div class="word-count text-info" id="keywordDensity">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6>Top Keywords</h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="showAllKeywords">
+                                        <label class="form-check-label" for="showAllKeywords">Show all</label>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Keyword</th>
+                                                <th>Count</th>
+                                                <th>Density</th>
+                                                <th class="text-end">Distribution</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="keywordsTableBody">
+                                            <!-- Keywords will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4" id="highlightedTextCard">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-highlighter me-2"></i>Text with Keywords Highlighted</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="highlightedText" class="p-3 border rounded bg-light">
+                                <!-- Highlighted text will be inserted here -->
+                            </div>
+                            <div class="mt-3">
+                                <button id="copyTextBtn" class="btn btn-outline-primary btn-sm">
+                                    <i class="far fa-copy me-2"></i>Copy Text
+                                </button>
+                                <button id="downloadTextBtn" class="btn btn-outline-secondary btn-sm ms-2">
+                                    <i class="fas fa-download me-2"></i>Download Text
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered list-group-flush">
+                                <li class="list-group-item ps-0 border-0">Paste your text in the input area</li>
+                                <li class="list-group-item ps-0 border-0">Click "Analyze Text" to process the content</li>
+                                <li class="list-group-item ps-0 border-0">Review the keyword density results</li>
+                                <li class="list-group-item ps-0 border-0">Optimize your content based on the analysis</li>
+                            </ol>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Tip:</strong> Aim for a keyword density of 1-2% for optimal SEO results.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Optimal Keyword Density</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Primary Keyword</label>
+                                <div class="density-meter mb-2">
+                                    <div class="density-fill" style="width: 1.5%; background-color: #198754;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small>1% - 2%</small>
+                                    <small>Optimal Range</small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Secondary Keywords</label>
+                                <div class="density-meter mb-2">
+                                    <div class="density-fill" style="width: 0.7%; background-color: #0dcaf0;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small>0.5% - 1%</small>
+                                    <small>Recommended</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Common words to ignore (can be expanded)
+            const commonWords = new Set([
+                'a', 'an', 'and', 'are', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'into', 'is', 'it',
+                'no', 'not', 'of', 'on', 'or', 'such', 'that', 'the', 'their', 'then', 'there', 'these',
+                'they', 'this', 'to', 'was', 'will', 'with', 'i', 'you', 'he', 'she', 'we', 'they', 'me',
+                'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 'their', 'mine', 'yours',
+                'hers', 'ours', 'theirs', 'myself', 'yourself', 'himself', 'herself', 'itself', 'ourselves',
+                'yourselves', 'themselves', 'what', 'which', 'who', 'whom', 'whose', 'this', 'that', 'these',
+                'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having',
+                'do', 'does', 'did', 'doing', 'will', 'would', 'shall', 'should', 'can', 'could', 'may', 'might',
+                'must', 'ought', 'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around',
+                'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'concerning',
+                'despite', 'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'like', 'near',
+                'of', 'off', 'on', 'onto', 'out', 'outside', 'over', 'past', 'since', 'through', 'throughout',
+                'till', 'to', 'toward', 'under', 'underneath', 'until', 'up', 'upon', 'with', 'within', 'without'
+            ]);
+
+            // DOM elements
+            const textInput = document.getElementById('textInput');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultsCard = document.getElementById('resultsCard');
+            const keywordsTableBody = document.getElementById('keywordsTableBody');
+            const highlightedText = document.getElementById('highlightedText');
+            const copyTextBtn = document.getElementById('copyTextBtn');
+            const downloadTextBtn = document.getElementById('downloadTextBtn');
+            const ignoreCommonWords = document.getElementById('ignoreCommonWords');
+            const showAllKeywords = document.getElementById('showAllKeywords');
+            const totalWordsEl = document.getElementById('totalWords');
+            const uniqueWordsEl = document.getElementById('uniqueWords');
+            const keywordDensityEl = document.getElementById('keywordDensity');
+            const densityMeter = document.getElementById('densityMeter');
+            const highlightedTextCard = document.getElementById('highlightedTextCard');
+
+            // Event listeners
+            analyzeBtn.addEventListener('click', analyzeText);
+            clearBtn.addEventListener('click', clearAnalysis);
+            copyTextBtn.addEventListener('click', copyHighlightedText);
+            downloadTextBtn.addEventListener('click', downloadHighlightedText);
+            ignoreCommonWords.addEventListener('change', analyzeText);
+            showAllKeywords.addEventListener('change', renderKeywordsTable);
+
+            // Main analysis function
+            function analyzeText() {
+                const text = textInput.value.trim();
+                if (!text) {
+                    showNotification('Please enter some text to analyze', 'warning');
+                    return;
+                }
+
+                // Process the text
+                const words = text.toLowerCase()
+                    .replace(/[^\w\s]|_/g, ' ')  // Remove punctuation
+                    .replace(/\s+/g, ' ')           // Replace multiple spaces with one
+                    .trim()
+                    .split(' ');
+
+                const totalWords = words.length;
+                if (totalWords === 0) {
+                    showNotification('No valid words found in the text', 'warning');
+                    return;
+                }
+
+                // Count word frequencies
+                const wordCounts = {};
+                words.forEach(word => {
+                    if (ignoreCommonWords.checked && commonWords.has(word)) return;
+                    wordCounts[word] = (wordCounts[word] || 0) + 1;
+                });
+
+                // Convert to array and sort by frequency
+                const sortedWords = Object.entries(wordCounts)
+                    .map(([word, count]) => ({
+                        word,
+                        count,
+                        density: (count / totalWords * 100).toFixed(2)
+                    }))
+                    .sort((a, b) => b.count - a.count);
+
+                // Calculate overall keyword density
+                const totalKeywords = sortedWords.reduce((sum, item) => sum + item.count, 0);
+                const overallDensity = (totalKeywords / totalWords * 100).toFixed(2);
+
+                // Update UI
+                updateStats(totalWords, sortedWords.length, overallDensity);
+                renderKeywordsTable(sortedWords);
+                renderHighlightedText(text, sortedWords);
+                
+                // Show results
+                resultsCard.style.display = 'block';
+                highlightedTextCard.style.display = 'block';
+            }
+
+            function updateStats(totalWords, uniqueWords, density) {
+                totalWordsEl.textContent = totalWords.toLocaleString();
+                uniqueWordsEl.textContent = uniqueWords.toLocaleString();
+                keywordDensityEl.textContent = `${density}%`;
+                
+                // Update density meter (cap at 5% for visualization)
+                const densityPercent = Math.min(parseFloat(density), 5) / 5 * 100;
+                densityMeter.style.width = `${densityPercent}%`;
+                
+                // Change color based on density
+                if (density < 1) {
+                    densityMeter.style.backgroundColor = '#dc3545'; // Red (too low)
+                } else if (density > 3) {
+                    densityMeter.style.backgroundColor = '#fd7e14'; // Orange (too high)
+                } else {
+                    densityMeter.style.backgroundColor = '#198754'; // Green (optimal)
+                }
+            }
+
+            function renderKeywordsTable(keywords) {
+                const showAll = showAllKeywords.checked;
+                const displayKeywords = showAll ? keywords : keywords.slice(0, 20);
+                
+                keywordsTableBody.innerHTML = displayKeywords
+                    .map((item, index) => `
+                        <tr class="keyword-row" data-keyword="${escapeHtml(item.word)}">
+                            <td>${index + 1}. ${escapeHtml(item.word)}</td>
+                            <td>${item.count}</td>
+                            <td>${item.density}%</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" role="progressbar" 
+                                         style="width: ${Math.min(item.density * 10, 100)}%" 
+                                         aria-valuenow="${item.density}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `)
+                    .join('');
+
+                // Add click handler to highlight words in text
+                document.querySelectorAll('.keyword-row').forEach(row => {
+                    row.addEventListener('click', () => {
+                        const keyword = row.getAttribute('data-keyword');
+                        highlightKeyword(keyword);
+                    });
+                });
+
+                // Show/hide more/less button
+                if (keywords.length > 20) {
+                    const showText = showAll ? 'Show Less' : `Show All (${keywords.length})`;
+                    if (!document.getElementById('showMoreBtn')) {
+                        const button = document.createElement('button');
+                        button.id = 'showMoreBtn';
+                        button.className = 'btn btn-sm btn-outline-secondary mt-2';
+                        button.textContent = showText;
+                        button.addEventListener('click', () => {
+                            showAllKeywords.checked = !showAllKeywords.checked;
+                            renderKeywordsTable(keywords);
+                        });
+                        keywordsTableBody.parentNode.parentNode.after(button);
+                    } else {
+                        const button = document.getElementById('showMoreBtn');
+                        button.textContent = showText;
+                    }
+                }
+            }
+
+            function renderHighlightedText(text, keywords) {
+                // Create a copy of the text to work with
+                let highlighted = text;
+                
+                // Sort keywords by length (longest first) to handle multi-word keywords
+                const sortedKeywords = [...keywords]
+                    .sort((a, b) => b.word.length - a.word.length);
+                
+                // Create a map of keywords to their colors based on density
+                const colorMap = {};
+                const colors = [
+                    '#ffddc1', '#ffcce0', '#d4f1f9', '#d1f7c4',
+                    '#ffeaa7', '#dfe6e9', '#fd79a8', '#74b9ff',
+                    '#55efc4', '#a29bfe', '#fab1a0', '#ff9ff3'
+                ];
+                
+                sortedKeywords.forEach((item, index) => {
+                    colorMap[item.word] = colors[index % colors.length];
+                });
+                
+                // Highlight each keyword
+                sortedKeywords.forEach(item => {
+                    const regex = new RegExp(`\\b${escapeRegExp(item.word)}\\b`, 'gi');
+                    highlighted = highlighted.replace(regex, 
+                        match => `<span class="highlight" style="background-color: ${colorMap[item.word.toLowerCase()]}">${match}</span>`
+                    );
+                });
+                
+                // Preserve line breaks
+                highlighted = highlighted.replace(/\n/g, '<br>');
+                
+                highlightedText.innerHTML = highlighted || '<em>No content to display</em>';
+            }
+
+            function highlightKeyword(keyword) {
+                const highlights = document.querySelectorAll('#highlightedText .highlight');
+                highlights.forEach(hl => {
+                    if (hl.textContent.toLowerCase() === keyword.toLowerCase()) {
+                        hl.style.border = '2px solid #dc3545';
+                        hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => {
+                            hl.style.border = 'none';
+                        }, 2000);
+                    }
+                });
+            }
+
+            function clearAnalysis() {
+                textInput.value = '';
+                resultsCard.style.display = 'none';
+                highlightedTextCard.style.display = 'none';
+                keywordsTableBody.innerHTML = '';
+                highlightedText.innerHTML = '';
+                totalWordsEl.textContent = '0';
+                uniqueWordsEl.textContent = '0';
+                keywordDensityEl.textContent = '0%';
+                densityMeter.style.width = '0%';
+                
+                const showMoreBtn = document.getElementById('showMoreBtn');
+                if (showMoreBtn) showMoreBtn.remove();
+            }
+
+            function copyHighlightedText() {
+                const textToCopy = highlightedText.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = copyTextBtn.innerHTML;
+                    copyTextBtn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+                    setTimeout(() => {
+                        copyTextBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            }
+
+            function downloadHighlightedText() {
+                const textToDownload = highlightedText.textContent;
+                const blob = new Blob([textToDownload], { type: 'text/plain;charset=utf-8' });
+                saveAs(blob, 'keyword-analyzed-text.txt');
+            }
+
+            // Helper functions
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online energy converter. Convert between joules, calories, kilowatt-hours, and more energy units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-bolt me-3"></i>Energy Converter</h1>
+            <p class="lead">Convert between joules, calories, kilowatt-hours, and more energy units</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Energy Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select id="fromUnit" class="form-select">
+                                        <option value="joule">Joule (J)</option>
+                                        <option value="kilojoule">Kilojoule (kJ)</option>
+                                        <option value="calorie">Calorie (cal)</option>
+                                        <option value="kilocalorie">Kilocalorie (kcal)</option>
+                                        <option value="watt-hour">Watt-hour (Wh)</option>
+                                        <option value="kilowatt-hour">Kilowatt-hour (kWh)</option>
+                                        <option value="megawatt-hour">Megawatt-hour (MWh)</option>
+                                        <option value="electronvolt">Electronvolt (eV)</option>
+                                        <option value="kiloelectronvolt">Kiloelectronvolt (keV)</option>
+                                        <option value="megaelectronvolt">Megaelectronvolt (MeV)</option>
+                                        <option value="gigaelectronvolt">Gigaelectronvolt (GeV)</option>
+                                        <option value="british-thermal-unit">British Thermal Unit (BTU)</option>
+                                        <option value="therm">Therm (thm)</option>
+                                        <option value="foot-pound">Foot-pound (ft⋅lb)</option>
+                                        <option value="erg">Erg (erg)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select id="toUnit" class="form-select">
+                                        <option value="kilowatt-hour">Kilowatt-hour (kWh)</option>
+                                        <option value="joule">Joule (J)</option>
+                                        <option value="kilojoule">Kilojoule (kJ)</option>
+                                        <option value="calorie">Calorie (cal)</option>
+                                        <option value="kilocalorie">Kilocalorie (kcal)</option>
+                                        <option value="watt-hour">Watt-hour (Wh)</option>
+                                        <option value="megawatt-hour">Megawatt-hour (MWh)</option>
+                                        <option value="electronvolt">Electronvolt (eV)</option>
+                                        <option value="kiloelectronvolt">Kiloelectronvolt (keV)</option>
+                                        <option value="megaelectronvolt">Megaelectronvolt (MeV)</option>
+                                        <option value="gigaelectronvolt">Gigaelectronvolt (GeV)</option>
+                                        <option value="british-thermal-unit">British Thermal Unit (BTU)</option>
+                                        <option value="therm">Therm (thm)</option>
+                                        <option value="foot-pound">Foot-pound (ft⋅lb)</option>
+                                        <option value="erg">Erg (erg)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromValue" class="form-label">Enter Value:</label>
+                                    <input type="number" id="fromValue" class="form-control" placeholder="1" step="0.000001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toValue" class="form-label">Result:</label>
+                                    <input type="text" id="toValue" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Convert
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap Units
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Units Conversion -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Units Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-bolt fa-3x mb-3"></i>
+                                    <p>Enter a value to see all unit conversions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Energy Values -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common Energy Values</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Daily Activities:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Activity</th>
+                                                    <th>Energy</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Walking (1 hour)</td>
+                                                    <td>200-300 kcal</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Running (1 hour)</td>
+                                                    <td>600-800 kcal</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cycling (1 hour)</td>
+                                                    <td>400-600 kcal</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Sleeping (8 hours)</td>
+                                                    <td>400-500 kcal</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Office Work (8 hours)</td>
+                                                    <td>1,600-2,000 kcal</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Apple (medium)</td>
+                                                    <td>95 kcal</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Energy Sources:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Source</th>
+                                                    <th>Energy</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1 kg Coal</td>
+                                                    <td>24 MJ</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1 L Gasoline</td>
+                                                    <td>34 MJ</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1 L Diesel</td>
+                                                    <td>38 MJ</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1 m³ Natural Gas</td>
+                                                    <td>36 MJ</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1 kg Uranium</td>
+                                                    <td>80,000,000 MJ</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1 kg Hydrogen</td>
+                                                    <td>120 MJ</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Calculator -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Energy Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="power" class="form-label">Power (Watts):</label>
+                                    <input type="number" id="power" class="form-control" placeholder="100">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="time" class="form-label">Time (hours):</label>
+                                    <input type="number" id="time" class="form-control" placeholder="1" step="0.01">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="calculatedEnergy" class="form-label">Calculated Energy:</label>
+                                    <input type="text" id="calculatedEnergy" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="energyCost" class="form-label">Cost (at $0.12/kWh):</label>
+                                    <input type="text" id="energyCost" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <button id="calculateEnergyBtn" class="btn btn-success">
+                                <i class="fas fa-calculator me-2"></i>Calculate Energy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('food')">
+                                    Food Energy
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('exercise')">
+                                    Exercise Energy
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('electricity')">
+                                    Electricity
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('fuel')">
+                                    Fuel Energy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Factors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Factors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>In Joules</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 calorie</td>
+                                            <td>4.184 J</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 kilocalorie</td>
+                                            <td>4,184 J</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 watt-hour</td>
+                                            <td>3,600 J</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 kilowatt-hour</td>
+                                            <td>3,600,000 J</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 BTU</td>
+                                            <td>1,055 J</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Energy Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 joule = 1 watt-second</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 calorie = 4.184 joules</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 kWh = 3.6 million joules</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 eV = 1.602 × 10⁻¹⁹ J</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 BTU = 1,055 joules</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Energy Efficiency -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-percentage me-2"></i>Energy Efficiency</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Device</th>
+                                            <th>Efficiency</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Incandescent Bulb</td>
+                                            <td>5-10%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>LED Bulb</td>
+                                            <td>80-90%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Gasoline Engine</td>
+                                            <td>20-30%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Electric Motor</td>
+                                            <td>85-95%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Solar Panel</td>
+                                            <td>15-25%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wind Turbine</td>
+                                            <td>30-50%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- Energy Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Energy Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>SI Units:</h6>
+                                    <ul>
+                                        <li><strong>Joule (J):</strong> Base unit of energy</li>
+                                        <li><strong>Kilojoule (kJ):</strong> 1,000 joules</li>
+                                        <li><strong>Megajoule (MJ):</strong> 1,000,000 joules</li>
+                                        <li><strong>Gigajoule (GJ):</strong> 1,000,000,000 joules</li>
+                                    </ul>
+                                    
+                                    <h6>Electrical Units:</h6>
+                                    <ul>
+                                        <li><strong>Watt-hour (Wh):</strong> Energy from 1 watt for 1 hour</li>
+                                        <li><strong>Kilowatt-hour (kWh):</strong> 1,000 watt-hours</li>
+                                        <li><strong>Megawatt-hour (MWh):</strong> 1,000,000 watt-hours</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Other Units:</h6>
+                                    <ul>
+                                        <li><strong>Calorie (cal):</strong> Energy to heat 1g water by 1°C</li>
+                                        <li><strong>Kilocalorie (kcal):</strong> 1,000 calories (food calorie)</li>
+                                        <li><strong>British Thermal Unit (BTU):</strong> Energy to heat 1lb water by 1°F</li>
+                                        <li><strong>Electronvolt (eV):</strong> Energy gained by electron in 1V potential</li>
+                                        <li><strong>Foot-pound (ft⋅lb):</strong> Energy from 1lb force over 1ft</li>
+                                    </ul>
+                                    
+                                    <h6>Usage by Context:</h6>
+                                    <ul>
+                                        <li><strong>Physics:</strong> Joules, electronvolts</li>
+                                        <li><strong>Nutrition:</strong> Calories, kilocalories</li>
+                                        <li><strong>Electricity:</strong> Watt-hours, kilowatt-hours</li>
+                                        <li><strong>Engineering:</strong> BTU, foot-pounds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Energy Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromValue = document.getElementById('fromValue');
+            const toValue = document.getElementById('toValue');
+            const convertBtn = document.getElementById('convertBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const power = document.getElementById('power');
+            const time = document.getElementById('time');
+            const calculatedEnergy = document.getElementById('calculatedEnergy');
+            const energyCost = document.getElementById('energyCost');
+            const calculateEnergyBtn = document.getElementById('calculateEnergyBtn');
+
+            // Conversion factors (all in joules)
+            const conversionFactors = {
+                'joule': 1,
+                'kilojoule': 1000,
+                'calorie': 4.184,
+                'kilocalorie': 4184,
+                'watt-hour': 3600,
+                'kilowatt-hour': 3600000,
+                'megawatt-hour': 3600000000,
+                'electronvolt': 1.602176634e-19,
+                'kiloelectronvolt': 1.602176634e-16,
+                'megaelectronvolt': 1.602176634e-13,
+                'gigaelectronvolt': 1.602176634e-10,
+                'british-thermal-unit': 1055.05585262,
+                'therm': 105505585.262,
+                'foot-pound': 1.3558179483314004,
+                'erg': 1e-7
+            };
+
+            // Unit symbols
+            const unitSymbols = {
+                'joule': 'J',
+                'kilojoule': 'kJ',
+                'calorie': 'cal',
+                'kilocalorie': 'kcal',
+                'watt-hour': 'Wh',
+                'kilowatt-hour': 'kWh',
+                'megawatt-hour': 'MWh',
+                'electronvolt': 'eV',
+                'kiloelectronvolt': 'keV',
+                'megaelectronvolt': 'MeV',
+                'gigaelectronvolt': 'GeV',
+                'british-thermal-unit': 'BTU',
+                'therm': 'thm',
+                'foot-pound': 'ft⋅lb',
+                'erg': 'erg'
+            };
+
+            // Convert button
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapUnits);
+            clearBtn.addEventListener('click', clearForm);
+            calculateEnergyBtn.addEventListener('click', calculateEnergy);
+
+            // Auto-convert on input change
+            fromValue.addEventListener('input', debounce(convert, 300));
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+
+            function convert() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+
+                if (isNaN(value)) {
+                    toValue.value = '';
+                    updateAllConversions();
+                    return;
+                }
+
+                // Convert to joules first, then to target unit
+                const joules = value * conversionFactors[from];
+                const result = joules / conversionFactors[to];
+
+                // Format result based on magnitude
+                toValue.value = formatResult(result);
+                updateAllConversions();
+            }
+
+            function calculateEnergy() {
+                const p = parseFloat(power.value);
+                const t = parseFloat(time.value);
+
+                if (isNaN(p) || isNaN(t) || p < 0 || t < 0) {
+                    calculatedEnergy.value = '';
+                    energyCost.value = '';
+                    return;
+                }
+
+                // Calculate energy in watt-hours
+                const energyWh = p * t;
+                const energyKwh = energyWh / 1000;
+                const cost = energyKwh * 0.12; // $0.12 per kWh
+
+                calculatedEnergy.value = `${energyKwh.toFixed(3)} kWh (${energyWh.toFixed(1)} Wh)`;
+                energyCost.value = `$${cost.toFixed(2)}`;
+            }
+
+            function formatResult(value) {
+                if (value === 0) return '0';
+                
+                if (value < 0.000001 || value > 999999) {
+                    return value.toExponential(6);
+                } else if (value < 0.01) {
+                    return value.toFixed(6);
+                } else if (value < 1) {
+                    return value.toFixed(4);
+                } else if (value < 100) {
+                    return value.toFixed(3);
+                } else if (value < 10000) {
+                    return value.toFixed(2);
+                } else {
+                    return value.toFixed(1);
+                }
+            }
+
+            function updateAllConversions() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+
+                if (isNaN(value)) {
+                    document.getElementById('allConversions').innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-bolt fa-3x mb-3"></i>
+                            <p>Enter a value to see all unit conversions</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const joules = value * conversionFactors[from];
+                let conversionsHTML = '<div class="row">';
+
+                Object.keys(conversionFactors).forEach(unit => {
+                    const result = joules / conversionFactors[unit];
+                    const symbol = unitSymbols[unit];
+                    const formattedResult = formatResult(result);
+                    
+                    conversionsHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="conversion-item p-2 border rounded">
+                                <div class="unit-name">${unit.replace('-', ' ').toUpperCase()}</div>
+                                <div class="unit-value">${formattedResult} ${symbol}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                conversionsHTML += '</div>';
+                document.getElementById('allConversions').innerHTML = conversionsHTML;
+            }
+
+            function swapUnits() {
+                const tempUnit = fromUnit.value;
+                const tempValue = fromValue.value;
+                
+                fromUnit.value = toUnit.value;
+                toUnit.value = tempUnit;
+                fromValue.value = toValue.value;
+                
+                convert();
+            }
+
+            function clearForm() {
+                fromValue.value = '';
+                toValue.value = '';
+                power.value = '';
+                time.value = '';
+                calculatedEnergy.value = '';
+                energyCost.value = '';
+                updateAllConversions();
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Quick conversion functions
+            window.loadQuickConversion = function(type) {
+                const conversions = {
+                    food: { value: 100, unit: 'kilocalorie', description: 'Food Energy' },
+                    exercise: { value: 500, unit: 'kilocalorie', description: 'Exercise Energy' },
+                    electricity: { value: 1, unit: 'kilowatt-hour', description: 'Electricity' },
+                    fuel: { value: 34, unit: 'megajoule', description: 'Fuel Energy' }
+                };
+
+                const conversion = conversions[type];
+                fromValue.value = conversion.value;
+                fromUnit.value = conversion.unit;
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .conversion-item {
+                    background: #f8f9fa;
+                    transition: transform 0.2s;
+                }
+                .conversion-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .unit-name {
+                    font-size: 12px;
+                    color: #6c757d;
+                    font-weight: bold;
+                }
+                .unit-value {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

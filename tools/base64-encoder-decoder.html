@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder - Multi-Tools Hub</title>
+    <meta name="description" content="Free online Base64 encoder and decoder. Convert text to Base64 and decode Base64 to text with file support.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-code me-3"></i>Base64 Encoder/Decoder</h1>
+            <p class="lead">Encode text to Base64 and decode Base64 to text with file support</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Base64 Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="inputText" class="form-label">Input Text:</label>
+                                    <textarea id="inputText" class="form-control" rows="8" placeholder="Enter text to encode or Base64 to decode..."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="outputText" class="form-label">Output:</label>
+                                    <textarea id="outputText" class="form-control" rows="8" readonly placeholder="Result will appear here..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="encodingType" class="form-label">Operation:</label>
+                                    <select id="encodingType" class="form-select">
+                                        <option value="auto">Auto Detect</option>
+                                        <option value="encode">Encode to Base64</option>
+                                        <option value="decode">Decode from Base64</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="outputFormat" class="form-label">Output Format:</label>
+                                    <select id="outputFormat" class="form-select">
+                                        <option value="text">Text</option>
+                                        <option value="hex">Hexadecimal</option>
+                                        <option value="binary">Binary</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mb-3">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-magic me-2"></i>Convert
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                                <button id="copyBtn" class="btn btn-outline-primary">
+                                    <i class="fas fa-copy me-2"></i>Copy Result
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-info">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap
+                                </button>
+                            </div>
+
+                            <!-- Conversion Info -->
+                            <div id="conversionInfo" class="mt-3 d-none">
+                                <div class="alert alert-info">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Operation:</strong> <span id="operationType">-</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Input Size:</strong> <span id="inputSize">-</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Output Size:</strong> <span id="outputSize">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Base64 Converter -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-file me-2"></i>File Base64 Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileInput" class="form-label">Select File:</label>
+                                    <input type="file" id="fileInput" class="form-control">
+                                    <small class="text-muted">Maximum file size: 10MB</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileOperation" class="form-label">Operation:</label>
+                                    <select id="fileOperation" class="form-select">
+                                        <option value="encode">Encode File to Base64</option>
+                                        <option value="decode">Decode Base64 to File</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="fileConvertBtn" class="btn btn-primary">
+                                    <i class="fas fa-file-upload me-2"></i>Convert File
+                                </button>
+                                <button id="downloadBtn" class="btn btn-success d-none">
+                                    <i class="fas fa-download me-2"></i>Download Result
+                                </button>
+                                <button id="clearFileBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear File
+                                </button>
+                            </div>
+
+                            <!-- File Conversion Result -->
+                            <div id="fileResult" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle me-2"></i>File Conversion Complete</h6>
+                                    <div id="fileInfo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Base64 Examples -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Base64 Examples</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Text Examples:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Original</th>
+                                                    <th>Base64</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Hello</td>
+                                                    <td><code>SGVsbG8=</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Hello World</td>
+                                                    <td><code>SGVsbG8gV29ybGQ=</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>123</td>
+                                                    <td><code>MTIz</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Test@123</td>
+                                                    <td><code>VGVzdEAxMjM=</code></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Common Uses:</h6>
+                                    <ul>
+                                        <li>Email attachments</li>
+                                        <li>Data URLs in web pages</li>
+                                        <li>API authentication</li>
+                                        <li>Binary data transmission</li>
+                                        <li>Image embedding in HTML</li>
+                                        <li>Configuration files</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Actions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('hello')">
+                                    "Hello World"
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('email')">
+                                    Email Address
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('password')">
+                                    Password
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('json')">
+                                    JSON Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Base64 Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Base64 Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="base64-info">
+                                <div class="info-item mb-3">
+                                    <strong>Character Set:</strong> A-Z, a-z, 0-9, +, /
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>Padding:</strong> = (equals sign)
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>Efficiency:</strong> ~33% size increase
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>URL Safe:</strong> Uses - and _ instead of + and /
+                                </div>
+                                <div class="info-item">
+                                    <strong>Common Uses:</strong>
+                                    <ul class="list-unstyled mt-2">
+                                        <li>• Email attachments</li>
+                                        <li>• Data URLs</li>
+                                        <li>• API authentication</li>
+                                        <li>• Binary data encoding</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Reference -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-table me-2"></i>Base64 Character Set</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Index</th>
+                                            <th>Char</th>
+                                            <th>Index</th>
+                                            <th>Char</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>0</td><td>A</td><td>32</td><td>g</td></tr>
+                                        <tr><td>1</td><td>B</td><td>33</td><td>h</td></tr>
+                                        <tr><td>2</td><td>C</td><td>34</td><td>i</td></tr>
+                                        <tr><td>3</td><td>D</td><td>35</td><td>j</td></tr>
+                                        <tr><td>4</td><td>E</td><td>36</td><td>k</td></tr>
+                                        <tr><td>5</td><td>F</td><td>37</td><td>l</td></tr>
+                                        <tr><td>6</td><td>G</td><td>38</td><td>m</td></tr>
+                                        <tr><td>7</td><td>H</td><td>39</td><td>n</td></tr>
+                                        <tr><td>8</td><td>I</td><td>40</td><td>o</td></tr>
+                                        <tr><td>9</td><td>J</td><td>41</td><td>p</td></tr>
+                                        <tr><td>10</td><td>K</td><td>42</td><td>q</td></tr>
+                                        <tr><td>11</td><td>L</td><td>43</td><td>r</td></tr>
+                                        <tr><td>12</td><td>M</td><td>44</td><td>s</td></tr>
+                                        <tr><td>13</td><td>N</td><td>45</td><td>t</td></tr>
+                                        <tr><td>14</td><td>O</td><td>46</td><td>u</td></tr>
+                                        <tr><td>15</td><td>P</td><td>47</td><td>v</td></tr>
+                                        <tr><td>16</td><td>Q</td><td>48</td><td>w</td></tr>
+                                        <tr><td>17</td><td>R</td><td>49</td><td>x</td></tr>
+                                        <tr><td>18</td><td>S</td><td>50</td><td>y</td></tr>
+                                        <tr><td>19</td><td>T</td><td>51</td><td>z</td></tr>
+                                        <tr><td>20</td><td>U</td><td>52</td><td>0</td></tr>
+                                        <tr><td>21</td><td>V</td><td>53</td><td>1</td></tr>
+                                        <tr><td>22</td><td>W</td><td>54</td><td>2</td></tr>
+                                        <tr><td>23</td><td>X</td><td>55</td><td>3</td></tr>
+                                        <tr><td>24</td><td>Y</td><td>56</td><td>4</td></tr>
+                                        <tr><td>25</td><td>Z</td><td>57</td><td>5</td></tr>
+                                        <tr><td>26</td><td>a</td><td>58</td><td>6</td></tr>
+                                        <tr><td>27</td><td>b</td><td>59</td><td>7</td></tr>
+                                        <tr><td>28</td><td>c</td><td>60</td><td>8</td></tr>
+                                        <tr><td>29</td><td>d</td><td>61</td><td>9</td></tr>
+                                        <tr><td>30</td><td>e</td><td>62</td><td>+</td></tr>
+                                        <tr><td>31</td><td>f</td><td>63</td><td>/</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ad Section -->
+                    <div class="ad-placeholder">
+                        <p class="text-muted">Advertisement Space</p>
+                        <div class="ad-content">
+                            <i class="fas fa-ad fa-2x text-muted"></i>
+                            <p>Your ad could be here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Base64 Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Base64 Encoding</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>What is Base64?</h6>
+                                    <p>Base64 is a group of binary-to-text encoding schemes that represent binary data in an ASCII string format by translating it into a radix-64 representation. It's commonly used to encode binary data for transmission over text-based protocols.</p>
+                                    
+                                    <h6>How it Works:</h6>
+                                    <ul>
+                                        <li>Takes 3 bytes of binary data</li>
+                                        <li>Converts them to 4 Base64 characters</li>
+                                        <li>Uses 64 printable ASCII characters</li>
+                                        <li>Adds padding with = if needed</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advantages:</h6>
+                                    <ul>
+                                        <li>Text-based, safe for transmission</li>
+                                        <li>Widely supported</li>
+                                        <li>No special characters</li>
+                                        <li>Human-readable</li>
+                                    </ul>
+                                    
+                                    <h6>Disadvantages:</h6>
+                                    <ul>
+                                        <li>33% size increase</li>
+                                        <li>Not suitable for large files</li>
+                                        <li>Not encryption (no security)</li>
+                                        <li>Can be inefficient for binary data</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Base64 Encoder/Decoder specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const encodingType = document.getElementById('encodingType');
+            const outputFormat = document.getElementById('outputFormat');
+            const convertBtn = document.getElementById('convertBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const fileInput = document.getElementById('fileInput');
+            const fileOperation = document.getElementById('fileOperation');
+            const fileConvertBtn = document.getElementById('fileConvertBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const clearFileBtn = document.getElementById('clearFileBtn');
+
+            // Event listeners
+            convertBtn.addEventListener('click', convert);
+            clearBtn.addEventListener('click', clearForm);
+            copyBtn.addEventListener('click', copyResult);
+            swapBtn.addEventListener('click', swapText);
+            fileConvertBtn.addEventListener('click', convertFile);
+            downloadBtn.addEventListener('click', downloadResult);
+            clearFileBtn.addEventListener('click', clearFile);
+
+            // Auto-convert on input change
+            inputText.addEventListener('input', debounce(convert, 500));
+            encodingType.addEventListener('change', convert);
+            outputFormat.addEventListener('change', convert);
+
+            function convert() {
+                const input = inputText.value.trim();
+                if (!input) {
+                    hideConversionInfo();
+                    return;
+                }
+
+                const operation = encodingType.value;
+                const format = outputFormat.value;
+                let result = '';
+                let operationType = '';
+
+                try {
+                    if (operation === 'encode' || (operation === 'auto' && !isBase64(input))) {
+                        result = btoa(input);
+                        operationType = 'Encode to Base64';
+                    } else if (operation === 'decode' || (operation === 'auto' && isBase64(input))) {
+                        result = atob(input);
+                        operationType = 'Decode from Base64';
+                    }
+
+                    // Format output
+                    if (format === 'hex') {
+                        result = stringToHex(result);
+                    } else if (format === 'binary') {
+                        result = stringToBinary(result);
+                    }
+
+                    outputText.value = result;
+                    displayConversionInfo(operationType, input.length, result.length);
+                } catch (error) {
+                    MultiTools.showNotification('Invalid input: ' + error.message, 'error');
+                    outputText.value = '';
+                    hideConversionInfo();
+                }
+            }
+
+            function isBase64(str) {
+                try {
+                    return btoa(atob(str)) === str;
+                } catch (err) {
+                    return false;
+                }
+            }
+
+            function stringToHex(str) {
+                let hex = '';
+                for (let i = 0; i < str.length; i++) {
+                    hex += str.charCodeAt(i).toString(16).padStart(2, '0');
+                }
+                return hex;
+            }
+
+            function stringToBinary(str) {
+                let binary = '';
+                for (let i = 0; i < str.length; i++) {
+                    binary += str.charCodeAt(i).toString(2).padStart(8, '0') + ' ';
+                }
+                return binary.trim();
+            }
+
+            function convertFile() {
+                const file = fileInput.files[0];
+                const operation = fileOperation.value;
+
+                if (!file) {
+                    MultiTools.showNotification('Please select a file first', 'warning');
+                    return;
+                }
+
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    MultiTools.showNotification('File size must be less than 10MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let result;
+                        let fileName;
+                        let mimeType;
+
+                        if (operation === 'encode') {
+                            // Encode file to Base64
+                            const arrayBuffer = e.target.result;
+                            const uint8Array = new Uint8Array(arrayBuffer);
+                            let binary = '';
+                            for (let i = 0; i < uint8Array.length; i++) {
+                                binary += String.fromCharCode(uint8Array[i]);
+                            }
+                            result = btoa(binary);
+                            fileName = file.name + '.base64';
+                            mimeType = 'text/plain';
+                        } else {
+                            // Decode Base64 to file
+                            const base64Data = e.target.result;
+                            result = atob(base64Data);
+                            fileName = 'decoded_file';
+                            mimeType = 'application/octet-stream';
+                        }
+
+                        // Store result for download
+                        window.fileResult = {
+                            data: result,
+                            fileName: fileName,
+                            mimeType: mimeType
+                        };
+
+                        displayFileResult(operation, file.name, result.length);
+                        downloadBtn.classList.remove('d-none');
+                    } catch (error) {
+                        MultiTools.showNotification('Error processing file: ' + error.message, 'error');
+                    }
+                };
+
+                if (operation === 'encode') {
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            }
+
+            function downloadResult() {
+                if (!window.fileResult) {
+                    MultiTools.showNotification('No file result to download', 'warning');
+                    return;
+                }
+
+                const blob = new Blob([window.fileResult.data], { type: window.fileResult.mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = window.fileResult.fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function displayConversionInfo(operation, inputSize, outputSize) {
+                document.getElementById('operationType').textContent = operation;
+                document.getElementById('inputSize').textContent = inputSize + ' characters';
+                document.getElementById('outputSize').textContent = outputSize + ' characters';
+                document.getElementById('conversionInfo').classList.remove('d-none');
+            }
+
+            function hideConversionInfo() {
+                document.getElementById('conversionInfo').classList.add('d-none');
+            }
+
+            function displayFileResult(operation, fileName, resultSize) {
+                const fileInfo = document.getElementById('fileInfo');
+                fileInfo.innerHTML = `
+                    <p><strong>Operation:</strong> ${operation === 'encode' ? 'Encoded' : 'Decoded'} ${fileName}</p>
+                    <p><strong>Result Size:</strong> ${resultSize} characters</p>
+                `;
+                document.getElementById('fileResult').classList.remove('d-none');
+            }
+
+            function clearForm() {
+                inputText.value = '';
+                outputText.value = '';
+                hideConversionInfo();
+            }
+
+            function clearFile() {
+                fileInput.value = '';
+                document.getElementById('fileResult').classList.add('d-none');
+                downloadBtn.classList.add('d-none');
+                window.fileResult = null;
+            }
+
+            function copyResult() {
+                if (outputText.value) {
+                    navigator.clipboard.writeText(outputText.value).then(() => {
+                        MultiTools.showNotification('Result copied to clipboard!', 'success');
+                    }).catch(() => {
+                        MultiTools.showNotification('Failed to copy result', 'error');
+                    });
+                } else {
+                    MultiTools.showNotification('No result to copy', 'warning');
+                }
+            }
+
+            function swapText() {
+                const temp = inputText.value;
+                inputText.value = outputText.value;
+                outputText.value = temp;
+                convert();
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Example functions
+            window.loadExample = function(type) {
+                const examples = {
+                    hello: 'Hello World',
+                    email: 'user@example.com',
+                    password: 'MySecurePassword123!',
+                    json: '{"name": "John", "age": 30, "city": "New York"}'
+                };
+
+                inputText.value = examples[type];
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .info-item {
+                    border-left: 3px solid var(--primary-color);
+                    padding-left: 10px;
+                }
+                .base64-info {
+                    font-size: 14px;
+                }
+                .base64-info ul {
+                    margin-bottom: 0;
+                }
+                .base64-info li {
+                    margin-bottom: 2px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

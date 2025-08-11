@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online scientific calculator with advanced mathematical functions, trigonometry, logarithms, and more.">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-square-root-alt me-3"></i>Scientific Calculator</h1>
+            <p class="lead">Advanced calculator with scientific functions, trigonometry, logarithms, and more</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Scientific Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Display -->
+                            <div class="calculator-display mb-3">
+                                <div class="form-control text-end" id="display" readonly>0</div>
+                                <div class="form-control text-end small text-muted" id="expression" readonly></div>
+                            </div>
+
+                            <!-- Calculator Buttons -->
+                            <div class="calculator-buttons">
+                                <!-- Function Buttons Row 1 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-secondary w-100" onclick="clearAll()">C</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-secondary w-100" onclick="clearEntry()">CE</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-secondary w-100" onclick="backspace()">⌫</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-secondary w-100" onclick="addToExpression('(')">(</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-secondary w-100" onclick="addToExpression(')')">)</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('/')">÷</button>
+                                    </div>
+                                </div>
+
+                                <!-- Function Buttons Row 2 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('sin')">sin</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('cos')">cos</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('tan')">tan</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('log')">log</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('ln')">ln</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('*')">×</button>
+                                    </div>
+                                </div>
+
+                                <!-- Function Buttons Row 3 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('asin')">sin⁻¹</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('acos')">cos⁻¹</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('atan')">tan⁻¹</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('sqrt')">√</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('pow')">x^y</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('-')">−</button>
+                                    </div>
+                                </div>
+
+                                <!-- Number Pad Row 1 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('7')">7</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('8')">8</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('9')">9</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('factorial')">n!</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('abs')">|x|</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('+')">+</button>
+                                    </div>
+                                </div>
+
+                                <!-- Number Pad Row 2 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('4')">4</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('5')">5</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('6')">6</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('exp')">e^x</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('pi')">π</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('^')">^</button>
+                                    </div>
+                                </div>
+
+                                <!-- Number Pad Row 3 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('1')">1</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('2')">2</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('3')">3</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('rand')">RND</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('e')">e</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-warning w-100" onclick="addToExpression('%')">%</button>
+                                    </div>
+                                </div>
+
+                                <!-- Number Pad Row 4 -->
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('0')">0</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-light w-100" onclick="addNumber('.')">.</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('floor')">⌊x⌋</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('ceil')">⌈x⌉</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-info w-100" onclick="addFunction('round')">round</button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-success w-100" onclick="calculate()">=</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculation History -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Calculation History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="history" class="calculation-history">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-history fa-2x mb-2"></i>
+                                    <p>Your calculations will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Calculator Modes -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Calculator Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="angleMode" class="form-label">Angle Mode:</label>
+                                <select id="angleMode" class="form-select">
+                                    <option value="degrees">Degrees</option>
+                                    <option value="radians">Radians</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="precision" class="form-label">Decimal Precision:</label>
+                                <select id="precision" class="form-select">
+                                    <option value="2">2 decimal places</option>
+                                    <option value="4" selected>4 decimal places</option>
+                                    <option value="6">6 decimal places</option>
+                                    <option value="8">8 decimal places</option>
+                                </select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="clearHistory()">
+                                    <i class="fas fa-trash me-2"></i>Clear History
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="copyLastResult()">
+                                    <i class="fas fa-copy me-2"></i>Copy Last Result
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Functions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Functions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickCalc('quadratic')">
+                                    Quadratic Formula
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickCalc('pythagorean')">
+                                    Pythagorean Theorem
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickCalc('area')">
+                                    Area Calculator
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickCalc('volume')">
+                                    Volume Calculator
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mathematical Constants -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-infinity me-2"></i>Mathematical Constants</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Constant</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>π (Pi)</td>
+                                            <td>3.14159...</td>
+                                        </tr>
+                                        <tr>
+                                            <td>e (Euler's)</td>
+                                            <td>2.71828...</td>
+                                        </tr>
+                                        <tr>
+                                            <td>φ (Golden)</td>
+                                            <td>1.61803...</td>
+                                        </tr>
+                                        <tr>
+                                            <td>γ (Euler-Mascheroni)</td>
+                                            <td>0.57721...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- Calculator Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Scientific Calculator Guide</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Operations:</h6>
+                                    <ul>
+                                        <li><strong>Addition:</strong> +</li>
+                                        <li><strong>Subtraction:</strong> -</li>
+                                        <li><strong>Multiplication:</strong> * or ×</li>
+                                        <li><strong>Division:</strong> / or ÷</li>
+                                        <li><strong>Power:</strong> ^</li>
+                                        <li><strong>Percentage:</strong> %</li>
+                                    </ul>
+                                    
+                                    <h6>Trigonometric Functions:</h6>
+                                    <ul>
+                                        <li><strong>Sine:</strong> sin(x)</li>
+                                        <li><strong>Cosine:</strong> cos(x)</li>
+                                        <li><strong>Tangent:</strong> tan(x)</li>
+                                        <li><strong>Inverse Sine:</strong> asin(x)</li>
+                                        <li><strong>Inverse Cosine:</strong> acos(x)</li>
+                                        <li><strong>Inverse Tangent:</strong> atan(x)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Functions:</h6>
+                                    <ul>
+                                        <li><strong>Square Root:</strong> sqrt(x)</li>
+                                        <li><strong>Natural Logarithm:</strong> ln(x)</li>
+                                        <li><strong>Common Logarithm:</strong> log(x)</li>
+                                        <li><strong>Exponential:</strong> exp(x)</li>
+                                        <li><strong>Factorial:</strong> n!</li>
+                                        <li><strong>Absolute Value:</strong> |x|</li>
+                                    </ul>
+                                    
+                                    <h6>Rounding Functions:</h6>
+                                    <ul>
+                                        <li><strong>Floor:</strong> ⌊x⌋ (round down)</li>
+                                        <li><strong>Ceiling:</strong> ⌈x⌉ (round up)</li>
+                                        <li><strong>Round:</strong> round(x)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Banner -->
+    <!-- Ad Banner -->
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Scientific Calculator specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentExpression = '';
+            let currentNumber = '0';
+            let history = [];
+            let angleMode = 'degrees';
+            let precision = 4;
+
+            // Initialize calculator
+            updateDisplay();
+
+            // Event listeners for settings
+            document.getElementById('angleMode').addEventListener('change', function() {
+                angleMode = this.value;
+            });
+
+            document.getElementById('precision').addEventListener('change', function() {
+                precision = parseInt(this.value);
+            });
+
+            // Calculator functions
+            window.addNumber = function(num) {
+                if (currentNumber === '0' && num !== '.') {
+                    currentNumber = num;
+                } else {
+                    if (num === '.' && currentNumber.includes('.')) return;
+                    currentNumber += num;
+                }
+                updateDisplay();
+            };
+
+            window.addToExpression = function(operator) {
+                if (currentNumber !== '0') {
+                    currentExpression += currentNumber + operator;
+                    currentNumber = '0';
+                } else if (currentExpression.length > 0) {
+                    currentExpression = currentExpression.slice(0, -1) + operator;
+                }
+                updateDisplay();
+            };
+
+            window.addFunction = function(func) {
+                if (currentNumber !== '0') {
+                    currentExpression += currentNumber;
+                    currentNumber = '0';
+                }
+                currentExpression += func + '(';
+                updateDisplay();
+            };
+
+            window.clearAll = function() {
+                currentExpression = '';
+                currentNumber = '0';
+                updateDisplay();
+            };
+
+            window.clearEntry = function() {
+                currentNumber = '0';
+                updateDisplay();
+            };
+
+            window.backspace = function() {
+                if (currentNumber.length > 1) {
+                    currentNumber = currentNumber.slice(0, -1);
+                } else {
+                    currentNumber = '0';
+                }
+                updateDisplay();
+            };
+
+            window.calculate = function() {
+                try {
+                    let expression = currentExpression + currentNumber;
+                    if (expression === '') return;
+
+                    // Replace mathematical functions
+                    expression = replaceFunctions(expression);
+                    
+                    // Evaluate the expression
+                    const result = evaluateExpression(expression);
+                    
+                    // Add to history
+                    addToHistory(expression, result);
+                    
+                    // Update display
+                    currentExpression = '';
+                    currentNumber = result.toString();
+                    updateDisplay();
+                    
+                } catch (error) {
+                    MultiTools.showNotification('Invalid expression: ' + error.message, 'error');
+                }
+            };
+
+            function replaceFunctions(expr) {
+                // Replace trigonometric functions
+                expr = expr.replace(/sin\(/g, 'Math.sin(');
+                expr = expr.replace(/cos\(/g, 'Math.cos(');
+                expr = expr.replace(/tan\(/g, 'Math.tan(');
+                expr = expr.replace(/asin\(/g, 'Math.asin(');
+                expr = expr.replace(/acos\(/g, 'Math.acos(');
+                expr = expr.replace(/atan\(/g, 'Math.atan(');
+                
+                // Replace logarithmic functions
+                expr = expr.replace(/log\(/g, 'Math.log10(');
+                expr = expr.replace(/ln\(/g, 'Math.log(');
+                
+                // Replace other functions
+                expr = expr.replace(/sqrt\(/g, 'Math.sqrt(');
+                expr = expr.replace(/exp\(/g, 'Math.exp(');
+                expr = expr.replace(/abs\(/g, 'Math.abs(');
+                expr = expr.replace(/floor\(/g, 'Math.floor(');
+                expr = expr.replace(/ceil\(/g, 'Math.ceil(');
+                expr = expr.replace(/round\(/g, 'Math.round(');
+                
+                // Replace constants
+                expr = expr.replace(/π/g, 'Math.PI');
+                expr = expr.replace(/e/g, 'Math.E');
+                
+                // Replace operators
+                expr = expr.replace(/\^/g, '**');
+                expr = expr.replace(/×/g, '*');
+                expr = expr.replace(/÷/g, '/');
+                expr = expr.replace(/−/g, '-');
+                
+                return expr;
+            }
+
+            function evaluateExpression(expr) {
+                // Handle special functions
+                if (expr.includes('factorial')) {
+                    expr = expr.replace(/factorial\((\d+)\)/g, function(match, num) {
+                        return factorial(parseInt(num));
+                    });
+                }
+                
+                if (expr.includes('rand')) {
+                    expr = expr.replace(/rand\(\)/g, Math.random());
+                }
+                
+                if (expr.includes('pow')) {
+                    expr = expr.replace(/pow\(([^,]+),([^)]+)\)/g, 'Math.pow($1,$2)');
+                }
+                
+                // Convert angles if needed
+                if (angleMode === 'degrees') {
+                    expr = expr.replace(/Math\.sin\(/g, 'Math.sin(Math.PI/180*');
+                    expr = expr.replace(/Math\.cos\(/g, 'Math.cos(Math.PI/180*');
+                    expr = expr.replace(/Math\.tan\(/g, 'Math.tan(Math.PI/180*');
+                }
+                
+                const result = eval(expr);
+                return Number(result.toFixed(precision));
+            }
+
+            function factorial(n) {
+                if (n < 0) throw new Error('Factorial not defined for negative numbers');
+                if (n === 0 || n === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+
+            function addToHistory(expression, result) {
+                history.unshift({
+                    expression: expression,
+                    result: result,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+                
+                if (history.length > 10) {
+                    history.pop();
+                }
+                
+                updateHistory();
+            }
+
+            function updateHistory() {
+                const historyDiv = document.getElementById('history');
+                if (history.length === 0) {
+                    historyDiv.innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-history fa-2x mb-2"></i>
+                            <p>Your calculations will appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let historyHTML = '';
+                history.forEach((item, index) => {
+                    historyHTML += `
+                        <div class="history-item mb-2 p-2 border rounded">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="expression">${item.expression}</div>
+                                    <div class="result text-primary fw-bold">= ${item.result}</div>
+                                    <small class="text-muted">${item.timestamp}</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary ms-2" onclick="useHistoryResult(${index})">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                historyDiv.innerHTML = historyHTML;
+            }
+
+            window.useHistoryResult = function(index) {
+                currentNumber = history[index].result.toString();
+                updateDisplay();
+            };
+
+            window.clearHistory = function() {
+                history = [];
+                updateHistory();
+            };
+
+            window.copyLastResult = function() {
+                if (history.length > 0) {
+                    navigator.clipboard.writeText(history[0].result.toString()).then(() => {
+                        MultiTools.showNotification('Result copied to clipboard!', 'success');
+                    }).catch(() => {
+                        MultiTools.showNotification('Failed to copy result', 'error');
+                    });
+                } else {
+                    MultiTools.showNotification('No result to copy', 'warning');
+                }
+            };
+
+            function updateDisplay() {
+                document.getElementById('display').textContent = currentNumber;
+                document.getElementById('expression').textContent = currentExpression;
+            }
+
+            // Quick calculation functions
+            window.loadQuickCalc = function(type) {
+                switch(type) {
+                    case 'quadratic':
+                        currentExpression = 'Quadratic Formula: ax² + bx + c = 0';
+                        currentNumber = 'x = (-b ± √(b² - 4ac)) / 2a';
+                        break;
+                    case 'pythagorean':
+                        currentExpression = 'Pythagorean Theorem: a² + b² = c²';
+                        currentNumber = 'c = √(a² + b²)';
+                        break;
+                    case 'area':
+                        currentExpression = 'Area Formulas:';
+                        currentNumber = 'Circle: πr², Rectangle: l×w, Triangle: ½bh';
+                        break;
+                    case 'volume':
+                        currentExpression = 'Volume Formulas:';
+                        currentNumber = 'Sphere: 4/3πr³, Cube: s³, Cylinder: πr²h';
+                        break;
+                }
+                updateDisplay();
+            };
+
+            // Add CSS for calculator styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .ad-banner {
+                    width: 1080px;
+                    margin: auto;
+                }
+                
+                .calculator-display {
+                    background: #f8f9fa;
+                    border-radius: 10px;
+                    padding: 15px;
+                }
+                .calculator-buttons .btn {
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .history-item {
+                    background: #f8f9fa;
+                }
+                .history-item .expression {
+                    font-family: 'Courier New', monospace;
+                    font-size: 12px;
+                }
+                .history-item .result {
+                    font-size: 16px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

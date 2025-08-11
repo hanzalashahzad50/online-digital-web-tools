@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online area converter. Convert between square meters, square feet, acres, hectares, and more area units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-vector-square"></i> Area Converter</h1>
+                    <p class="lead">Convert between different area units and calculate areas for various shapes.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exchange-alt"></i> Unit Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select class="form-select" id="fromUnit">
+                                        <option value="sq_m">Square Meter (m²)</option>
+                                        <option value="sq_km">Square Kilometer (km²)</option>
+                                        <option value="sq_cm">Square Centimeter (cm²)</option>
+                                        <option value="sq_mm">Square Millimeter (mm²)</option>
+                                        <option value="sq_ft">Square Foot (ft²)</option>
+                                        <option value="sq_yd">Square Yard (yd²)</option>
+                                        <option value="sq_in">Square Inch (in²)</option>
+                                        <option value="sq_mi">Square Mile (mi²)</option>
+                                        <option value="acre">Acre</option>
+                                        <option value="hectare">Hectare (ha)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select class="form-select" id="toUnit">
+                                        <option value="sq_ft">Square Foot (ft²)</option>
+                                        <option value="sq_m">Square Meter (m²)</option>
+                                        <option value="sq_km">Square Kilometer (km²)</option>
+                                        <option value="sq_cm">Square Centimeter (cm²)</option>
+                                        <option value="sq_mm">Square Millimeter (mm²)</option>
+                                        <option value="sq_yd">Square Yard (yd²)</option>
+                                        <option value="sq_in">Square Inch (in²)</option>
+                                        <option value="sq_mi">Square Mile (mi²)</option>
+                                        <option value="acre">Acre</option>
+                                        <option value="hectare">Hectare (ha)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="inputValue" class="form-label">Value:</label>
+                                    <input type="number" class="form-control" id="inputValue" placeholder="Enter value" step="0.01">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resultValue" class="form-label">Result:</label>
+                                    <input type="text" class="form-control" id="resultValue" readonly>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="convertArea()">
+                                    <i class="fas fa-calculator"></i> Convert
+                                </button>
+                                <button class="btn btn-secondary" onclick="swapUnits()">
+                                    <i class="fas fa-exchange-alt"></i> Swap
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearConverter()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-shapes"></i> Area Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="shapeType" class="form-label">Shape:</label>
+                                    <select class="form-select" id="shapeType" onchange="showShapeInputs()">
+                                        <option value="rectangle">Rectangle</option>
+                                        <option value="square">Square</option>
+                                        <option value="circle">Circle</option>
+                                        <option value="triangle">Triangle</option>
+                                        <option value="trapezoid">Trapezoid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="shapeInputs">
+                                <!-- Rectangle inputs -->
+                                <div id="rectangleInputs" class="shape-inputs">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="length" class="form-label">Length:</label>
+                                            <input type="number" class="form-control" id="length" placeholder="Length" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="width" class="form-label">Width:</label>
+                                            <input type="number" class="form-control" id="width" placeholder="Width" step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success" onclick="calculateArea()">
+                                <i class="fas fa-calculator"></i> Calculate Area
+                            </button>
+                            
+                            <div id="areaResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Area Results:</h6>
+                                    <div id="areaDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> All Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions" class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="conversionsTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Facts</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>1 acre:</strong> 43,560 square feet</li>
+                            <li><strong>1 hectare:</strong> 10,000 square meters</li>
+                            <li><strong>1 square mile:</strong> 640 acres</li>
+                            <li><strong>1 square kilometer:</strong> 100 hectares</li>
+                            <li><strong>1 square yard:</strong> 9 square feet</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-ruler"></i> Common Areas</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Football Field:</small><br>
+                            <span class="badge bg-success">1.32 acres</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Tennis Court:</small><br>
+                            <span class="badge bg-info">2,808 ft²</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Basketball Court:</small><br>
+                            <span class="badge bg-warning">4,700 ft²</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Olympic Pool:</small><br>
+                            <span class="badge bg-primary">13,454 ft²</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Area conversion factors (to square meters as base)
+        const areaFactors = {
+            'sq_m': 1, // Base unit
+            'sq_km': 1000000, // 1 km² = 1,000,000 m²
+            'sq_cm': 0.0001, // 1 cm² = 0.0001 m²
+            'sq_mm': 0.000001, // 1 mm² = 0.000001 m²
+            'sq_ft': 0.092903, // 1 ft² = 0.092903 m²
+            'sq_yd': 0.836127, // 1 yd² = 0.836127 m²
+            'sq_in': 0.00064516, // 1 in² = 0.00064516 m²
+            'sq_mi': 2589988.11, // 1 mi² = 2,589,988.11 m²
+            'acre': 4046.86, // 1 acre = 4,046.86 m²
+            'hectare': 10000 // 1 ha = 10,000 m²
+        };
+
+        function convertArea() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            
+            if (isNaN(inputValue)) {
+                MultiTools.showNotification('Please enter a valid number', 'error');
+                return;
+            }
+
+            // Convert to base unit (square meters)
+            const baseValue = inputValue * areaFactors[fromUnit];
+            
+            // Convert from base unit to target unit
+            const result = baseValue / areaFactors[toUnit];
+
+            document.getElementById('resultValue').value = result.toFixed(6);
+            updateAllConversions(inputValue, fromUnit);
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = document.getElementById('inputValue').value;
+            const resultValue = document.getElementById('resultValue').value;
+
+            document.getElementById('fromUnit').value = toUnit;
+            document.getElementById('toUnit').value = fromUnit;
+            document.getElementById('inputValue').value = resultValue;
+            document.getElementById('resultValue').value = inputValue;
+        }
+
+        function clearConverter() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('resultValue').value = '';
+            document.getElementById('conversionsTable').innerHTML = '';
+            document.getElementById('areaResults').style.display = 'none';
+        }
+
+        function updateAllConversions(value, fromUnit) {
+            const table = document.getElementById('conversionsTable');
+            table.innerHTML = '';
+
+            Object.keys(areaFactors).forEach(unit => {
+                if (unit !== fromUnit) {
+                    const baseValue = value * areaFactors[fromUnit];
+                    const convertedValue = baseValue / areaFactors[unit];
+
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${getUnitName(unit)}</strong></td>
+                        <td>${convertedValue.toFixed(6)}</td>
+                    `;
+                }
+            });
+        }
+
+        function getUnitName(unit) {
+            const names = {
+                'sq_m': 'Square Meter (m²)',
+                'sq_km': 'Square Kilometer (km²)',
+                'sq_cm': 'Square Centimeter (cm²)',
+                'sq_mm': 'Square Millimeter (mm²)',
+                'sq_ft': 'Square Foot (ft²)',
+                'sq_yd': 'Square Yard (yd²)',
+                'sq_in': 'Square Inch (in²)',
+                'sq_mi': 'Square Mile (mi²)',
+                'acre': 'Acre',
+                'hectare': 'Hectare (ha)'
+            };
+            return names[unit] || unit;
+        }
+
+        function showShapeInputs() {
+            const shapeType = document.getElementById('shapeType').value;
+            const shapeInputs = document.getElementById('shapeInputs');
+            
+            // Hide all shape inputs
+            const allInputs = shapeInputs.querySelectorAll('.shape-inputs');
+            allInputs.forEach(input => input.style.display = 'none');
+            
+            // Show selected shape inputs
+            const selectedInputs = document.getElementById(shapeType + 'Inputs');
+            if (selectedInputs) {
+                selectedInputs.style.display = 'block';
+            }
+        }
+
+        function calculateArea() {
+            const shapeType = document.getElementById('shapeType').value;
+            let area = 0;
+            let details = '';
+
+            switch (shapeType) {
+                case 'rectangle':
+                    const length = parseFloat(document.getElementById('length').value);
+                    const width = parseFloat(document.getElementById('width').value);
+                    if (isNaN(length) || isNaN(width)) {
+                        MultiTools.showNotification('Please enter valid dimensions', 'error');
+                        return;
+                    }
+                    area = length * width;
+                    details = `Rectangle: ${length} × ${width}`;
+                    break;
+                    
+                case 'square':
+                    const side = parseFloat(document.getElementById('length').value);
+                    if (isNaN(side)) {
+                        MultiTools.showNotification('Please enter valid side length', 'error');
+                        return;
+                    }
+                    area = side * side;
+                    details = `Square: ${side} × ${side}`;
+                    break;
+                    
+                case 'circle':
+                    const radius = parseFloat(document.getElementById('length').value);
+                    if (isNaN(radius)) {
+                        MultiTools.showNotification('Please enter valid radius', 'error');
+                        return;
+                    }
+                    area = Math.PI * radius * radius;
+                    details = `Circle: radius ${radius}`;
+                    break;
+                    
+                case 'triangle':
+                    const base = parseFloat(document.getElementById('length').value);
+                    const height = parseFloat(document.getElementById('width').value);
+                    if (isNaN(base) || isNaN(height)) {
+                        MultiTools.showNotification('Please enter valid base and height', 'error');
+                        return;
+                    }
+                    area = 0.5 * base * height;
+                    details = `Triangle: base ${base}, height ${height}`;
+                    break;
+                    
+                case 'trapezoid':
+                    const a = parseFloat(document.getElementById('length').value);
+                    const b = parseFloat(document.getElementById('width').value);
+                    const h = parseFloat(document.getElementById('height')?.value || 0);
+                    if (isNaN(a) || isNaN(b) || isNaN(h)) {
+                        MultiTools.showNotification('Please enter valid dimensions', 'error');
+                        return;
+                    }
+                    area = 0.5 * (a + b) * h;
+                    details = `Trapezoid: bases ${a}, ${b}, height ${h}`;
+                    break;
+            }
+
+            // Display results
+            const resultsDiv = document.getElementById('areaResults');
+            const detailsDiv = document.getElementById('areaDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Shape:</strong> ${details}<br>
+                        <strong>Area:</strong> <span class="text-success fw-bold">${area.toFixed(2)} square units</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>In Square Meters:</strong> ${(area * 0.092903).toFixed(2)} m²<br>
+                        <strong>In Square Feet:</strong> ${(area * 10.7639).toFixed(2)} ft²<br>
+                        <strong>In Acres:</strong> ${(area * 0.000022957).toFixed(6)} acres
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Auto-convert on input change
+        document.getElementById('inputValue').addEventListener('input', function() {
+            if (this.value && !isNaN(this.value)) {
+                convertArea();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showShapeInputs();
+            // Set default values for demo
+            document.getElementById('inputValue').value = '100';
+            convertArea();
+        });
+    </script>
+</body>
+</html> 

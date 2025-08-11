@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Length Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online length converter. Convert between meters, feet, inches, kilometers, miles, and more length units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-ruler me-3"></i>Length Converter</h1>
+            <p class="lead">Convert between meters, feet, inches, kilometers, miles, and more length units</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Length Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select id="fromUnit" class="form-select">
+                                        <option value="meter">Meter (m)</option>
+                                        <option value="kilometer">Kilometer (km)</option>
+                                        <option value="centimeter">Centimeter (cm)</option>
+                                        <option value="millimeter">Millimeter (mm)</option>
+                                        <option value="mile">Mile (mi)</option>
+                                        <option value="yard">Yard (yd)</option>
+                                        <option value="foot">Foot (ft)</option>
+                                        <option value="inch">Inch (in)</option>
+                                        <option value="nautical-mile">Nautical Mile (nmi)</option>
+                                        <option value="light-year">Light Year (ly)</option>
+                                        <option value="astronomical-unit">Astronomical Unit (AU)</option>
+                                        <option value="parsec">Parsec (pc)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select id="toUnit" class="form-select">
+                                        <option value="foot">Foot (ft)</option>
+                                        <option value="meter">Meter (m)</option>
+                                        <option value="kilometer">Kilometer (km)</option>
+                                        <option value="centimeter">Centimeter (cm)</option>
+                                        <option value="millimeter">Millimeter (mm)</option>
+                                        <option value="mile">Mile (mi)</option>
+                                        <option value="yard">Yard (yd)</option>
+                                        <option value="inch">Inch (in)</option>
+                                        <option value="nautical-mile">Nautical Mile (nmi)</option>
+                                        <option value="light-year">Light Year (ly)</option>
+                                        <option value="astronomical-unit">Astronomical Unit (AU)</option>
+                                        <option value="parsec">Parsec (pc)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromValue" class="form-label">Enter Value:</label>
+                                    <input type="number" id="fromValue" class="form-control" placeholder="1" step="0.000001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toValue" class="form-label">Result:</label>
+                                    <input type="text" id="toValue" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Convert
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap Units
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Units Conversion -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Units Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-ruler fa-3x mb-3"></i>
+                                    <p>Enter a value to see all unit conversions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Lengths -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common Lengths</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Everyday Objects:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Object</th>
+                                                    <th>Length</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Paper Clip</td>
+                                                    <td>3.5 cm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Credit Card</td>
+                                                    <td>8.5 cm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Smartphone</td>
+                                                    <td>15 cm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Laptop</td>
+                                                    <td>35 cm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Human Height</td>
+                                                    <td>1.7 m</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Distances:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Distance</th>
+                                                    <th>Length</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Football Field</td>
+                                                    <td>100 m</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Marathon</td>
+                                                    <td>42.2 km</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Earth's Circumference</td>
+                                                    <td>40,075 km</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Earth to Moon</td>
+                                                    <td>384,400 km</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Earth to Sun</td>
+                                                    <td>149.6 million km</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('height')">
+                                    Human Height
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('room')">
+                                    Room Dimensions
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('distance')">
+                                    Travel Distance
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('space')">
+                                    Space Distances
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Factors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Factors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>In Meters</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 inch</td>
+                                            <td>0.0254 m</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 foot</td>
+                                            <td>0.3048 m</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 yard</td>
+                                            <td>0.9144 m</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 mile</td>
+                                            <td>1,609.344 m</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 nautical mile</td>
+                                            <td>1,852 m</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Length Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Length Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 meter = 39.37 inches</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 kilometer = 0.621 miles</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 mile = 1.609 kilometers</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 light year = 9.46 trillion km</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 parsec = 3.26 light years</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                   
+                </div>
+            </div>
+
+            <!-- Length Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Length Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Metric System:</h6>
+                                    <ul>
+                                        <li><strong>Millimeter (mm):</strong> 1/1000 of a meter</li>
+                                        <li><strong>Centimeter (cm):</strong> 1/100 of a meter</li>
+                                        <li><strong>Meter (m):</strong> Base unit of length</li>
+                                        <li><strong>Kilometer (km):</strong> 1000 meters</li>
+                                    </ul>
+                                    
+                                    <h6>Imperial System:</h6>
+                                    <ul>
+                                        <li><strong>Inch (in):</strong> 1/12 of a foot</li>
+                                        <li><strong>Foot (ft):</strong> 12 inches</li>
+                                        <li><strong>Yard (yd):</strong> 3 feet</li>
+                                        <li><strong>Mile (mi):</strong> 5,280 feet</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Specialized Units:</h6>
+                                    <ul>
+                                        <li><strong>Nautical Mile:</strong> Used in aviation and maritime</li>
+                                        <li><strong>Light Year:</strong> Distance light travels in one year</li>
+                                        <li><strong>Astronomical Unit:</strong> Average distance from Earth to Sun</li>
+                                        <li><strong>Parsec:</strong> Unit used in astronomy</li>
+                                    </ul>
+                                    
+                                    <h6>Usage by Country:</h6>
+                                    <ul>
+                                        <li><strong>Metric:</strong> Most countries worldwide</li>
+                                        <li><strong>Imperial:</strong> United States, Myanmar, Liberia</li>
+                                        <li><strong>Mixed:</strong> United Kingdom, Canada</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Length Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromValue = document.getElementById('fromValue');
+            const toValue = document.getElementById('toValue');
+            const convertBtn = document.getElementById('convertBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // Conversion factors (all in meters)
+            const conversionFactors = {
+                'meter': 1,
+                'kilometer': 1000,
+                'centimeter': 0.01,
+                'millimeter': 0.001,
+                'mile': 1609.344,
+                'yard': 0.9144,
+                'foot': 0.3048,
+                'inch': 0.0254,
+                'nautical-mile': 1852,
+                'light-year': 9.461e15,
+                'astronomical-unit': 1.496e11,
+                'parsec': 3.086e16
+            };
+
+            // Unit symbols
+            const unitSymbols = {
+                'meter': 'm',
+                'kilometer': 'km',
+                'centimeter': 'cm',
+                'millimeter': 'mm',
+                'mile': 'mi',
+                'yard': 'yd',
+                'foot': 'ft',
+                'inch': 'in',
+                'nautical-mile': 'nmi',
+                'light-year': 'ly',
+                'astronomical-unit': 'AU',
+                'parsec': 'pc'
+            };
+
+            // Convert button
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapUnits);
+            clearBtn.addEventListener('click', clearForm);
+
+            // Auto-convert on input change
+            fromValue.addEventListener('input', debounce(convert, 300));
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+
+            function convert() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+
+                if (isNaN(value)) {
+                    toValue.value = '';
+                    updateAllConversions();
+                    return;
+                }
+
+                // Convert to meters first, then to target unit
+                const meters = value * conversionFactors[from];
+                const result = meters / conversionFactors[to];
+
+                // Format result based on magnitude
+                toValue.value = formatResult(result);
+                updateAllConversions();
+            }
+
+            function formatResult(value) {
+                if (value === 0) return '0';
+                
+                if (value < 0.000001 || value > 999999) {
+                    return value.toExponential(6);
+                } else if (value < 0.01) {
+                    return value.toFixed(6);
+                } else if (value < 1) {
+                    return value.toFixed(4);
+                } else if (value < 100) {
+                    return value.toFixed(3);
+                } else if (value < 10000) {
+                    return value.toFixed(2);
+                } else {
+                    return value.toFixed(1);
+                }
+            }
+
+            function updateAllConversions() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+
+                if (isNaN(value)) {
+                    document.getElementById('allConversions').innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-ruler fa-3x mb-3"></i>
+                            <p>Enter a value to see all unit conversions</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const meters = value * conversionFactors[from];
+                let conversionsHTML = '<div class="row">';
+
+                Object.keys(conversionFactors).forEach(unit => {
+                    const result = meters / conversionFactors[unit];
+                    const symbol = unitSymbols[unit];
+                    const formattedResult = formatResult(result);
+                    
+                    conversionsHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="conversion-item p-2 border rounded">
+                                <div class="unit-name">${unit.replace('-', ' ').toUpperCase()}</div>
+                                <div class="unit-value">${formattedResult} ${symbol}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                conversionsHTML += '</div>';
+                document.getElementById('allConversions').innerHTML = conversionsHTML;
+            }
+
+            function swapUnits() {
+                const tempUnit = fromUnit.value;
+                const tempValue = fromValue.value;
+                
+                fromUnit.value = toUnit.value;
+                toUnit.value = tempUnit;
+                fromValue.value = toValue.value;
+                
+                convert();
+            }
+
+            function clearForm() {
+                fromValue.value = '';
+                toValue.value = '';
+                updateAllConversions();
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Quick conversion functions
+            window.loadQuickConversion = function(type) {
+                const conversions = {
+                    height: { value: 1.75, unit: 'meter', description: 'Average Human Height' },
+                    room: { value: 4, unit: 'meter', description: 'Room Length' },
+                    distance: { value: 100, unit: 'kilometer', description: 'Travel Distance' },
+                    space: { value: 1, unit: 'light-year', description: 'Space Distance' }
+                };
+
+                const conversion = conversions[type];
+                fromValue.value = conversion.value;
+                fromUnit.value = conversion.unit;
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .conversion-item {
+                    background: #f8f9fa;
+                    transition: transform 0.2s;
+                }
+                .conversion-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .unit-name {
+                    font-size: 12px;
+                    color: #6c757d;
+                    font-weight: bold;
+                }
+                .unit-value {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

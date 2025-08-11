@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Image Resizer - Multi-Tools Hub</title>
+    <meta name="description" content="Resize your images to the perfect dimensions for any social media platform.">
+    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            display: none;
+            margin: 0 auto;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        #dropZone {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        #dropZone:hover, #dropZone.dragover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .platform-option {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .platform-option:hover, .platform-option.active {
+            border-color: #0d6efd;
+            background-color: #f0f7ff;
+        }
+        .platform-option i {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .dimension-inputs { display: none; }
+        .canvas-container {
+            position: relative;
+            margin: 20px auto;
+            display: inline-block;
+        }
+        #previewCanvas {
+            max-width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .cropper-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-crop-alt me-2"></i>Social Media Image Resizer
+                </h1>
+                <p class="text-center text-muted mb-4">Resize and optimize your images for any social media platform</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div id="dropZone">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5>Drag & Drop your image here</h5>
+                                    <p class="text-muted">or click to browse files</p>
+                                    <input type="file" id="imageInput" accept="image/*" class="d-none">
+                                    <button class="btn btn-primary mt-2" id="browseBtn">
+                                        <i class="fas fa-folder-open me-2"></i>Select Image
+                                    </button>
+                                </div>
+                                
+                                <div id="imageContainer" class="text-center mb-4">
+                                    <img id="imagePreview" alt="Preview">
+                                </div>
+                                
+                                <div id="platformOptions" class="mb-4">
+                                    <h5 class="mb-3">Select Platform</h5>
+                                    <div class="row g-3">
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option active" data-platform="instagram" data-width="1080" data-height="1080">
+                                                <i class="fab fa-instagram text-danger"></i>
+                                                <div>Instagram Post</div>
+                                                <small class="text-muted">1:1 (1080×1080)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="instagram" data-width="1080" data-height="1350">
+                                                <i class="fab fa-instagram text-danger"></i>
+                                                <div>Instagram Story</div>
+                                                <small class="text-muted">4:5 (1080×1350)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="facebook" data-width="1200" data-height="630">
+                                                <i class="fab fa-facebook text-primary"></i>
+                                                <div>Facebook Post</div>
+                                                <small class="text-muted">1.91:1 (1200×630)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="twitter" data-width="1200" data-height="675">
+                                                <i class="fab fa-twitter text-info"></i>
+                                                <div>Twitter Post</div>
+                                                <small class="text-muted">16:9 (1200×675)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="pinterest" data-width="1000" data-height="1500">
+                                                <i class="fab fa-pinterest text-danger"></i>
+                                                <div>Pinterest Pin</div>
+                                                <small class="text-muted">2:3 (1000×1500)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="linkedin" data-width="1200" data-height="627">
+                                                <i class="fab fa-linkedin text-primary"></i>
+                                                <div>LinkedIn Post</div>
+                                                <small class="text-muted">1.91:1 (1200×627)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <div class="platform-option" data-platform="custom">
+                                                <i class="fas fa-ruler-combined"></i>
+                                                <div>Custom Size</div>
+                                                <small class="text-muted">Set your own dimensions</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="customDimensions" class="mt-3 dimension-inputs">
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <label class="form-label">Width (px)</label>
+                                                <input type="number" class="form-control" id="customWidth" min="100" max="5000" value="800">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label">Height (px)</label>
+                                                <input type="number" class="form-control" id="customHeight" min="100" max="5000" value="600">
+                                            </div>
+                                            <div class="col-12 mt-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="maintainAspect" checked>
+                                                    <label class="form-check-label" for="maintainAspect">
+                                                        Maintain aspect ratio
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" id="resizeBtn" disabled>
+                                        <i class="fas fa-arrows-alt-h me-2"></i>Resize Image
+                                    </button>
+                                    <button class="btn btn-outline-secondary" id="downloadBtn" disabled>
+                                        <i class="fas fa-download me-2"></i>Download Image
+                                    </button>
+                                    <button class="btn btn-outline-danger" id="resetBtn">
+                                        <i class="fas fa-redo me-2"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="far fa-image me-2"></i>Preview
+                                </h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="previewContainer" class="mb-3">
+                                    <p class="text-muted my-5">Your resized image will appear here</p>
+                                </div>
+                                <div id="imageInfo" class="small text-muted">
+                                    <div>Original: <span id="originalDimensions">-</span></div>
+                                    <div>New: <span id="newDimensions">-</span></div>
+                                    <div>File size: <span id="fileSize">-</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Platform Guidelines
+                                </h5>
+                            </div>
+                            <div class="card-body small">
+                                <ul class="mb-0">
+                                    <li><strong>Instagram Post:</strong> 1:1 (1080×1080) or 4:5 (1080×1350)</li>
+                                    <li><strong>Instagram Story:</strong> 9:16 (1080×1920)</li>
+                                    <li><strong>Facebook Post:</strong> 1.91:1 (1200×630)</li>
+                                    <li><strong>Twitter Post:</strong> 16:9 (1200×675)</li>
+                                    <li><strong>Pinterest Pin:</strong> 2:3 (1000×1500)</li>
+                                    <li><strong>LinkedIn Post:</strong> 1.91:1 (1200×627)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bottom Ad Banner -->
+                <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-placeholder"></div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Cropper.js for image cropping -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/header-footer.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <!-- AdMob Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    
+    <!-- Tool Specific JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const imageInput = document.getElementById('imageInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('previewContainer');
+            const platformOptions = document.querySelectorAll('.platform-option');
+            const customDimensions = document.getElementById('customDimensions');
+            const resizeBtn = document.getElementById('resizeBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const originalDimensions = document.getElementById('originalDimensions');
+            const newDimensions = document.getElementById('newDimensions');
+            const fileSizeElement = document.getElementById('fileSize');
+            const maintainAspect = document.getElementById('maintainAspect');
+            const customWidth = document.getElementById('customWidth');
+            const customHeight = document.getElementById('customHeight');
+            
+            // Variables
+            let cropper = null;
+            let originalImage = null;
+            let currentWidth = 0;
+            let currentHeight = 0;
+            let aspectRatio = 1;
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleFileSelect);
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('drop', handleDrop);
+            resizeBtn.addEventListener('click', resizeImage);
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetTool);
+            
+            // Platform selection
+            platformOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    platformOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    if (option.dataset.platform === 'custom') {
+                        customDimensions.style.display = 'block';
+                        updateCustomDimensions();
+                    } else {
+                        customDimensions.style.display = 'none';
+                        if (cropper) {
+                            const width = parseInt(option.dataset.width);
+                            const height = parseInt(option.dataset.height);
+                            updateAspectRatio(width, height);
+                        }
+                    }
+                });
+            });
+            
+            // Custom dimension inputs
+            customWidth.addEventListener('input', updateCustomDimensions);
+            customHeight.addEventListener('input', updateCustomDimensions);
+            maintainAspect.addEventListener('change', updateCustomDimensions);
+            
+            // Functions
+            function handleFileSelect(e) {
+                const file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+                if (!file) return;
+                
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file (JPEG, PNG, etc.)');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    dropZone.style.display = 'none';
+                    
+                    // Initialize cropper
+                    initializeCropper();
+                    
+                    // Update UI
+                    resizeBtn.disabled = false;
+                    
+                    // Store original image
+                    originalImage = new Image();
+                    originalImage.onload = function() {
+                        originalDimensions.textContent = `${this.width} × ${this.height}px`;
+                        currentWidth = this.width;
+                        currentHeight = this.height;
+                        aspectRatio = this.width / this.height;
+                        
+                        // Set initial dimensions
+                        const activeOption = document.querySelector('.platform-option.active');
+                        if (activeOption.dataset.platform === 'custom') {
+                            updateCustomDimensions();
+                        } else {
+                            const width = parseInt(activeOption.dataset.width);
+                            const height = parseInt(activeOption.dataset.height);
+                            updateAspectRatio(width, height);
+                        }
+                    };
+                    originalImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+                handleFileSelect(e);
+            }
+            
+            function initializeCropper() {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(imagePreview, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    checkCrossOrigin: false
+                });
+            }
+            
+            function updateAspectRatio(width, height) {
+                if (!cropper) return;
+                
+                const newAspectRatio = width / height;
+                cropper.setAspectRatio(newAspectRatio);
+                
+                // Update preview
+                updatePreview(width, height);
+            }
+            
+            function updateCustomDimensions() {
+                if (!cropper) return;
+                
+                let width = parseInt(customWidth.value) || 800;
+                let height = parseInt(customHeight.value) || 600;
+                
+                if (maintainAspect.checked && cropper) {
+                    if (this === customWidth) {
+                        height = Math.round(width / aspectRatio);
+                        customHeight.value = height;
+                    } else {
+                        width = Math.round(height * aspectRatio);
+                        customWidth.value = width;
+                    }
+                }
+                
+                updateAspectRatio(width, height);
+            }
+            
+            function updatePreview(width, height) {
+                newDimensions.textContent = `${width} × ${height}px`;
+                
+                // Create canvas for preview
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Fill with a light background
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Add border
+                ctx.strokeStyle = '#dee2e6';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+                
+                // Add dimensions text
+                ctx.fillStyle = '#6c757d';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`${width} × ${height}`, width / 2, height / 2);
+                
+                // Update preview container
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(canvas);
+            }
+            
+            function resizeImage() {
+                if (!cropper) return;
+                
+                // Get selected dimensions
+                const activeOption = document.querySelector('.platform-option.active');
+                let width, height;
+                
+                if (activeOption.dataset.platform === 'custom') {
+                    width = parseInt(customWidth.value) || 800;
+                    height = parseInt(customHeight.value) || 600;
+                } else {
+                    width = parseInt(activeOption.dataset.width);
+                    height = parseInt(activeOption.dataset.height);
+                }
+                
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                    width: width,
+                    height: height,
+                    minWidth: 100,
+                    minHeight: 100,
+                    maxWidth: 5000,
+                    maxHeight: 5000,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+                });
+                
+                // Update preview with resized image
+                previewContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = canvas.toDataURL('image/jpeg', 0.9);
+                img.className = 'img-fluid';
+                previewContainer.appendChild(img);
+                
+                // Update file size
+                canvas.toBlob(function(blob) {
+                    const fileSize = blob ? (blob.size / 1024).toFixed(2) + ' KB' : '-';
+                    fileSizeElement.textContent = fileSize;
+                }, 'image/jpeg', 0.9);
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+                
+                // Update dimensions
+                newDimensions.textContent = `${width} × ${height}px`;
+                currentWidth = width;
+                currentHeight = height;
+            }
+            
+            function downloadImage() {
+                if (!cropper) return;
+                
+                // Get the canvas with the resized image
+                const canvas = cropper.getCroppedCanvas({
+                    width: currentWidth,
+                    height: currentHeight,
+                    minWidth: 100,
+                    minHeight: 100,
+                    maxWidth: 5000,
+                    maxHeight: 5000,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+                });
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `resized-image-${currentWidth}x${currentHeight}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            }
+            
+            function resetTool() {
+                // Reset form
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                
+                // Reset UI
+                imagePreview.style.display = 'none';
+                dropZone.style.display = 'block';
+                previewContainer.innerHTML = '<p class="text-muted my-5">Your resized image will appear here</p>';
+                originalDimensions.textContent = '-';
+                newDimensions.textContent = '-';
+                fileSizeElement.textContent = '-';
+                resizeBtn.disabled = true;
+                downloadBtn.disabled = true;
+                imageInput.value = '';
+                
+                // Reset platform selection
+                platformOptions[0].click();
+                customDimensions.style.display = 'none';
+                customWidth.value = '800';
+                customHeight.value = '600';
+                maintainAspect.checked = true;
+            }
+            
+            // Initialize
+            resetTool();
+        });
+    </script>
+</body>
+</html>

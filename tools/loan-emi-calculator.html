@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan EMI Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online loan EMI calculator. Calculate monthly payments, interest, and total cost for personal loans, home loans, car loans, and more.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .ad-banner {
+            width: 1080px;
+            margin: auto;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-calculator"></i> Loan EMI Calculator</h1>
+                    <p class="lead">Calculate monthly EMI payments, total interest, and loan breakdown for various loan types.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calculator"></i> EMI Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="loanAmount" class="form-label">Loan Amount:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="loanAmount" placeholder="Enter loan amount" step="1000">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="interestRate" class="form-label">Interest Rate (% per year):</label>
+                                    <input type="number" class="form-control" id="interestRate" placeholder="Enter interest rate" step="0.1">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="loanTerm" class="form-label">Loan Term:</label>
+                                    <input type="number" class="form-control" id="loanTerm" placeholder="Enter loan term" step="1">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="termUnit" class="form-label">Term Unit:</label>
+                                    <select class="form-select" id="termUnit">
+                                        <option value="years">Years</option>
+                                        <option value="months">Months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="loanType" class="form-label">Loan Type:</label>
+                                    <select class="form-select" id="loanType">
+                                        <option value="personal">Personal Loan</option>
+                                        <option value="home">Home Loan</option>
+                                        <option value="car">Car Loan</option>
+                                        <option value="business">Business Loan</option>
+                                        <option value="student">Student Loan</option>
+                                        <option value="credit">Credit Card</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="paymentFrequency" class="form-label">Payment Frequency:</label>
+                                    <select class="form-select" id="paymentFrequency">
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="semi-annually">Semi-annually</option>
+                                        <option value="annually">Annually</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="calculateEMI()">
+                                <i class="fas fa-calculator"></i> Calculate EMI
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie"></i> Loan Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="loanResults" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="alert alert-info">
+                                            <h6><i class="fas fa-info-circle"></i> Monthly Payment:</h6>
+                                            <h4 class="text-primary" id="monthlyEMI">$0</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-success">
+                                            <h6><i class="fas fa-info-circle"></i> Total Payment:</h6>
+                                            <h4 class="text-success" id="totalPayment">$0</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="alert alert-warning">
+                                            <h6><i class="fas fa-info-circle"></i> Total Interest:</h6>
+                                            <h4 class="text-warning" id="totalInterest">$0</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-secondary">
+                                            <h6><i class="fas fa-info-circle"></i> Interest Rate (Monthly):</h6>
+                                            <h4 class="text-secondary" id="monthlyRate">0%</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-table"></i> Amortization Schedule</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="amortizationTable" class="table-responsive" style="display: none;">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Payment #</th>
+                                            <th>Payment</th>
+                                            <th>Principal</th>
+                                            <th>Interest</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="amortizationBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Loan Comparison</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="compareAmount" class="form-label">Loan Amount:</label>
+                                    <input type="number" class="form-control" id="compareAmount" placeholder="Amount" step="1000">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="compareTerm" class="form-label">Term (Years):</label>
+                                    <input type="number" class="form-control" id="compareTerm" placeholder="Years" step="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="compareRates" class="form-label">Interest Rates (%):</label>
+                                    <input type="text" class="form-control" id="compareRates" placeholder="5, 7, 10" value="5, 7, 10">
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="compareLoans()">
+                                <i class="fas fa-chart-bar"></i> Compare Loans
+                            </button>
+                            
+                            <div id="comparisonResults" class="mt-3" style="display: none;">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Interest Rate</th>
+                                                <th>Monthly Payment</th>
+                                                <th>Total Interest</th>
+                                                <th>Total Payment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="comparisonBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Tips</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>Lower interest rates</strong> mean lower monthly payments</li>
+                            <li><strong>Shorter loan terms</strong> reduce total interest paid</li>
+                            <li><strong>Larger down payments</strong> reduce loan amount</li>
+                            <li><strong>Prepayment</strong> can save significant interest</li>
+                            <li><strong>Credit score</strong> affects interest rates</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-percentage"></i> Typical Interest Rates</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Personal Loan:</small><br>
+                            <span class="badge bg-info">6-36%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Home Loan:</small><br>
+                            <span class="badge bg-success">3-8%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Car Loan:</small><br>
+                            <span class="badge bg-warning">3-15%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Student Loan:</small><br>
+                            <span class="badge bg-primary">3-12%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Credit Card:</small><br>
+                            <span class="badge bg-danger">15-25%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-calculator"></i> Quick Calculators</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Affordability Calculator:</small><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showAffordabilityCalculator()">
+                                Calculate Max Loan
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Prepayment Calculator:</small><br>
+                            <button class="btn btn-sm btn-outline-success" onclick="showPrepaymentCalculator()">
+                                Calculate Savings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <!-- Ad Banner -->
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function calculateEMI() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value);
+            const termUnit = document.getElementById('termUnit').value;
+            const paymentFrequency = document.getElementById('paymentFrequency').value;
+            
+            if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm)) {
+                MultiTools.showNotification('Please enter valid numbers', 'error');
+                return;
+            }
+
+            // Convert term to months
+            const termInMonths = termUnit === 'years' ? loanTerm * 12 : loanTerm;
+            
+            // Calculate monthly interest rate
+            const monthlyRate = interestRate / 100 / 12;
+            
+            // Calculate EMI using formula: EMI = P * r * (1 + r)^n / ((1 + r)^n - 1)
+            const emi = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, termInMonths) / 
+                       (Math.pow(1 + monthlyRate, termInMonths) - 1);
+            
+            const totalPayment = emi * termInMonths;
+            const totalInterest = totalPayment - loanAmount;
+
+            // Display results
+            document.getElementById('monthlyEMI').textContent = '$' + emi.toFixed(2);
+            document.getElementById('totalPayment').textContent = '$' + totalPayment.toFixed(2);
+            document.getElementById('totalInterest').textContent = '$' + totalInterest.toFixed(2);
+            document.getElementById('monthlyRate').textContent = (monthlyRate * 100).toFixed(4) + '%';
+            
+            document.getElementById('loanResults').style.display = 'block';
+            
+            // Generate amortization schedule
+            generateAmortizationSchedule(loanAmount, monthlyRate, termInMonths, emi);
+        }
+
+        function generateAmortizationSchedule(principal, monthlyRate, termInMonths, emi) {
+            const table = document.getElementById('amortizationBody');
+            table.innerHTML = '';
+            
+            let balance = principal;
+            
+            for (let i = 1; i <= Math.min(termInMonths, 12); i++) { // Show first 12 payments
+                const interest = balance * monthlyRate;
+                const principalPaid = emi - interest;
+                balance = balance - principalPaid;
+                
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>$${emi.toFixed(2)}</td>
+                    <td>$${principalPaid.toFixed(2)}</td>
+                    <td>$${interest.toFixed(2)}</td>
+                    <td>$${Math.max(0, balance).toFixed(2)}</td>
+                `;
+            }
+            
+            if (termInMonths > 12) {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td colspan="5" class="text-center text-muted">
+                        ... and ${termInMonths - 12} more payments
+                    </td>
+                `;
+            }
+            
+            document.getElementById('amortizationTable').style.display = 'block';
+        }
+
+        function compareLoans() {
+            const amount = parseFloat(document.getElementById('compareAmount').value);
+            const term = parseFloat(document.getElementById('compareTerm').value);
+            const ratesText = document.getElementById('compareRates').value;
+            
+            if (isNaN(amount) || isNaN(term) || !ratesText) {
+                MultiTools.showNotification('Please enter valid values', 'error');
+                return;
+            }
+
+            const rates = ratesText.split(',').map(r => parseFloat(r.trim())).filter(r => !isNaN(r));
+            const termInMonths = term * 12;
+            
+            const table = document.getElementById('comparisonBody');
+            table.innerHTML = '';
+            
+            rates.forEach(rate => {
+                const monthlyRate = rate / 100 / 12;
+                const emi = amount * monthlyRate * Math.pow(1 + monthlyRate, termInMonths) / 
+                           (Math.pow(1 + monthlyRate, termInMonths) - 1);
+                const totalPayment = emi * termInMonths;
+                const totalInterest = totalPayment - amount;
+                
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td><strong>${rate}%</strong></td>
+                    <td>$${emi.toFixed(2)}</td>
+                    <td>$${totalInterest.toFixed(2)}</td>
+                    <td>$${totalPayment.toFixed(2)}</td>
+                `;
+            });
+            
+            document.getElementById('comparisonResults').style.display = 'block';
+        }
+
+        function showAffordabilityCalculator() {
+            const monthlyIncome = prompt('Enter your monthly income:');
+            const monthlyExpenses = prompt('Enter your monthly expenses:');
+            const desiredEMI = prompt('Enter your desired monthly payment:');
+            
+            if (monthlyIncome && monthlyExpenses && desiredEMI) {
+                const availableIncome = parseFloat(monthlyIncome) - parseFloat(monthlyExpenses);
+                const maxEMI = Math.min(availableIncome * 0.4, parseFloat(desiredEMI));
+                
+                alert(`Based on your income and expenses:\n\n` +
+                      `Available income: $${availableIncome.toFixed(2)}\n` +
+                      `Recommended max EMI: $${maxEMI.toFixed(2)}\n\n` +
+                      `This is 40% of your available income.`);
+            }
+        }
+
+        function showPrepaymentCalculator() {
+            const currentBalance = prompt('Enter current loan balance:');
+            const prepaymentAmount = prompt('Enter prepayment amount:');
+            const interestRate = prompt('Enter current interest rate (%):');
+            
+            if (currentBalance && prepaymentAmount && interestRate) {
+                const balance = parseFloat(currentBalance) - parseFloat(prepaymentAmount);
+                const monthlyRate = parseFloat(interestRate) / 100 / 12;
+                const remainingPayments = Math.log(1 + (balance * monthlyRate) / 1000) / Math.log(1 + monthlyRate);
+                
+                alert(`Prepayment Analysis:\n\n` +
+                      `New balance: $${balance.toFixed(2)}\n` +
+                      `Estimated payments saved: ${Math.round(remainingPayments)}\n` +
+                      `Interest saved: ~$${(parseFloat(prepaymentAmount) * parseFloat(interestRate) / 100).toFixed(2)}`);
+            }
+        }
+
+        // Auto-calculate on input change
+        document.getElementById('loanAmount').addEventListener('input', function() {
+            if (this.value && document.getElementById('interestRate').value && document.getElementById('loanTerm').value) {
+                calculateEMI();
+            }
+        });
+
+        document.getElementById('interestRate').addEventListener('input', function() {
+            if (this.value && document.getElementById('loanAmount').value && document.getElementById('loanTerm').value) {
+                calculateEMI();
+            }
+        });
+
+        document.getElementById('loanTerm').addEventListener('input', function() {
+            if (this.value && document.getElementById('loanAmount').value && document.getElementById('interestRate').value) {
+                calculateEMI();
+            }
+        });
+
+        // Initialize with sample data
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loanAmount').value = '25000';
+            document.getElementById('interestRate').value = '7.5';
+            document.getElementById('loanTerm').value = '5';
+            calculateEMI();
+        });
+    </script>
+</body>
+</html> 

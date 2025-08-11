@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashtag Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate trending and relevant hashtags for your social media posts.">
+    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .hashtag {background:#e9ecef;border-radius:15px;padding:5px 12px;cursor:pointer;transition:all 0.3s;margin:5px;display:inline-block;}
+        .hashtag:hover{background:#0d6efd;color:white;}
+        .hashtag.copied{background:#198754;color:white;}
+        #resultSection{display:none;}
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="text-center mb-3"><i class="fas fa-hashtag me-2"></i>Hashtag Generator</h1>
+                <p class="text-center text-muted mb-4">Generate trending and relevant hashtags for your social media posts</p>
+                
+                <!-- Top Ad Banner -->
+                <div class="text-center mb-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form id="hashtagForm">
+                            <div class="mb-3">
+                                <label for="topic" class="form-label">Topic or Keyword</label>
+                                <input type="text" class="form-control" id="topic" placeholder="e.g., travel, food, technology" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Platform</label>
+                                <select class="form-select" id="platform">
+                                    <option value="instagram">Instagram</option>
+                                    <option value="twitter">Twitter</option>
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="hashtagCount" class="form-label">Number of Hashtags: <span id="countValue">15</span></label>
+                                <input type="range" class="form-range" min="5" max="30" value="15" id="hashtagCount">
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-magic me-2"></i>Generate Hashtags
+                                </button>
+                            </div>
+                            
+                            <!-- Middle Ad Banner Placeholder -->
+                            <div id="middle-content-ad" class="my-4"></div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4" id="resultSection">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-hashtag me-2"></i>Generated Hashtags</h5>
+                        <button class="btn btn-sm btn-outline-secondary" id="copyAllBtn">
+                            <i class="far fa-copy me-1"></i>Copy All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="hashtagContainer"></div>
+                        <small class="text-muted">Click on any hashtag to copy it</small>
+                    </div>
+                </div>
+                
+                <!-- Middle Content Ad Placeholder -->
+                <div id="middle-content-ad" class="my-4"></div>
+                
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips for Using Hashtags</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li>Use a mix of popular and niche hashtags</li>
+                            <li>Don't use spaces or special characters in hashtags</li>
+                            <li>Research trending hashtags in your niche</li>
+                            <li>Keep your hashtags relevant to your content</li>
+                            <li>Use 5-15 hashtags per post for best results</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/header-footer.js"></script>
+    <!-- Bottom Ad Banner -->
+    <div class="text-center my-4">
+        <div class="ad-banner border rounded p-2 bg-light">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1226609223843598"
+                 data-ad-slot="1798180633"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true">
+            </ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <small class="text-muted d-block mt-1">Advertisement</small>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('hashtagForm');
+            const countSlider = document.getElementById('hashtagCount');
+            const countValue = document.getElementById('countValue');
+            const resultSection = document.getElementById('resultSection');
+            const hashtagContainer = document.getElementById('hashtagContainer');
+            const copyAllBtn = document.getElementById('copyAllBtn');
+            
+            // Update count display
+            countSlider.addEventListener('input', () => {
+                countValue.textContent = countSlider.value;
+            });
+            
+            // Generate hashtags
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const topic = document.getElementById('topic').value.trim().toLowerCase();
+                const platform = document.getElementById('platform').value;
+                const count = parseInt(countSlider.value);
+                
+                if (!topic) return;
+                
+                // Generate hashtags (in a real app, this would be more sophisticated)
+                const hashtags = generateHashtags(topic, platform, count);
+                
+                // Display hashtags
+                hashtagContainer.innerHTML = '';
+                hashtags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'hashtag';
+                    tagElement.textContent = `#${tag}`;
+                    tagElement.addEventListener('click', function() {
+                        copyToClipboard(`#${tag}`);
+                        this.classList.add('copied');
+                        this.textContent = 'Copied!';
+                        setTimeout(() => {
+                            this.textContent = `#${tag}`;
+                            this.classList.remove('copied');
+                        }, 1000);
+                    });
+                    hashtagContainer.appendChild(tagElement);
+                });
+                
+                resultSection.style.display = 'block';
+            });
+            
+            // Copy all hashtags
+            copyAllBtn.addEventListener('click', function() {
+                const hashtags = Array.from(hashtagContainer.querySelectorAll('.hashtag'))
+                    .map(span => span.textContent.replace('Copied!', '').trim())
+                    .filter(text => text.startsWith('#'))
+                    .join(' ');
+                
+                if (hashtags) {
+                    copyToClipboard(hashtags);
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                }
+            });
+            
+            // Helper function to generate hashtags
+            function generateHashtags(topic, platform, count) {
+                // Base tags based on topic
+                const baseTags = [
+                    topic.replace(/\s+/g, ''),
+                    `${topic}life`,
+                    `${topic}lover`,
+                    `${topic}time`,
+                    `love${topic}`,
+                    `${topic}addict`,
+                    `${topic}gram`,
+                    `${topic}photo`,
+                    `bestof${topic}`,
+                    `${topic}oftheday`
+                ];
+                
+                // Platform specific tags
+                const platformTags = {
+                    instagram: ['instadaily', 'instagood', 'picoftheday', 'instagram', 'instamood'],
+                    twitter: ['tweegram', 'twitter', 'tweet', 'twitpic', 'twitterphoto'],
+                    tiktok: ['tiktok', 'viral', 'fyp', 'foryou', 'foryoupage'],
+                    facebook: ['fb', 'facebook', 'fblife', 'facebookpage'],
+                    linkedin: ['linkedin', 'linkedinlife', 'career', 'professional', 'networking']
+                };
+                
+                // Popular tags
+                const popularTags = [
+                    'love', 'instagood', 'photooftheday', 'beautiful', 'happy',
+                    'cute', 'tbt', 'followme', 'follow', 'like4like', 'follow4follow'
+                ];
+                
+                // Combine all tags and remove duplicates
+                let allTags = [...new Set([
+                    ...baseTags,
+                    ...(platformTags[platform] || []),
+                    ...popularTags
+                ])];
+                
+                // Shuffle and return requested number of tags
+                return shuffleArray(allTags).slice(0, Math.min(count, allTags.length));
+            }
+            
+            // Helper function to shuffle array
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Helper function to copy text to clipboard
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show notification using the main.js function if available
+                    if (window.MultiTools && typeof window.MultiTools.showNotification === 'function') {
+                        window.MultiTools.showNotification('Copied to clipboard!', 'success');
+                    }
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

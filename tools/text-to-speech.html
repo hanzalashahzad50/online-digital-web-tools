@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Text to Speech Converter Online | Instant Voice Generation</title>
+<meta name="description" content="Convert any text to natural sounding voice in multiple languages. Free online text to speech tool with download options.">
+<meta name="keywords" content="text to speech, TTS, voice generator, online voice converter, text to mp3, free voice tool">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .voice-controls { background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .voice-preview { background-color: #f1f3f5; border-radius: 8px; padding: 20px; margin-bottom: 20px; min-height: 150px; }
+        .voice-visualizer { height: 60px; display: flex; align-items: flex-end; justify-content: center; margin: 20px 0; }
+        .voice-bar { width: 8px; margin: 0 2px; background-color: #e9ecef; border-radius: 4px; transition: height 0.1s ease; }
+        .voice-active { background-color: #0d6efd; }
+        #textInput { min-height: 150px; }
+        .char-count { text-align: right; font-size: 0.8rem; color: #6c757d; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-comment-dots me-3"></i>Text to Speech</h1>
+            <p class="lead">Convert any text to natural sounding speech with multiple voices and languages</p>
+        </div>
+        
+        <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-keyboard me-2"></i>Enter Your Text</h5>
+                            <div class="btn-group">
+                                <button id="clearBtn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-eraser me-1"></i> Clear
+                                </button>
+                                <button id="sampleBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-magic me-1"></i> Sample
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="textInput" class="form-control" placeholder="Type or paste your text here..."></textarea>
+                            <div class="char-count"><span id="charCount">0</span> characters</div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Voice Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="languageSelect" class="form-label">Language</label>
+                                        <select id="languageSelect" class="form-select">
+                                            <option value="">Loading languages...</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="voiceSelect" class="form-label">Voice</label>
+                                        <select id="voiceSelect" class="form-select" disabled>
+                                            <option value="">Select a language first</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Speech Rate: <span id="rateValue">1.0</span></label>
+                                        <input type="range" class="form-range" id="rateControl" min="0.5" max="2" step="0.1" value="1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Pitch: <span id="pitchValue">1.0</span></label>
+                                        <input type="range" class="form-range" id="pitchControl" min="0.5" max="2" step="0.1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="voice-preview mt-3">
+                                <div id="voiceVisualizer" class="voice-visualizer"></div>
+                                <div id="previewText" class="text-muted text-center">Preview voice by selecting a voice</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-3">
+                                <button id="playBtn" class="btn btn-primary me-md-2" disabled>
+                                    <i class="fas fa-play me-2"></i>Play
+                                </button>
+                                <button id="pauseBtn" class="btn btn-warning me-md-2" disabled>
+                                    <i class="fas fa-pause me-2"></i>Pause
+                                </button>
+                                <button id="stopBtn" class="btn btn-danger me-md-2" disabled>
+                                    <i class="fas fa-stop me-2"></i>Stop
+                                </button>
+                                <button id="downloadBtn" class="btn btn-success" disabled>
+                                    <i class="fas fa-download me-2"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="mb-0">
+                                <li>Enter or paste your text</li>
+                                <li>Select language and voice</li>
+                                <li>Adjust rate and pitch if needed</li>
+                                <li>Click Play to hear the text</li>
+                                <li>Download as audio if desired</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ad-bottom" class="container mt-4 mb-4"></div>
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const textInput = document.getElementById('textInput');
+            const charCount = document.getElementById('charCount');
+            const languageSelect = document.getElementById('languageSelect');
+            const voiceSelect = document.getElementById('voiceSelect');
+            const rateControl = document.getElementById('rateControl');
+            const rateValue = document.getElementById('rateValue');
+            const pitchControl = document.getElementById('pitchControl');
+            const pitchValue = document.getElementById('pitchValue');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const sampleBtn = document.getElementById('sampleBtn');
+            const voiceVisualizer = document.getElementById('voiceVisualizer');
+            const previewText = document.getElementById('previewText');
+
+            // Web Speech API objects
+            let speechSynthesis = window.speechSynthesis;
+            let voices = [];
+            let currentUtterance = null;
+            let audioContext = null;
+            let analyser = null;
+            let dataArray = null;
+            let animationId = null;
+            let isPlaying = false;
+
+            // Sample texts for different languages
+            const sampleTexts = {
+                'en': 'The quick brown fox jumps over the lazy dog.',
+                'es': 'El rápido zorro marrón salta sobre el perro perezoso.',
+                'fr': 'Le rapide renard brun saute par-dessus le chien paresseux.',
+                'de': 'Der schnelle braune Fuchs springt über den faulen Hund.',
+                'ja': '速い茶色のキツネがのろまな犬を飛び越えます。',
+                'zh': '快速的棕色狐狸跳过懒狗。'
+            };
+
+            // Initialize the application
+            function init() {
+                setupEventListeners();
+                setupVoiceVisualizer();
+                loadVoices();
+                updateCharCount();
+                
+                if (!speechSynthesis) {
+                    showError('Your browser does not support the Web Speech API. Please try using Chrome, Edge, or Safari.');
+                    return;
+                }
+                
+                speechSynthesis.onvoiceschanged = loadVoices;
+            }
+
+            // Set up event listeners
+            function setupEventListeners() {
+                textInput.addEventListener('input', updateCharCount);
+                languageSelect.addEventListener('change', updateVoiceList);
+                voiceSelect.addEventListener('change', previewVoice);
+                rateControl.addEventListener('input', updateRateDisplay);
+                pitchControl.addEventListener('input', updatePitchDisplay);
+                playBtn.addEventListener('click', playText);
+                pauseBtn.addEventListener('click', pauseSpeech);
+                stopBtn.addEventListener('click', stopSpeech);
+                downloadBtn.addEventListener('click', downloadSpeech);
+                clearBtn.addEventListener('click', clearText);
+                sampleBtn.addEventListener('click', loadSampleText);
+            }
+
+            // Set up the voice visualizer
+            function setupVoiceVisualizer() {
+                for (let i = 0; i < 16; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'voice-bar';
+                    bar.style.height = '10px';
+                    voiceVisualizer.appendChild(bar);
+                }
+            }
+
+            // Update the voice visualization
+            function updateVisualization() {
+                if (!analyser) return;
+                
+                if (!dataArray) {
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                }
+                
+                analyser.getByteFrequencyData(dataArray);
+                const bars = voiceVisualizer.getElementsByClassName('voice-bar');
+                
+                for (let i = 0; i < bars.length; i++) {
+                    const value = dataArray[i * 2] || 0;
+                    const height = Math.max(5, value / 2);
+                    bars[i].style.height = `${height}px`;
+                    bars[i].classList.toggle('voice-active', value > 10);
+                }
+                
+                if (isPlaying) {
+                    animationId = requestAnimationFrame(updateVisualization);
+                }
+            }
+
+            // Load available voices
+            function loadVoices() {
+                voices = speechSynthesis.getVoices();
+                
+                if (voices.length === 0) {
+                    languageSelect.innerHTML = '<option value="">No voices available. Try refreshing the page.</option>';
+                    return;
+                }
+                
+                // Group voices by language
+                const languages = new Map();
+                
+                voices.forEach((voice, index) => {
+                    const lang = voice.lang.substring(0, 2);
+                    if (!languages.has(lang)) {
+                        languages.set(lang, []);
+                    }
+                    languages.get(lang).push(voice);
+                });
+                
+                // Sort languages by name
+                const sortedLanguages = Array.from(languages.entries()).sort((a, b) => {
+                    return a[1][0].lang.localeCompare(b[1][0].lang);
+                });
+                
+                // Populate language select
+                languageSelect.innerHTML = '<option value="">Select a language</option>';
+                sortedLanguages.forEach(([lang, langVoices]) => {
+                    const langName = new Intl.DisplayNames(['en'], { type: 'language' }).of(lang);
+                    const option = document.createElement('option');
+                    option.value = lang;
+                    option.textContent = `${langName} (${lang})`;
+                    languageSelect.appendChild(option);
+                });
+                
+                languageSelect.disabled = false;
+                
+                // Set default language to browser language if available
+                const browserLang = navigator.language.substring(0, 2);
+                if (languages.has(browserLang)) {
+                    languageSelect.value = browserLang;
+                    updateVoiceList();
+                }
+                
+                sampleBtn.disabled = false;
+            }
+
+            // Update voice list based on selected language
+            function updateVoiceList() {
+                const selectedLang = languageSelect.value;
+                const langVoices = voices.filter(voice => voice.lang.startsWith(selectedLang));
+                
+                voiceSelect.innerHTML = '<option value="">Select a voice</option>';
+                
+                if (langVoices.length === 0) {
+                    voiceSelect.innerHTML = '<option value="">No voices available for this language</option>';
+                    voiceSelect.disabled = true;
+                    return;
+                }
+                
+                // Add voices to select
+                langVoices.forEach((voice, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' - Default' : ''}`;
+                    voiceSelect.appendChild(option);
+                });
+                
+                voiceSelect.disabled = false;
+                
+                // Select the default voice if available
+                const defaultVoice = langVoices.find(voice => voice.default) || langVoices[0];
+                if (defaultVoice) {
+                    voiceSelect.value = langVoices.indexOf(defaultVoice);
+                    previewVoice();
+                }
+            }
+
+            // Preview the selected voice
+            function previewVoice() {
+                const voiceIndex = parseInt(voiceSelect.value);
+                if (isNaN(voiceIndex)) {
+                    previewText.textContent = 'Select a voice to preview';
+                    return;
+                }
+                
+                const voice = voices[voiceIndex];
+                if (!voice) return;
+                
+                const sampleText = sampleTexts[voice.lang.substring(0, 2)] || 
+                                 `This is a preview of the ${voice.name} voice.`;
+                
+                previewText.textContent = sampleText;
+                
+                // Speak the preview text
+                const utterance = new SpeechSynthesisUtterance(sampleText);
+                utterance.voice = voice;
+                utterance.rate = parseFloat(rateControl.value);
+                utterance.pitch = parseFloat(pitchControl.value);
+                
+                // Stop any current speech
+                stopSpeech();
+                
+                // Play the preview
+                speechSynthesis.speak(utterance);
+                
+                // Enable/disable controls
+                playBtn.disabled = false;
+                pauseBtn.disabled = false;
+                stopBtn.disabled = false;
+                downloadBtn.disabled = !textInput.value.trim();
+            }
+
+            // Play the entered text
+            function playText() {
+                const text = textInput.value.trim();
+                if (!text) {
+                    showError('Please enter some text to speak');
+                    return;
+                }
+                
+                const voiceIndex = parseInt(voiceSelect.value);
+                if (isNaN(voiceIndex)) {
+                    showError('Please select a voice');
+                    return;
+                }
+                
+                const voice = voices[voiceIndex];
+                if (!voice) return;
+                
+                // Stop any current speech
+                stopSpeech();
+                
+                // Create audio context if not already created
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 64;
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                }
+                
+                // Create a new utterance
+                currentUtterance = new SpeechSynthesisUtterance(text);
+                currentUtterance.voice = voice;
+                currentUtterance.rate = parseFloat(rateControl.value);
+                currentUtterance.pitch = parseFloat(pitchControl.value);
+                
+                // Set up event handlers
+                currentUtterance.onstart = function() {
+                    isPlaying = true;
+                    playBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                    
+                    // Start visualization
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    updateVisualization();
+                };
+                
+                currentUtterance.onend = function() {
+                    isPlaying = false;
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    
+                    // Stop visualization
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                };
+                
+                currentUtterance.onerror = function(event) {
+                    console.error('SpeechSynthesis error:', event);
+                    showError('An error occurred while speaking. Please try again.');
+                };
+                
+                // Start speaking
+                speechSynthesis.speak(currentUtterance);
+            }
+
+            // Pause the current speech
+            function pauseSpeech() {
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.pause();
+                    isPlaying = false;
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    
+                    // Pause visualization
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                }
+            }
+
+            // Stop the current speech
+            function stopSpeech() {
+                if (speechSynthesis.speaking || speechSynthesis.paused) {
+                    speechSynthesis.cancel();
+                    isPlaying = false;
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    
+                    // Stop visualization
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                }
+            }
+
+            // Download the speech as an audio file
+            function downloadSpeech() {
+                showError('Download functionality requires server-side processing. Please use the browser\'s built-in download options.');
+            }
+
+            // Clear the text input
+            function clearText() {
+                textInput.value = '';
+                updateCharCount();
+                textInput.focus();
+            }
+
+            // Load sample text
+            function loadSampleText() {
+                const selectedLang = languageSelect.value || 'en';
+                const sampleText = sampleTexts[selectedLang] || sampleTexts['en'];
+                textInput.value = sampleText;
+                updateCharCount();
+                
+                // Enable play button if a voice is selected
+                if (!isNaN(parseInt(voiceSelect.value))) {
+                    playBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                }
+            }
+
+            // Update character count
+            function updateCharCount() {
+                const count = textInput.value.length;
+                charCount.textContent = count.toLocaleString();
+                
+                // Enable/disable buttons based on text presence
+                const hasText = count > 0;
+                playBtn.disabled = !hasText || isNaN(parseInt(voiceSelect.value));
+                downloadBtn.disabled = !hasText || isNaN(parseInt(voiceSelect.value));
+            }
+
+            // Update rate display
+            function updateRateDisplay() {
+                rateValue.textContent = rateControl.value;
+                if (currentUtterance) {
+                    currentUtterance.rate = parseFloat(rateControl.value);
+                }
+            }
+
+            // Update pitch display
+            function updatePitchDisplay() {
+                pitchValue.textContent = pitchControl.value;
+                if (currentUtterance) {
+                    currentUtterance.pitch = parseFloat(pitchControl.value);
+                }
+            }
+
+            // Show error message
+            function showError(message) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger alert-dismissible fade show';
+                alert.role = 'alert';
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                const container = document.querySelector('.tool-content');
+                container.insertBefore(alert, container.firstChild);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }, 5000);
+            }
+
+            // Initialize the app
+            init();
+        });
+    </script>
+</body>
+</html>

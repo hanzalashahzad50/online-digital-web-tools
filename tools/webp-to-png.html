@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert WebP to PNG - Multi-Tools Hub</title>
+    <meta name="description" content="Convert WebP images to PNG format online for free. No registration required. Supports batch conversion.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #f1f8ff;
+        }
+        .drop-zone.dragover {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 1rem 0;
+        }
+        .preview-item {
+            flex: 1;
+            min-width: 180px;
+        }
+        .preview-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            padding: 5px;
+        }
+        .file-card {
+            position: relative;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .file-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+        }
+        .file-size {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .progress {
+            height: 5px;
+            margin-top: 5px;
+        }
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .conversion-options {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-exchange-alt me-3"></i>Convert WebP to PNG</h1>
+            <p class="lead">Easily convert your WebP images to PNG format with high quality</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- Top Ad (Leaderboard) -->
+            <div id="ad-leaderboard" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Upload Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload WebP Images</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dropZone" class="drop-zone mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h5>Drag & Drop your WebP files here</h5>
+                                <p class="text-muted">or click to browse files</p>
+                                <input type="file" id="fileInput" class="d-none" accept=".webp,image/webp" multiple>
+                                <button id="browseBtn" class="btn btn-outline-primary mt-2">
+                                    <i class="fas fa-folder-open me-2"></i>Select Files
+                                </button>
+                            </div>
+                            
+                            <!-- Conversion Options -->
+                            <div class="conversion-options mb-4">
+                                <div class="option-title">
+                                    <i class="fas fa-cog me-2"></i>Conversion Options
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="qualityRange" class="form-label">Quality: <span id="qualityValue">90</span>%</label>
+                                            <input type="range" class="form-range" id="qualityRange" min="1" max="100" value="90">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="preserveTransparency" checked>
+                                            <label class="form-check-label" for="preserveTransparency">Preserve Transparency</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="optimizeSize" checked>
+                                            <label class="form-check-label" for="optimizeSize">Optimize File Size</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- File List -->
+                            <div id="fileList" class="mb-3">
+                                <!-- Files will be listed here -->
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex flex-wrap gap-2">
+                                <button id="convertAllBtn" class="btn btn-primary" disabled>
+                                    <i class="fas fa-sync-alt me-2"></i>Convert All
+                                </button>
+                                <button id="downloadAllBtn" class="btn btn-success" disabled>
+                                    <i class="fas fa-download me-2"></i>Download All
+                                </button>
+                                <button id="clearAllBtn" class="btn btn-outline-secondary ms-auto">
+                                    <i class="fas fa-trash-alt me-2"></i>Clear All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="far fa-image me-2"></i>Preview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="preview-container">
+                                <div class="preview-item">
+                                    <div class="preview-label">Original (WebP)</div>
+                                    <img id="originalPreview" class="preview-image" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22150%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f8f9fa%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%2280%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20fill%3D%22%236c757d%22%3ENo%20image%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Original preview">
+                                </div>
+                                <div class="preview-item">
+                                    <div class="preview-label">Converted (PNG)</div>
+                                    <img id="convertedPreview" class="preview-image" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22150%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f8f9fa%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%2280%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20fill%3D%22%236c757d%22%3EConverted%20image%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Converted preview">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+
+                    <!-- How to Use -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item">Click "Select Files" or drag and drop WebP images</li>
+                                <li class="list-group-item">Adjust conversion options if needed</li>
+                                <li class="list-group-item">Click "Convert All" to start conversion</li>
+                                <li class="list-group-item">Download individual files or all at once</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Why Convert to PNG? -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Why Convert to PNG?</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Wider Compatibility:</strong> PNG works everywhere
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Lossless Quality:</strong> No quality loss during conversion
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Transparency Support:</strong> Preserves transparent backgrounds
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>No Plugins Needed:</strong> Works in all modern browsers
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- File Information -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>File Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>Selected Files:</strong> 
+                                <span id="fileCount">0</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Total Size:</strong> 
+                                <span id="totalSize">0 B</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Status:</strong> 
+                                <span id="conversionStatus" class="text-muted">Ready</span>
+                            </div>
+                            <div class="progress mt-2 d-none" id="conversionProgress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Ad (Leaderboard) -->
+            <div id="ad-bottom" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../js/ads.js"></script>
+    <script src="../js/main.js"></script>
+    
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const convertAllBtn = document.getElementById('convertAllBtn');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const fileList = document.getElementById('fileList');
+            const originalPreview = document.getElementById('originalPreview');
+            const convertedPreview = document.getElementById('convertedPreview');
+            const qualityRange = document.getElementById('qualityRange');
+            const qualityValue = document.getElementById('qualityValue');
+            const fileCount = document.getElementById('fileCount');
+            const totalSize = document.getElementById('totalSize');
+            const conversionStatus = document.getElementById('conversionStatus');
+            const conversionProgress = document.getElementById('conversionProgress');
+            const progressBar = conversionProgress.querySelector('.progress-bar');
+            
+            // State
+            let files = [];
+            let convertedFiles = [];
+            
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            convertAllBtn.addEventListener('click', convertAllFiles);
+            downloadAllBtn.addEventListener('click', downloadAllFiles);
+            clearAllBtn.addEventListener('click', clearAllFiles);
+            qualityRange.addEventListener('input', updateQualityValue);
+            
+            // Drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                const newFiles = Array.from(e.target.files);
+                if (newFiles.length > 0) {
+                    handleFiles(newFiles);
+                }
+            }
+            
+            function handleFiles(selectedFiles) {
+                let validFiles = [];
+                
+                Array.from(selectedFiles).forEach(file => {
+                    // Check if file is WebP
+                    if (file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')) {
+                        // Check if file is already in the list
+                        const isDuplicate = files.some(f => f.name === file.name && f.size === file.size);
+                        
+                        if (!isDuplicate) {
+                            validFiles.push(file);
+                        }
+                    }
+                });
+                
+                if (validFiles.length === 0) {
+                    showNotification('No valid WebP files found. Please select WebP files only.', 'error');
+                    return;
+                }
+                
+                // Add new files to the list
+                files = [...files, ...validFiles];
+                updateFileList();
+                updateUI();
+                
+                // Show success message
+                showNotification(`Added ${validFiles.length} WebP file(s) for conversion`, 'success');
+                
+                // Reset file input to allow selecting the same file again if needed
+                fileInput.value = '';
+            }
+            
+            function updateFileList() {
+                fileList.innerHTML = '';
+                let totalSizeBytes = 0;
+                
+                files.forEach((file, index) => {
+                    totalSizeBytes += file.size;
+                    
+                    const fileCard = document.createElement('div');
+                    fileCard.className = 'file-card';
+                    fileCard.innerHTML = `
+                        <div class="file-info">
+                            <div class="file-name" title="${file.name}">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" id="progress-${index}"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <div>
+                                <span class="badge bg-secondary">${file.type || 'WebP'}</span>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary preview-btn" data-index="${index}" title="Preview">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success download-btn" data-index="${index}" title="Download" disabled>
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn btn-outline-danger remove-btn" data-index="${index}" title="Remove">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    fileList.appendChild(fileCard);
+                });
+                
+                // Update file count and total size
+                fileCount.textContent = files.length;
+                totalSize.textContent = formatFileSize(totalSizeBytes);
+                
+                // Add event listeners to the new buttons
+                document.querySelectorAll('.preview-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => previewFile(parseInt(e.target.closest('.preview-btn').dataset.index)));
+                });
+                
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => downloadFile(parseInt(e.target.closest('.download-btn').dataset.index)));
+                });
+                
+                document.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => removeFile(parseInt(e.target.closest('.remove-btn').dataset.index)));
+                });
+            }
+            
+            function updateQualityValue() {
+                qualityValue.textContent = qualityRange.value;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function updateUI() {
+                // Enable/disable buttons based on state
+                convertAllBtn.disabled = files.length === 0;
+                downloadAllBtn.disabled = convertedFiles.length === 0;
+                clearAllBtn.disabled = files.length === 0;
+                
+                // Update file count and total size
+                const totalSizeBytes = files.reduce((sum, file) => sum + file.size, 0);
+                fileCount.textContent = files.length;
+                totalSize.textContent = formatFileSize(totalSizeBytes);
+            }
+            
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    // Fallback notification
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+            
+            // Initialize
+            updateUI();
+            updateQualityValue();
+        });
+    </script>
+</body>
+</html>

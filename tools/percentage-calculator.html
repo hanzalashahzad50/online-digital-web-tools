@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online percentage calculator. Calculate percentages, percentage changes, discounts, and more.">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-percentage me-3"></i>Percentage Calculator</h1>
+            <p class="lead">Calculate percentages, percentage changes, discounts, and more</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Calculator Tabs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs" id="calculatorTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">
+                                        <i class="fas fa-calculator me-2"></i>Basic Percentage
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="change-tab" data-bs-toggle="tab" data-bs-target="#change" type="button" role="tab">
+                                        <i class="fas fa-chart-line me-2"></i>Percentage Change
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="discount-tab" data-bs-toggle="tab" data-bs-target="#discount" type="button" role="tab">
+                                        <i class="fas fa-tags me-2"></i>Discount Calculator
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="markup-tab" data-bs-toggle="tab" data-bs-target="#markup" type="button" role="tab">
+                                        <i class="fas fa-plus-circle me-2"></i>Markup Calculator
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="calculatorTabContent">
+                                <!-- Basic Percentage Calculator -->
+                                <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="basicValue" class="form-label">Value:</label>
+                                            <input type="number" id="basicValue" class="form-control" placeholder="100" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="basicPercentage" class="form-label">Percentage (%):</label>
+                                            <input type="number" id="basicPercentage" class="form-control" placeholder="25" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" onclick="calculateBasic()">
+                                            <i class="fas fa-calculator me-2"></i>Calculate
+                                        </button>
+                                    </div>
+                                    <div id="basicResult" class="mt-3 d-none">
+                                        <div class="alert alert-info">
+                                            <h6>Result:</h6>
+                                            <p id="basicResultText" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Percentage Change Calculator -->
+                                <div class="tab-pane fade" id="change" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="oldValue" class="form-label">Old Value:</label>
+                                            <input type="number" id="oldValue" class="form-control" placeholder="100" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="newValue" class="form-label">New Value:</label>
+                                            <input type="number" id="newValue" class="form-control" placeholder="150" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" onclick="calculateChange()">
+                                            <i class="fas fa-chart-line me-2"></i>Calculate Change
+                                        </button>
+                                    </div>
+                                    <div id="changeResult" class="mt-3 d-none">
+                                        <div class="alert alert-info">
+                                            <h6>Result:</h6>
+                                            <p id="changeResultText" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Discount Calculator -->
+                                <div class="tab-pane fade" id="discount" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="originalPrice" class="form-label">Original Price:</label>
+                                            <input type="number" id="originalPrice" class="form-control" placeholder="100" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="discountPercent" class="form-label">Discount Percentage (%):</label>
+                                            <input type="number" id="discountPercent" class="form-control" placeholder="20" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" onclick="calculateDiscount()">
+                                            <i class="fas fa-tags me-2"></i>Calculate Discount
+                                        </button>
+                                    </div>
+                                    <div id="discountResult" class="mt-3 d-none">
+                                        <div class="alert alert-success">
+                                            <h6>Discount Details:</h6>
+                                            <div id="discountResultText"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Markup Calculator -->
+                                <div class="tab-pane fade" id="markup" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="costPrice" class="form-label">Cost Price:</label>
+                                            <input type="number" id="costPrice" class="form-control" placeholder="80" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="markupPercent" class="form-label">Markup Percentage (%):</label>
+                                            <input type="number" id="markupPercent" class="form-control" placeholder="25" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" onclick="calculateMarkup()">
+                                            <i class="fas fa-plus-circle me-2"></i>Calculate Markup
+                                        </button>
+                                    </div>
+                                    <div id="markupResult" class="mt-3 d-none">
+                                        <div class="alert alert-warning">
+                                            <h6>Markup Details:</h6>
+                                            <div id="markupResultText"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Calculations -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightning-bolt me-2"></i>Quick Calculations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="loadQuickCalc('tip')">
+                                        <i class="fas fa-coins me-2"></i>Tip Calculator
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="loadQuickCalc('tax')">
+                                        <i class="fas fa-receipt me-2"></i>Tax Calculator
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="loadQuickCalc('commission')">
+                                        <i class="fas fa-handshake me-2"></i>Commission Calculator
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="loadQuickCalc('interest')">
+                                        <i class="fas fa-percentage me-2"></i>Interest Calculator
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Percentage Formulas -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Percentage Formulas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="formula-item mb-3">
+                                <strong>Basic Percentage:</strong>
+                                <div class="formula">Result = Value × (Percentage ÷ 100)</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Percentage Change:</strong>
+                                <div class="formula">Change% = ((New - Old) ÷ Old) × 100</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Discount Amount:</strong>
+                                <div class="formula">Discount = Original × (Discount% ÷ 100)</div>
+                            </div>
+                            <div class="formula-item">
+                                <strong>Markup Amount:</strong>
+                                <div class="formula">Markup = Cost × (Markup% ÷ 100)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Percentages -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Common Percentages</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Percentage</th>
+                                            <th>Fraction</th>
+                                            <th>Decimal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>25%</td>
+                                            <td>1/4</td>
+                                            <td>0.25</td>
+                                        </tr>
+                                        <tr>
+                                            <td>50%</td>
+                                            <td>1/2</td>
+                                            <td>0.5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>75%</td>
+                                            <td>3/4</td>
+                                            <td>0.75</td>
+                                        </tr>
+                                        <tr>
+                                            <td>10%</td>
+                                            <td>1/10</td>
+                                            <td>0.1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>20%</td>
+                                            <td>1/5</td>
+                                            <td>0.2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Percentage Tips -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>To find 10%, divide by 10</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>To find 5%, divide by 20</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>To find 15%, add 10% + 5%</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>To find 25%, divide by 4</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>To find 50%, divide by 2</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                   
+                </div>
+                </div>
+            </div>
+
+            <!-- Percentage Examples -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Percentage Examples</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Real-World Examples:</h6>
+                                    <ul>
+                                        <li><strong>Sales Tax:</strong> 8.5% on $100 = $8.50</li>
+                                        <li><strong>Tip:</strong> 15% on $50 = $7.50</li>
+                                        <li><strong>Discount:</strong> 20% off $80 = $16 savings</li>
+                                        <li><strong>Interest:</strong> 5% on $1000 = $50 per year</li>
+                                        <li><strong>Commission:</strong> 10% on $500 sale = $50</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Business Applications:</h6>
+                                    <ul>
+                                        <li><strong>Profit Margin:</strong> (Profit ÷ Revenue) × 100</li>
+                                        <li><strong>Growth Rate:</strong> ((New - Old) ÷ Old) × 100</li>
+                                        <li><strong>Market Share:</strong> (Company Sales ÷ Total Market) × 100</li>
+                                        <li><strong>Conversion Rate:</strong> (Conversions ÷ Visitors) × 100</li>
+                                        <li><strong>Return on Investment:</strong> ((Gain - Cost) ÷ Cost) × 100</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ad Banner -->
+    <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Percentage Calculator specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners for auto-calculation
+            document.getElementById('basicValue').addEventListener('input', debounce(calculateBasic, 500));
+            document.getElementById('basicPercentage').addEventListener('input', debounce(calculateBasic, 500));
+            document.getElementById('oldValue').addEventListener('input', debounce(calculateChange, 500));
+            document.getElementById('newValue').addEventListener('input', debounce(calculateChange, 500));
+            document.getElementById('originalPrice').addEventListener('input', debounce(calculateDiscount, 500));
+            document.getElementById('discountPercent').addEventListener('input', debounce(calculateDiscount, 500));
+            document.getElementById('costPrice').addEventListener('input', debounce(calculateMarkup, 500));
+            document.getElementById('markupPercent').addEventListener('input', debounce(calculateMarkup, 500));
+
+            // Basic percentage calculation
+            window.calculateBasic = function() {
+                const value = parseFloat(document.getElementById('basicValue').value);
+                const percentage = parseFloat(document.getElementById('basicPercentage').value);
+                const resultDiv = document.getElementById('basicResult');
+                const resultText = document.getElementById('basicResultText');
+
+                if (isNaN(value) || isNaN(percentage)) {
+                    resultDiv.classList.add('d-none');
+                    return;
+                }
+
+                const result = value * (percentage / 100);
+                const percentageOf = (result / value) * 100;
+
+                resultText.innerHTML = `
+                    <strong>${percentage}% of ${value} = ${result.toFixed(2)}</strong><br>
+                    <small class="text-muted">${result} is ${percentage}% of ${value}</small>
+                `;
+                resultDiv.classList.remove('d-none');
+            };
+
+            // Percentage change calculation
+            window.calculateChange = function() {
+                const oldValue = parseFloat(document.getElementById('oldValue').value);
+                const newValue = parseFloat(document.getElementById('newValue').value);
+                const resultDiv = document.getElementById('changeResult');
+                const resultText = document.getElementById('changeResultText');
+
+                if (isNaN(oldValue) || isNaN(newValue)) {
+                    resultDiv.classList.add('d-none');
+                    return;
+                }
+
+                const change = newValue - oldValue;
+                const percentageChange = (change / oldValue) * 100;
+                const changeType = change >= 0 ? 'increase' : 'decrease';
+
+                resultText.innerHTML = `
+                    <strong>Change: ${change.toFixed(2)} (${Math.abs(percentageChange).toFixed(2)}% ${changeType})</strong><br>
+                    <small class="text-muted">From ${oldValue} to ${newValue}</small>
+                `;
+                resultDiv.classList.remove('d-none');
+            };
+
+            // Discount calculation
+            window.calculateDiscount = function() {
+                const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+                const discountPercent = parseFloat(document.getElementById('discountPercent').value);
+                const resultDiv = document.getElementById('discountResult');
+                const resultText = document.getElementById('discountResultText');
+
+                if (isNaN(originalPrice) || isNaN(discountPercent)) {
+                    resultDiv.classList.add('d-none');
+                    return;
+                }
+
+                const discountAmount = originalPrice * (discountPercent / 100);
+                const finalPrice = originalPrice - discountAmount;
+                const savings = originalPrice - finalPrice;
+
+                resultText.innerHTML = `
+                    <strong>Original Price:</strong> $${originalPrice.toFixed(2)}<br>
+                    <strong>Discount Amount:</strong> $${discountAmount.toFixed(2)}<br>
+                    <strong>Final Price:</strong> $${finalPrice.toFixed(2)}<br>
+                    <strong>You Save:</strong> $${savings.toFixed(2)} (${discountPercent}%)
+                `;
+                resultDiv.classList.remove('d-none');
+            };
+
+            // Markup calculation
+            window.calculateMarkup = function() {
+                const costPrice = parseFloat(document.getElementById('costPrice').value);
+                const markupPercent = parseFloat(document.getElementById('markupPercent').value);
+                const resultDiv = document.getElementById('markupResult');
+                const resultText = document.getElementById('markupResultText');
+
+                if (isNaN(costPrice) || isNaN(markupPercent)) {
+                    resultDiv.classList.add('d-none');
+                    return;
+                }
+
+                const markupAmount = costPrice * (markupPercent / 100);
+                const sellingPrice = costPrice + markupAmount;
+                const profitMargin = (markupAmount / sellingPrice) * 100;
+
+                resultText.innerHTML = `
+                    <strong>Cost Price:</strong> $${costPrice.toFixed(2)}<br>
+                    <strong>Markup Amount:</strong> $${markupAmount.toFixed(2)}<br>
+                    <strong>Selling Price:</strong> $${sellingPrice.toFixed(2)}<br>
+                    <strong>Profit Margin:</strong> ${profitMargin.toFixed(2)}%
+                `;
+                resultDiv.classList.remove('d-none');
+            };
+
+            // Quick calculation loader
+            window.loadQuickCalc = function(type) {
+                switch(type) {
+                    case 'tip':
+                        // Switch to basic tab and set tip calculation
+                        document.getElementById('basic-tab').click();
+                        document.getElementById('basicValue').value = '50';
+                        document.getElementById('basicPercentage').value = '15';
+                        calculateBasic();
+                        break;
+                    case 'tax':
+                        document.getElementById('basic-tab').click();
+                        document.getElementById('basicValue').value = '100';
+                        document.getElementById('basicPercentage').value = '8.5';
+                        calculateBasic();
+                        break;
+                    case 'commission':
+                        document.getElementById('basic-tab').click();
+                        document.getElementById('basicValue').value = '500';
+                        document.getElementById('basicPercentage').value = '10';
+                        calculateBasic();
+                        break;
+                    case 'interest':
+                        document.getElementById('basic-tab').click();
+                        document.getElementById('basicValue').value = '1000';
+                        document.getElementById('basicPercentage').value = '5';
+                        calculateBasic();
+                        break;
+                }
+            };
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Add some CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .formula {
+                    font-family: 'Courier New', monospace;
+                    background: #f8f9fa;
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin-top: 5px;
+                    font-size: 0.9em;
+                }
+                .formula-item {
+                    border-left: 3px solid var(--primary-color);
+                    padding-left: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

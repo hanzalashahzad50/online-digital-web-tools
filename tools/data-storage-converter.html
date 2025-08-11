@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Storage Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online data storage converter. Convert between bytes, kilobytes, megabytes, gigabytes, terabytes, and more storage units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-hdd me-3"></i>Data Storage Converter</h1>
+            <p class="lead">Convert between bytes, kilobytes, megabytes, gigabytes, terabytes, and more storage units</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Storage Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select id="fromUnit" class="form-select">
+                                        <option value="byte">Byte (B)</option>
+                                        <option value="kilobyte">Kilobyte (KB)</option>
+                                        <option value="megabyte">Megabyte (MB)</option>
+                                        <option value="gigabyte">Gigabyte (GB)</option>
+                                        <option value="terabyte">Terabyte (TB)</option>
+                                        <option value="petabyte">Petabyte (PB)</option>
+                                        <option value="exabyte">Exabyte (EB)</option>
+                                        <option value="zettabyte">Zettabyte (ZB)</option>
+                                        <option value="yottabyte">Yottabyte (YB)</option>
+                                        <option value="kibibyte">Kibibyte (KiB)</option>
+                                        <option value="mebibyte">Mebibyte (MiB)</option>
+                                        <option value="gibibyte">Gibibyte (GiB)</option>
+                                        <option value="tebibyte">Tebibyte (TiB)</option>
+                                        <option value="pebibyte">Pebibyte (PiB)</option>
+                                        <option value="exbibyte">Exbibyte (EiB)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select id="toUnit" class="form-select">
+                                        <option value="megabyte">Megabyte (MB)</option>
+                                        <option value="byte">Byte (B)</option>
+                                        <option value="kilobyte">Kilobyte (KB)</option>
+                                        <option value="gigabyte">Gigabyte (GB)</option>
+                                        <option value="terabyte">Terabyte (TB)</option>
+                                        <option value="petabyte">Petabyte (PB)</option>
+                                        <option value="exabyte">Exabyte (EB)</option>
+                                        <option value="zettabyte">Zettabyte (ZB)</option>
+                                        <option value="yottabyte">Yottabyte (YB)</option>
+                                        <option value="kibibyte">Kibibyte (KiB)</option>
+                                        <option value="mebibyte">Mebibyte (MiB)</option>
+                                        <option value="gibibyte">Gibibyte (GiB)</option>
+                                        <option value="tebibyte">Tebibyte (TiB)</option>
+                                        <option value="pebibyte">Pebibyte (PiB)</option>
+                                        <option value="exbibyte">Exbibyte (EiB)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromValue" class="form-label">Enter Value:</label>
+                                    <input type="number" id="fromValue" class="form-control" placeholder="1" step="0.000001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toValue" class="form-label">Result:</label>
+                                    <input type="text" id="toValue" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="conversionType" class="form-label">Conversion Type:</label>
+                                    <select id="conversionType" class="form-select">
+                                        <option value="decimal">Decimal (1000-based)</option>
+                                        <option value="binary">Binary (1024-based)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="precision" class="form-label">Precision:</label>
+                                    <select id="precision" class="form-select">
+                                        <option value="2">2 decimal places</option>
+                                        <option value="4">4 decimal places</option>
+                                        <option value="6">6 decimal places</option>
+                                        <option value="8">8 decimal places</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Convert
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap Units
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Units Conversion -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Units Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-hdd fa-3x mb-3"></i>
+                                    <p>Enter a value to see all unit conversions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Storage Sizes -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common Storage Sizes</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Files & Documents:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>File Type</th>
+                                                    <th>Typical Size</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Text Document</td>
+                                                    <td>1-10 KB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Email</td>
+                                                    <td>10-50 KB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Web Page</td>
+                                                    <td>100-500 KB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>MP3 Song</td>
+                                                    <td>3-5 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Digital Photo</td>
+                                                    <td>2-10 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>HD Video (1 min)</td>
+                                                    <td>50-100 MB</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Storage Devices:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Device</th>
+                                                    <th>Capacity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Floppy Disk</td>
+                                                    <td>1.44 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>CD-ROM</td>
+                                                    <td>700 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>DVD</td>
+                                                    <td>4.7 GB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Blu-ray</td>
+                                                    <td>25-50 GB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>USB Flash Drive</td>
+                                                    <td>8-256 GB</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Hard Drive</td>
+                                                    <td>1-20 TB</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Size Calculator -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>File Size Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileInput" class="form-label">Select File:</label>
+                                    <input type="file" id="fileInput" class="form-control">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileSize" class="form-label">File Size:</label>
+                                    <input type="text" id="fileSize" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileType" class="form-label">File Type:</label>
+                                    <select id="fileType" class="form-select">
+                                        <option value="text">Text File</option>
+                                        <option value="image">Image File</option>
+                                        <option value="audio">Audio File</option>
+                                        <option value="video">Video File</option>
+                                        <option value="document">Document</option>
+                                        <option value="archive">Archive</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="estimatedSize" class="form-label">Estimated Size:</label>
+                                    <input type="text" id="estimatedSize" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <button id="calculateFileSizeBtn" class="btn btn-success">
+                                <i class="fas fa-calculator me-2"></i>Calculate File Size
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('small')">
+                                    Small Files
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('medium')">
+                                    Medium Files
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('large')">
+                                    Large Files
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('storage')">
+                                    Storage Devices
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Factors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Factors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Decimal</th>
+                                            <th>Binary</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 KB</td>
+                                            <td>1,000 B</td>
+                                            <td>1,024 B</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 MB</td>
+                                            <td>1,000 KB</td>
+                                            <td>1,024 KB</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 GB</td>
+                                            <td>1,000 MB</td>
+                                            <td>1,024 MB</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 TB</td>
+                                            <td>1,000 GB</td>
+                                            <td>1,024 GB</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 PB</td>
+                                            <td>1,000 TB</td>
+                                            <td>1,024 TB</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Storage Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Storage Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 byte = 8 bits</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 KB = 1,000 bytes (decimal)</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 KiB = 1,024 bytes (binary)</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 GB = 1 billion bytes</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 TB = 1 trillion bytes</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Data Transfer Rates -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Data Transfer Rates</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Connection</th>
+                                            <th>Speed</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Dial-up</td>
+                                            <td>56 Kbps</td>
+                                        </tr>
+                                        <tr>
+                                            <td>DSL</td>
+                                            <td>1-100 Mbps</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cable</td>
+                                            <td>100-1000 Mbps</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Fiber</td>
+                                            <td>1-10 Gbps</td>
+                                        </tr>
+                                        <tr>
+                                            <td>USB 3.0</td>
+                                            <td>5 Gbps</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Thunderbolt</td>
+                                            <td>40 Gbps</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- Storage Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Data Storage Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Decimal Units (SI):</h6>
+                                    <ul>
+                                        <li><strong>Kilobyte (KB):</strong> 1,000 bytes</li>
+                                        <li><strong>Megabyte (MB):</strong> 1,000 kilobytes</li>
+                                        <li><strong>Gigabyte (GB):</strong> 1,000 megabytes</li>
+                                        <li><strong>Terabyte (TB):</strong> 1,000 gigabytes</li>
+                                        <li><strong>Petabyte (PB):</strong> 1,000 terabytes</li>
+                                    </ul>
+                                    
+                                    <h6>Binary Units (IEC):</h6>
+                                    <ul>
+                                        <li><strong>Kibibyte (KiB):</strong> 1,024 bytes</li>
+                                        <li><strong>Mebibyte (MiB):</strong> 1,024 kibibytes</li>
+                                        <li><strong>Gibibyte (GiB):</strong> 1,024 mebibytes</li>
+                                        <li><strong>Tebibyte (TiB):</strong> 1,024 gibibytes</li>
+                                        <li><strong>Pebibyte (PiB):</strong> 1,024 tebibytes</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Usage by Context:</h6>
+                                    <ul>
+                                        <li><strong>Storage Manufacturers:</strong> Use decimal (1000-based)</li>
+                                        <li><strong>Operating Systems:</strong> Use binary (1024-based)</li>
+                                        <li><strong>Network Speeds:</strong> Use decimal (1000-based)</li>
+                                        <li><strong>Memory:</strong> Use binary (1024-based)</li>
+                                    </ul>
+                                    
+                                    <h6>Common Confusions:</h6>
+                                    <ul>
+                                        <li>1 GB (decimal) ≠ 1 GB (binary)</li>
+                                        <li>1 GB (decimal) = 0.931 GB (binary)</li>
+                                        <li>Storage capacity vs. memory capacity</li>
+                                        <li>Network speed vs. file size</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Data Storage Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromValue = document.getElementById('fromValue');
+            const toValue = document.getElementById('toValue');
+            const convertBtn = document.getElementById('convertBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const conversionType = document.getElementById('conversionType');
+            const precision = document.getElementById('precision');
+            const fileInput = document.getElementById('fileInput');
+            const fileSize = document.getElementById('fileSize');
+            const fileType = document.getElementById('fileType');
+            const estimatedSize = document.getElementById('estimatedSize');
+            const calculateFileSizeBtn = document.getElementById('calculateFileSizeBtn');
+
+            // Conversion factors (decimal - 1000-based)
+            const decimalFactors = {
+                'byte': 1,
+                'kilobyte': 1000,
+                'megabyte': 1000000,
+                'gigabyte': 1000000000,
+                'terabyte': 1000000000000,
+                'petabyte': 1000000000000000,
+                'exabyte': 1000000000000000000,
+                'zettabyte': 1000000000000000000000,
+                'yottabyte': 1000000000000000000000000
+            };
+
+            // Conversion factors (binary - 1024-based)
+            const binaryFactors = {
+                'byte': 1,
+                'kibibyte': 1024,
+                'mebibyte': 1048576,
+                'gibibyte': 1073741824,
+                'tebibyte': 1099511627776,
+                'pebibyte': 1125899906842624,
+                'exbibyte': 1152921504606846976
+            };
+
+            // Unit symbols
+            const unitSymbols = {
+                'byte': 'B',
+                'kilobyte': 'KB',
+                'megabyte': 'MB',
+                'gigabyte': 'GB',
+                'terabyte': 'TB',
+                'petabyte': 'PB',
+                'exabyte': 'EB',
+                'zettabyte': 'ZB',
+                'yottabyte': 'YB',
+                'kibibyte': 'KiB',
+                'mebibyte': 'MiB',
+                'gibibyte': 'GiB',
+                'tebibyte': 'TiB',
+                'pebibyte': 'PiB',
+                'exbibyte': 'EiB'
+            };
+
+            // Convert button
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapUnits);
+            clearBtn.addEventListener('click', clearForm);
+            calculateFileSizeBtn.addEventListener('click', calculateFileSize);
+
+            // Auto-convert on input change
+            fromValue.addEventListener('input', debounce(convert, 300));
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+            conversionType.addEventListener('change', convert);
+            precision.addEventListener('change', convert);
+
+            // File input change
+            fileInput.addEventListener('change', handleFileSelect);
+
+            function convert() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+                const type = conversionType.value;
+                const prec = parseInt(precision.value);
+
+                if (isNaN(value)) {
+                    toValue.value = '';
+                    updateAllConversions();
+                    return;
+                }
+
+                // Get conversion factors based on type
+                const factors = type === 'decimal' ? decimalFactors : binaryFactors;
+                
+                // Convert to bytes first, then to target unit
+                const bytes = value * factors[from];
+                const result = bytes / factors[to];
+
+                // Format result
+                toValue.value = formatResult(result, prec);
+                updateAllConversions();
+            }
+
+            function formatResult(value, precision) {
+                if (value === 0) return '0';
+                
+                if (value < 0.000001 || value > 999999) {
+                    return value.toExponential(precision);
+                } else if (value < 0.01) {
+                    return value.toFixed(precision);
+                } else if (value < 1) {
+                    return value.toFixed(Math.min(precision, 4));
+                } else if (value < 100) {
+                    return value.toFixed(Math.min(precision, 3));
+                } else if (value < 10000) {
+                    return value.toFixed(Math.min(precision, 2));
+                } else {
+                    return value.toFixed(Math.min(precision, 1));
+                }
+            }
+
+            function updateAllConversions() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const type = conversionType.value;
+                const prec = parseInt(precision.value);
+
+                if (isNaN(value)) {
+                    document.getElementById('allConversions').innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-hdd fa-3x mb-3"></i>
+                            <p>Enter a value to see all unit conversions</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const factors = type === 'decimal' ? decimalFactors : binaryFactors;
+                const bytes = value * factors[from];
+                let conversionsHTML = '<div class="row">';
+
+                Object.keys(factors).forEach(unit => {
+                    const result = bytes / factors[unit];
+                    const symbol = unitSymbols[unit];
+                    const formattedResult = formatResult(result, prec);
+                    
+                    conversionsHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="conversion-item p-2 border rounded">
+                                <div class="unit-name">${unit.toUpperCase()}</div>
+                                <div class="unit-value">${formattedResult} ${symbol}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                conversionsHTML += '</div>';
+                document.getElementById('allConversions').innerHTML = conversionsHTML;
+            }
+
+            function swapUnits() {
+                const tempUnit = fromUnit.value;
+                const tempValue = fromValue.value;
+                
+                fromUnit.value = toUnit.value;
+                toUnit.value = tempUnit;
+                fromValue.value = toValue.value;
+                
+                convert();
+            }
+
+            function clearForm() {
+                fromValue.value = '';
+                toValue.value = '';
+                fileInput.value = '';
+                fileSize.value = '';
+                estimatedSize.value = '';
+                updateAllConversions();
+            }
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (file) {
+                    const size = file.size;
+                    fileSize.value = formatFileSize(size);
+                    calculateEstimatedSize();
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function calculateFileSize() {
+                const file = fileInput.files[0];
+                if (file) {
+                    const size = file.size;
+                    fileSize.value = formatFileSize(size);
+                    calculateEstimatedSize();
+                } else {
+                    MultiTools.showNotification('Please select a file first', 'warning');
+                }
+            }
+
+            function calculateEstimatedSize() {
+                const type = fileType.value;
+                const estimatedSizes = {
+                    'text': '1-10 KB',
+                    'image': '2-10 MB',
+                    'audio': '3-5 MB per minute',
+                    'video': '50-100 MB per minute',
+                    'document': '100-500 KB',
+                    'archive': 'Varies by content'
+                };
+                
+                estimatedSize.value = estimatedSizes[type] || 'Varies';
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Quick conversion functions
+            window.loadQuickConversion = function(type) {
+                const conversions = {
+                    small: { value: 1, unit: 'megabyte', description: 'Small File' },
+                    medium: { value: 100, unit: 'megabyte', description: 'Medium File' },
+                    large: { value: 1, unit: 'gigabyte', description: 'Large File' },
+                    storage: { value: 1, unit: 'terabyte', description: 'Storage Device' }
+                };
+
+                const conversion = conversions[type];
+                fromValue.value = conversion.value;
+                fromUnit.value = conversion.unit;
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .conversion-item {
+                    background: #f8f9fa;
+                    transition: transform 0.2s;
+                }
+                .conversion-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .unit-name {
+                    font-size: 12px;
+                    color: #6c757d;
+                    font-weight: bold;
+                }
+                .unit-value {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

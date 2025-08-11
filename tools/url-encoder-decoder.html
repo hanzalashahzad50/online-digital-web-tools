@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder & Decoder - Multi-Tools Hub</title>
+    <meta name="description" content="Free online URL encoder and decoder. Encode and decode URLs, special characters, and HTML entities.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-link me-3"></i>URL Encoder & Decoder</h1>
+            <p class="lead">Encode and decode URLs, special characters, and HTML entities</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Input Text</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="inputText" class="form-label">Enter text to encode or decode:</label>
+                                <textarea id="inputText" class="form-control" rows="8" placeholder="Enter your text here..."></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="encodingType" class="form-label">Encoding Type:</label>
+                                    <select id="encodingType" class="form-select">
+                                        <option value="url">URL Encoding</option>
+                                        <option value="html">HTML Entities</option>
+                                        <option value="base64">Base64</option>
+                                        <option value="unicode">Unicode</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="operation" class="form-label">Operation:</label>
+                                    <select id="operation" class="form-select">
+                                        <option value="encode">Encode</option>
+                                        <option value="decode">Decode</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mb-3">
+                                <button id="processBtn" class="btn btn-primary">
+                                    <i class="fas fa-cogs me-2"></i>Process
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-info">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Examples -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Examples</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <button class="btn btn-outline-primary btn-sm w-100" onclick="loadExample('url')">
+                                        URL Example
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <button class="btn btn-outline-primary btn-sm w-100" onclick="loadExample('html')">
+                                        HTML Example
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <button class="btn btn-outline-primary btn-sm w-100" onclick="loadExample('base64')">
+                                        Base64 Example
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <button class="btn btn-outline-primary btn-sm w-100" onclick="loadExample('unicode')">
+                                        Unicode Example
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Output</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="outputText" class="form-label">Result:</label>
+                                <textarea id="outputText" class="form-control" rows="8" readonly></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button id="copyBtn" class="btn btn-success">
+                                    <i class="fas fa-copy me-2"></i>Copy Result
+                                </button>
+                                <button id="downloadBtn" class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-2"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Reference -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-table me-2"></i>Common Characters</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Character</th>
+                                            <th>URL Encoded</th>
+                                            <th>HTML Entity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Space</td>
+                                            <td><code>%20</code></td>
+                                            <td><code>&amp;nbsp;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>&</td>
+                                            <td><code>%26</code></td>
+                                            <td><code>&amp;amp;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><</td>
+                                            <td><code>%3C</code></td>
+                                            <td><code>&amp;lt;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>></td>
+                                            <td><code>%3E</code></td>
+                                            <td><code>&amp;gt;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>"</td>
+                                            <td><code>%22</code></td>
+                                            <td><code>&amp;quot;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>'</td>
+                                            <td><code>%27</code></td>
+                                            <td><code>&amp;apos;</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ad Section -->
+                    <div class="ad-placeholder mt-4">
+                        <p class="text-muted">Advertisement Space</p>
+                        <div class="ad-content">
+                            <i class="fas fa-ad fa-2x text-muted"></i>
+                            <p>Your ad could be here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Encoding Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About URL Encoding</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>URL Encoding:</h6>
+                                    <p>URL encoding converts special characters into a format that can be transmitted over the internet. It replaces unsafe ASCII characters with a "%" followed by two hexadecimal digits.</p>
+                                    
+                                    <h6>When to Use:</h6>
+                                    <ul>
+                                        <li>URLs with special characters</li>
+                                        <li>Form data submission</li>
+                                        <li>API parameters</li>
+                                        <li>File names in URLs</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>HTML Entities:</h6>
+                                    <p>HTML entities are used to display characters that have special meaning in HTML, such as &lt;, &gt;, and &amp;.</p>
+                                    
+                                    <h6>Base64 Encoding:</h6>
+                                    <p>Base64 encoding converts binary data into ASCII characters, commonly used for embedding images, sending email attachments, and storing binary data in text formats.</p>
+                                    
+                                    <h6>Unicode Encoding:</h6>
+                                    <p>Unicode encoding represents characters using their Unicode code points, useful for internationalization and special characters.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // URL Encoder/Decoder specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const encodingType = document.getElementById('encodingType');
+            const operation = document.getElementById('operation');
+            const processBtn = document.getElementById('processBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            // Process button
+            processBtn.addEventListener('click', processText);
+
+            // Auto-process on input change
+            inputText.addEventListener('input', debounce(processText, 500));
+
+            // Clear button
+            clearBtn.addEventListener('click', function() {
+                inputText.value = '';
+                outputText.value = '';
+            });
+
+            // Swap button
+            swapBtn.addEventListener('click', function() {
+                const temp = inputText.value;
+                inputText.value = outputText.value;
+                outputText.value = temp;
+                processText();
+            });
+
+            // Copy button
+            copyBtn.addEventListener('click', function() {
+                if (outputText.value) {
+                    navigator.clipboard.writeText(outputText.value).then(() => {
+                        MultiTools.showNotification('Result copied to clipboard!', 'success');
+                    }).catch(() => {
+                        MultiTools.showNotification('Failed to copy result', 'error');
+                    });
+                } else {
+                    MultiTools.showNotification('No result to copy', 'warning');
+                }
+            });
+
+            // Download button
+            downloadBtn.addEventListener('click', function() {
+                if (outputText.value) {
+                    const blob = new Blob([outputText.value], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'encoded_decoded_text.txt';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                } else {
+                    MultiTools.showNotification('No result to download', 'warning');
+                }
+            });
+
+            function processText() {
+                const text = inputText.value;
+                const type = encodingType.value;
+                const op = operation.value;
+
+                if (!text) {
+                    outputText.value = '';
+                    return;
+                }
+
+                try {
+                    let result;
+                    if (op === 'encode') {
+                        result = encodeText(text, type);
+                    } else {
+                        result = decodeText(text, type);
+                    }
+                    outputText.value = result;
+                } catch (error) {
+                    outputText.value = `Error: ${error.message}`;
+                    MultiTools.showNotification('Processing error: ' + error.message, 'error');
+                }
+            }
+
+            function encodeText(text, type) {
+                switch(type) {
+                    case 'url':
+                        return encodeURIComponent(text);
+                    case 'html':
+                        return encodeHTML(text);
+                    case 'base64':
+                        return btoa(unescape(encodeURIComponent(text)));
+                    case 'unicode':
+                        return encodeUnicode(text);
+                    default:
+                        return text;
+                }
+            }
+
+            function decodeText(text, type) {
+                switch(type) {
+                    case 'url':
+                        return decodeURIComponent(text);
+                    case 'html':
+                        return decodeHTML(text);
+                    case 'base64':
+                        return decodeURIComponent(escape(atob(text)));
+                    case 'unicode':
+                        return decodeUnicode(text);
+                    default:
+                        return text;
+                }
+            }
+
+            function encodeHTML(text) {
+                const htmlEntities = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                    ' ': '&nbsp;'
+                };
+                return text.replace(/[&<>"' ]/g, char => htmlEntities[char] || char);
+            }
+
+            function decodeHTML(text) {
+                const htmlEntities = {
+                    '&amp;': '&',
+                    '&lt;': '<',
+                    '&gt;': '>',
+                    '&quot;': '"',
+                    '&#39;': "'",
+                    '&nbsp;': ' '
+                };
+                return text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g, entity => htmlEntities[entity] || entity);
+            }
+
+            function encodeUnicode(text) {
+                return text.split('').map(char => {
+                    const code = char.charCodeAt(0);
+                    return code > 127 ? `\\u${code.toString(16).padStart(4, '0')}` : char;
+                }).join('');
+            }
+
+            function decodeUnicode(text) {
+                return text.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+                    return String.fromCharCode(parseInt(hex, 16));
+                });
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Example functions
+            window.loadExample = function(type) {
+                const examples = {
+                    url: {
+                        input: 'https://example.com/path with spaces?param=value&other=test',
+                        encoding: 'url',
+                        operation: 'encode'
+                    },
+                    html: {
+                        input: '<div class="test">Hello & World</div>',
+                        encoding: 'html',
+                        operation: 'encode'
+                    },
+                    base64: {
+                        input: 'Hello, World!',
+                        encoding: 'base64',
+                        operation: 'encode'
+                    },
+                    unicode: {
+                        input: 'Hello, 世界!',
+                        encoding: 'unicode',
+                        operation: 'encode'
+                    }
+                };
+
+                const example = examples[type];
+                inputText.value = example.input;
+                encodingType.value = example.encoding;
+                operation.value = example.operation;
+                processText();
+            };
+        });
+    </script>
+</body>
+</html> 

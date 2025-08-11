@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>PDF Converter Tools | Image to PDF, Merge, Split & Compress PDFs</title>
+<meta name="description" content="Complete PDF toolkit - convert images to PDF, merge multiple PDFs, split PDF pages, and compress PDF files online for free.">
+<meta name="keywords" content="PDF converter, image to PDF, merge PDF, split PDF, compress PDF, PDF tools">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .drop-zone:hover { border-color: #0d6efd; background-color: #f1f8ff; }
+        .drop-zone.dragover { border-color: #0d6efd; background-color: #e7f1ff; }
+        .preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin: 1rem 0; min-height: 120px; }
+        .preview-item { position: relative; width: 100px; height: 100px; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .remove-btn {
+            position: absolute; top: 2px; right: 2px; width: 20px; height: 20px;
+            background-color: #dc3545; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-size: 12px; opacity: 0; transition: opacity 0.2s;
+        }
+        .preview-item:hover .remove-btn { opacity: 1; }
+        .page-number {
+            position: absolute; bottom: 2px; right: 2px;
+            background-color: rgba(0,0,0,0.6); color: white;
+            font-size: 10px; padding: 0 4px; border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-camera me-3"></i>Screenshot to PDF Converter</h1>
+            <p class="lead">Convert your screenshots to PDF files quickly and easily</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- Top Ad -->
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Upload Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Screenshots</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dropZone" class="drop-zone mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h5>Drag & Drop your screenshots here</h5>
+                                <p class="text-muted mb-0">or click to browse files</p>
+                                <input type="file" id="fileInput" class="d-none" accept="image/*" multiple>
+                                <button id="browseBtn" class="btn btn-primary mt-3">
+                                    <i class="fas fa-folder-open me-2"></i>Select Files
+                                </button>
+                            </div>
+
+                            <!-- File List -->
+                            <div id="fileList">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Selected Files: <span id="fileCount">0</span></h6>
+                                    <div>
+                                        <button id="clearAllBtn" class="btn btn-sm btn-outline-danger me-2" disabled>
+                                            <i class="fas fa-trash-alt me-1"></i>Clear All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="previewContainer" class="preview-container">
+                                    <div class="text-muted w-100 text-center my-5">No files selected</div>
+                                </div>
+                            </div>
+
+                            <!-- PDF Options -->
+                            <div class="mt-4">
+                                <h6><i class="fas fa-cog me-2"></i>PDF Options</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Page Size</label>
+                                        <select class="form-select" id="pageSize">
+                                            <option value="a4">A4</option>
+                                            <option value="letter">Letter</option>
+                                            <option value="a5">A5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Orientation</label>
+                                        <select class="form-select" id="pageOrientation">
+                                            <option value="portrait">Portrait</option>
+                                            <option value="landscape">Landscape</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <span id="conversionStatus" class="text-muted">Ready to convert</span>
+                                <button id="convertBtn" class="btn btn-success" disabled>
+                                    <i class="fas fa-file-pdf me-2"></i>Convert to PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="resultSection" class="card mt-4 d-none">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-file-pdf me-2"></i>PDF Ready</h5>
+                            <div>
+                                <button id="downloadPdfBtn" class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-download me-1"></i>Download PDF
+                                </button>
+                                <button id="newConversionBtn" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-redo me-1"></i>New
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="p-4">
+                                <i class="fas fa-file-pdf fa-4x text-danger mb-3"></i>
+                                <h5>PDF Ready for Download</h5>
+                                <p class="text-muted">Click the download button to save your PDF file</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- How It Works -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered list-group-flush">
+                                <li class="list-group-item ps-0 border-0">Click "Select Files" or drag & drop screenshots</li>
+                                <li class="list-group-item ps-0 border-0">Adjust PDF options if needed</li>
+                                <li class="list-group-item ps-0 border-0">Click "Convert to PDF"</li>
+                                <li class="list-group-item ps-0 border-0">Download your PDF file</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Ad -->
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+
+            <!-- Bottom Ad -->
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const previewContainer = document.getElementById('previewContainer');
+            const fileCount = document.getElementById('fileCount');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const convertBtn = document.getElementById('convertBtn');
+            const resultSection = document.getElementById('resultSection');
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const newConversionBtn = document.getElementById('newConversionBtn');
+            const conversionStatus = document.getElementById('conversionStatus');
+            
+            // State
+            let files = [];
+            let pdfBlob = null;
+            
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            clearAllBtn.addEventListener('click', clearAllFiles);
+            convertBtn.addEventListener('click', convertToPdf);
+            downloadPdfBtn.addEventListener('click', downloadPdf);
+            newConversionBtn.addEventListener('click', startNewConversion);
+            
+            // Drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const droppedFiles = dt.files;
+                if (droppedFiles.length > 0) {
+                    handleFiles(droppedFiles);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                const selectedFiles = Array.from(e.target.files);
+                if (selectedFiles.length > 0) {
+                    handleFiles(selectedFiles);
+                }
+            }
+            
+            function handleFiles(selectedFiles) {
+                // Filter only image files
+                const imageFiles = Array.from(selectedFiles).filter(file => 
+                    file.type.match('image.*')
+                );
+                
+                if (imageFiles.length === 0) {
+                    showNotification('Please select valid image files (PNG, JPG, JPEG, WebP)', 'error');
+                    return;
+                }
+                
+                // Add new files to the array
+                imageFiles.forEach(file => {
+                    // Check if file already exists
+                    const fileExists = files.some(f => f.name === file.name && f.size === file.size);
+                    if (!fileExists) {
+                        files.push({
+                            file: file,
+                            url: URL.createObjectURL(file),
+                            name: file.name,
+                            size: file.size,
+                            type: file.type
+                        });
+                    }
+                });
+                
+                // Update UI
+                updateFileList();
+                showNotification(`Added ${imageFiles.length} image(s)`, 'success');
+                
+                // Reset file input to allow selecting the same file again
+                fileInput.value = '';
+            }
+            
+            function updateFileList() {
+                // Clear the preview container
+                previewContainer.innerHTML = '';
+                
+                if (files.length === 0) {
+                    previewContainer.innerHTML = '<div class="text-muted w-100 text-center my-5">No files selected</div>';
+                    fileCount.textContent = '0';
+                    clearAllBtn.disabled = true;
+                    convertBtn.disabled = true;
+                    return;
+                }
+                
+                // Update file count
+                fileCount.textContent = files.length;
+                clearAllBtn.disabled = false;
+                convertBtn.disabled = false;
+                
+                // Create preview items
+                files.forEach((file, index) => {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    previewItem.dataset.index = index;
+                    
+                    const img = document.createElement('img');
+                    img.src = file.url;
+                    img.alt = file.name;
+                    img.title = file.name;
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.title = 'Remove';
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                    });
+                    
+                    const pageNumber = document.createElement('div');
+                    pageNumber.className = 'page-number';
+                    pageNumber.textContent = index + 1;
+                    
+                    previewItem.appendChild(img);
+                    previewItem.appendChild(removeBtn);
+                    previewItem.appendChild(pageNumber);
+                    
+                    previewContainer.appendChild(previewItem);
+                });
+            }
+            
+            function removeFile(index) {
+                if (index >= 0 && index < files.length) {
+                    // Revoke the object URL to free up memory
+                    URL.revokeObjectURL(files[index].url);
+                    files.splice(index, 1);
+                    updateFileList();
+                }
+            }
+            
+            function clearAllFiles() {
+                // Revoke all object URLs
+                files.forEach(file => URL.revokeObjectURL(file.url));
+                files = [];
+                updateFileList();
+                showNotification('All files removed', 'info');
+            }
+            
+            async function convertToPdf() {
+                if (files.length === 0) {
+                    showNotification('Please add at least one image', 'error');
+                    return;
+                }
+                
+                try {
+                    convertBtn.disabled = true;
+                    convertBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Converting...';
+                    conversionStatus.textContent = 'Converting images to PDF...';
+                    
+                    // Initialize jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: document.getElementById('pageOrientation').value,
+                        unit: 'mm',
+                        format: document.getElementById('pageSize').value
+                    });
+                    
+                    // Add each image to the PDF
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const img = await loadImage(file.url);
+                        
+                        // Add a new page for each image after the first one
+                        if (i > 0) {
+                            pdf.addPage();
+                        }
+                        
+                        // Calculate dimensions to maintain aspect ratio
+                        const pageWidth = pdf.internal.pageSize.getWidth();
+                        const pageHeight = pdf.internal.pageSize.getHeight();
+                        
+                        let imgWidth = pageWidth - 20; // 10mm margin on each side
+                        let imgHeight = (img.height * imgWidth) / img.width;
+                        
+                        // If image is too tall, scale it down
+                        if (imgHeight > pageHeight - 20) {
+                            imgHeight = pageHeight - 20;
+                            imgWidth = (img.width * imgHeight) / img.height;
+                        }
+                        
+                        // Center the image on the page
+                        const x = (pageWidth - imgWidth) / 2;
+                        const y = (pageHeight - imgHeight) / 2;
+                        
+                        // Add the image to the PDF
+                        pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
+                        
+                        // Update progress
+                        const progress = Math.round(((i + 1) / files.length) * 100);
+                        conversionStatus.textContent = `Processing image ${i + 1} of ${files.length} (${progress}%)`;
+                    }
+                    
+                    // Save the PDF
+                    pdfBlob = pdf.output('blob');
+                    
+                    // Show the result section
+                    resultSection.classList.remove('d-none');
+                    
+                    // Scroll to results
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                    
+                    showNotification('PDF created successfully!', 'success');
+                    conversionStatus.textContent = 'Conversion complete';
+                    
+                } catch (error) {
+                    console.error('Error creating PDF:', error);
+                    showNotification('Error creating PDF: ' + error.message, 'error');
+                    conversionStatus.textContent = 'Error during conversion';
+                } finally {
+                    convertBtn.disabled = false;
+                    convertBtn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Convert to PDF';
+                }
+            }
+            
+            function loadImage(url) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+            
+            function downloadPdf() {
+                if (!pdfBlob) {
+                    showNotification('No PDF to download', 'error');
+                    return;
+                }
+                
+                const fileName = document.getElementById('pdfFileNameInput')?.value || 'screenshots';
+                saveAs(pdfBlob, `${fileName}.pdf`);
+                showNotification('Download started', 'success');
+            }
+            
+            function startNewConversion() {
+                // Clear the current state
+                clearAllFiles();
+                resultSection.classList.add('d-none');
+                pdfBlob = null;
+                conversionStatus.textContent = 'Ready to convert';
+            }
+            
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    // Fallback notification
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

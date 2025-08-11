@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary to Decimal Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online binary to decimal converter. Convert between binary, decimal, hexadecimal, and octal number systems.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-binary"></i> Binary to Decimal Converter</h1>
+                    <p class="lead">Convert between binary, decimal, hexadecimal, and octal number systems with ease.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exchange-alt"></i> Number System Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromSystem" class="form-label">From System:</label>
+                                    <select class="form-select" id="fromSystem">
+                                        <option value="binary">Binary (Base-2)</option>
+                                        <option value="decimal">Decimal (Base-10)</option>
+                                        <option value="hexadecimal">Hexadecimal (Base-16)</option>
+                                        <option value="octal">Octal (Base-8)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toSystem" class="form-label">To System:</label>
+                                    <select class="form-select" id="toSystem">
+                                        <option value="decimal">Decimal (Base-10)</option>
+                                        <option value="binary">Binary (Base-2)</option>
+                                        <option value="hexadecimal">Hexadecimal (Base-16)</option>
+                                        <option value="octal">Octal (Base-8)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="inputValue" class="form-label">Input Value:</label>
+                                    <input type="text" class="form-control" id="inputValue" placeholder="Enter value">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resultValue" class="form-label">Result:</label>
+                                    <input type="text" class="form-control" id="resultValue" readonly>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="convertNumber()">
+                                    <i class="fas fa-calculator"></i> Convert
+                                </button>
+                                <button class="btn btn-secondary" onclick="swapSystems()">
+                                    <i class="fas fa-exchange-alt"></i> Swap
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearConverter()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> All Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions" class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>System</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="conversionsTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calculator"></i> Binary Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="binary1" class="form-label">First Binary Number:</label>
+                                    <input type="text" class="form-control" id="binary1" placeholder="e.g., 1010">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="binary2" class="form-label">Second Binary Number:</label>
+                                    <input type="text" class="form-control" id="binary2" placeholder="e.g., 1100">
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 mb-3">
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('add')">Add (+)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('subtract')">Subtract (-)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('multiply')">Multiply (×)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('divide')">Divide (÷)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('and')">AND (&)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('or')">OR (|)</button>
+                                <button class="btn btn-outline-primary" onclick="binaryOperation('xor')">XOR (^)</button>
+                            </div>
+                            
+                            <div id="binaryResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Binary Calculation Results:</h6>
+                                    <div id="binaryDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-table"></i> Common Values</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Decimal</th>
+                                            <th>Binary</th>
+                                            <th>Hexadecimal</th>
+                                            <th>Octal</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>0</td>
+                                            <td>0000</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('0')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>0001</td>
+                                            <td>1</td>
+                                            <td>1</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('1')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>10</td>
+                                            <td>1010</td>
+                                            <td>A</td>
+                                            <td>12</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('10')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>16</td>
+                                            <td>10000</td>
+                                            <td>10</td>
+                                            <td>20</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('16')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>255</td>
+                                            <td>11111111</td>
+                                            <td>FF</td>
+                                            <td>377</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('255')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>1024</td>
+                                            <td>10000000000</td>
+                                            <td>400</td>
+                                            <td>2000</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadValue('1024')">Load</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="ad-placeholder mb-4">
+                    <div class="ad-content">
+                        <i class="fas fa-ad"></i>
+                        <p>Advertisement Space</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Facts</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>Binary:</strong> Base-2 (0, 1)</li>
+                            <li><strong>Decimal:</strong> Base-10 (0-9)</li>
+                            <li><strong>Hexadecimal:</strong> Base-16 (0-9, A-F)</li>
+                            <li><strong>Octal:</strong> Base-8 (0-7)</li>
+                            <li><strong>1 byte:</strong> 8 bits (binary)</li>
+                            <li><strong>1 nibble:</strong> 4 bits (binary)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-percentage"></i> Common Uses</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Computer Programming:</small><br>
+                            <span class="badge bg-info">Binary/Hex</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Memory Addresses:</small><br>
+                            <span class="badge bg-success">Hexadecimal</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">File Permissions:</small><br>
+                            <span class="badge bg-warning">Octal</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">IP Addresses:</small><br>
+                            <span class="badge bg-primary">Decimal</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Color Codes:</small><br>
+                            <span class="badge bg-danger">Hexadecimal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-calculator"></i> Quick Tools</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Bit Counter:</small><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showBitCounter()">
+                                Count Bits
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Power of 2:</small><br>
+                            <button class="btn btn-sm btn-outline-success" onclick="showPowerOf2()">
+                                Calculate Powers
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">ASCII Converter:</small><br>
+                            <button class="btn btn-sm btn-outline-warning" onclick="showAsciiConverter()">
+                                Convert ASCII
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function convertNumber() {
+            const fromSystem = document.getElementById('fromSystem').value;
+            const toSystem = document.getElementById('toSystem').value;
+            const inputValue = document.getElementById('inputValue').value.trim();
+            
+            if (!inputValue) {
+                MultiTools.showNotification('Please enter a value', 'error');
+                return;
+            }
+
+            try {
+                let decimalValue;
+                
+                // Convert input to decimal first
+                switch (fromSystem) {
+                    case 'binary':
+                        decimalValue = parseInt(inputValue, 2);
+                        break;
+                    case 'decimal':
+                        decimalValue = parseInt(inputValue, 10);
+                        break;
+                    case 'hexadecimal':
+                        decimalValue = parseInt(inputValue, 16);
+                        break;
+                    case 'octal':
+                        decimalValue = parseInt(inputValue, 8);
+                        break;
+                }
+                
+                if (isNaN(decimalValue)) {
+                    MultiTools.showNotification('Invalid input for the selected number system', 'error');
+                    return;
+                }
+
+                // Convert decimal to target system
+                let result;
+                switch (toSystem) {
+                    case 'binary':
+                        result = decimalValue.toString(2);
+                        break;
+                    case 'decimal':
+                        result = decimalValue.toString(10);
+                        break;
+                    case 'hexadecimal':
+                        result = decimalValue.toString(16).toUpperCase();
+                        break;
+                    case 'octal':
+                        result = decimalValue.toString(8);
+                        break;
+                }
+
+                document.getElementById('resultValue').value = result;
+                updateAllConversions(decimalValue);
+                
+            } catch (error) {
+                MultiTools.showNotification('Error converting number', 'error');
+            }
+        }
+
+        function swapSystems() {
+            const fromSystem = document.getElementById('fromSystem').value;
+            const toSystem = document.getElementById('toSystem').value;
+            const inputValue = document.getElementById('inputValue').value;
+            const resultValue = document.getElementById('resultValue').value;
+
+            document.getElementById('fromSystem').value = toSystem;
+            document.getElementById('toSystem').value = fromSystem;
+            document.getElementById('inputValue').value = resultValue;
+            document.getElementById('resultValue').value = inputValue;
+        }
+
+        function clearConverter() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('resultValue').value = '';
+            document.getElementById('conversionsTable').innerHTML = '';
+            document.getElementById('binaryResults').style.display = 'none';
+        }
+
+        function updateAllConversions(decimalValue) {
+            const table = document.getElementById('conversionsTable');
+            table.innerHTML = '';
+
+            const systems = [
+                { name: 'Binary', value: decimalValue.toString(2) },
+                { name: 'Decimal', value: decimalValue.toString(10) },
+                { name: 'Hexadecimal', value: decimalValue.toString(16).toUpperCase() },
+                { name: 'Octal', value: decimalValue.toString(8) }
+            ];
+
+            systems.forEach(system => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td><strong>${system.name}</strong></td>
+                    <td><code>${system.value}</code></td>
+                `;
+            });
+        }
+
+        function binaryOperation(operation) {
+            const binary1 = document.getElementById('binary1').value.trim();
+            const binary2 = document.getElementById('binary2').value.trim();
+            
+            if (!binary1 || !binary2) {
+                MultiTools.showNotification('Please enter both binary numbers', 'error');
+                return;
+            }
+
+            try {
+                const num1 = parseInt(binary1, 2);
+                const num2 = parseInt(binary2, 2);
+                
+                if (isNaN(num1) || isNaN(num2)) {
+                    MultiTools.showNotification('Invalid binary numbers', 'error');
+                    return;
+                }
+
+                let result, operationSymbol;
+                
+                switch (operation) {
+                    case 'add':
+                        result = num1 + num2;
+                        operationSymbol = '+';
+                        break;
+                    case 'subtract':
+                        result = num1 - num2;
+                        operationSymbol = '-';
+                        break;
+                    case 'multiply':
+                        result = num1 * num2;
+                        operationSymbol = '×';
+                        break;
+                    case 'divide':
+                        if (num2 === 0) {
+                            MultiTools.showNotification('Cannot divide by zero', 'error');
+                            return;
+                        }
+                        result = Math.floor(num1 / num2);
+                        operationSymbol = '÷';
+                        break;
+                    case 'and':
+                        result = num1 & num2;
+                        operationSymbol = '&';
+                        break;
+                    case 'or':
+                        result = num1 | num2;
+                        operationSymbol = '|';
+                        break;
+                    case 'xor':
+                        result = num1 ^ num2;
+                        operationSymbol = '^';
+                        break;
+                }
+
+                const resultsDiv = document.getElementById('binaryResults');
+                const detailsDiv = document.getElementById('binaryDetails');
+                
+                detailsDiv.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Operation:</strong> ${binary1} ${operationSymbol} ${binary2}<br>
+                            <strong>Decimal:</strong> ${num1} ${operationSymbol} ${num2} = ${result}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Binary Result:</strong> ${result.toString(2)}<br>
+                            <strong>Hex Result:</strong> ${result.toString(16).toUpperCase()}
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.style.display = 'block';
+                
+            } catch (error) {
+                MultiTools.showNotification('Error performing binary operation', 'error');
+            }
+        }
+
+        function loadValue(value) {
+            document.getElementById('inputValue').value = value;
+            document.getElementById('fromSystem').value = 'decimal';
+            document.getElementById('toSystem').value = 'binary';
+            convertNumber();
+        }
+
+        function showBitCounter() {
+            const binary = prompt('Enter binary number:');
+            if (binary) {
+                const ones = (binary.match(/1/g) || []).length;
+                const zeros = (binary.match(/0/g) || []).length;
+                
+                alert(`Bit Count Analysis:\n\n` +
+                      `Binary: ${binary}\n` +
+                      `Total bits: ${binary.length}\n` +
+                      `Ones (1s): ${ones}\n` +
+                      `Zeros (0s): ${zeros}`);
+            }
+        }
+
+        function showPowerOf2() {
+            const power = prompt('Enter power (0-20):');
+            if (power && !isNaN(power)) {
+                const result = Math.pow(2, parseInt(power));
+                
+                alert(`Power of 2 Calculation:\n\n` +
+                      `2^${power} = ${result}\n` +
+                      `Binary: ${result.toString(2)}\n` +
+                      `Hex: ${result.toString(16).toUpperCase()}`);
+            }
+        }
+
+        function showAsciiConverter() {
+            const input = prompt('Enter character or ASCII code:');
+            if (input) {
+                if (input.length === 1) {
+                    const ascii = input.charCodeAt(0);
+                    alert(`ASCII Conversion:\n\n` +
+                          `Character: '${input}'\n` +
+                          `ASCII Code: ${ascii}\n` +
+                          `Binary: ${ascii.toString(2)}\n` +
+                          `Hex: ${ascii.toString(16).toUpperCase()}`);
+                } else {
+                    const char = String.fromCharCode(parseInt(input));
+                    alert(`ASCII Conversion:\n\n` +
+                          `ASCII Code: ${input}\n` +
+                          `Character: '${char}'\n` +
+                          `Binary: ${parseInt(input).toString(2)}\n` +
+                          `Hex: ${parseInt(input).toString(16).toUpperCase()}`);
+                }
+            }
+        }
+
+        // Auto-convert on input change
+        document.getElementById('inputValue').addEventListener('input', function() {
+            if (this.value && document.getElementById('fromSystem').value && document.getElementById('toSystem').value) {
+                convertNumber();
+            }
+        });
+
+        // Initialize with sample data
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('inputValue').value = '1010';
+            document.getElementById('fromSystem').value = 'binary';
+            document.getElementById('toSystem').value = 'decimal';
+            convertNumber();
+        });
+    </script>
+</body>
+</html> 

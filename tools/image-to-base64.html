@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Image to Base64 - Multi-Tools Hub</title>
+    <meta name="description" content="Convert any image to Base64 string for use in HTML, CSS, or JavaScript. Supports JPG, PNG, GIF, and WebP formats.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #f1f8ff;
+        }
+        .drop-zone.dragover {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .preview-container {
+            max-width: 100%;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            display: none;
+        }
+        #base64Output {
+            min-height: 150px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+        .file-info {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .format-options label {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .format-options label:hover {
+            background-color: #f1f1f1;
+        }
+        .format-options input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-code me-3"></i>Convert Image to Base64</h1>
+            <p class="lead">Convert any image to Base64 string for use in HTML, CSS, or JavaScript</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- Top Ad (Leaderboard) -->
+            <div id="ad-leaderboard" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Upload Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Image</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dropZone" class="drop-zone mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h5>Drag & Drop your image here</h5>
+                                <p class="text-muted">or click to browse files</p>
+                                <input type="file" id="fileInput" class="d-none" accept="image/*">
+                                <button id="browseBtn" class="btn btn-outline-primary mt-2">
+                                    <i class="fas fa-folder-open me-2"></i>Select Image
+                                </button>
+                            </div>
+                            
+                            <div id="fileInfo" class="file-info d-none">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Selected file:</strong> <span id="fileName"></span>
+                                        <span id="fileSize" class="text-muted ms-2"></span>
+                                    </div>
+                                    <button id="clearBtn" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-container">
+                                <img id="imagePreview" alt="Preview" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-code me-2"></i>Base64 Output</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="outputType" class="form-label">Output Format:</label>
+                                <div class="format-options d-flex flex-wrap gap-3 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="outputType" id="dataUrl" value="dataurl" checked>
+                                        <label class="form-check-label" for="dataUrl">
+                                            Data URL (full HTML/CSS format)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="outputType" id="base64Only" value="base64">
+                                        <label class="form-check-label" for="base64Only">
+                                            Base64 Only
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label for="base64Output" class="form-label mb-0">Base64 String:</label>
+                                        <div>
+                                            <button id="copyBtn" class="btn btn-sm btn-outline-secondary" disabled>
+                                                <i class="far fa-copy me-1"></i>Copy
+                                            </button>
+                                            <button id="downloadBtn" class="btn btn-sm btn-outline-primary" disabled>
+                                                <i class="fas fa-download me-1"></i>Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <textarea id="base64Output" class="form-control font-monospace" rows="8" readonly></textarea>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Usage Tip:</strong> Use this Base64 string directly in your HTML <code>img</code> tag's <code>src</code> attribute
+                                    or in your CSS <code>background-image</code> property.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+
+                    <!-- How to Use -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item">Click "Select Image" or drag and drop an image file</li>
+                                <li class="list-group-item">The image will be converted to Base64 automatically</li>
+                                <li class="list-group-item">Choose your preferred output format (Data URL or Base64 only)</li>
+                                <li class="list-group-item">Click "Copy" to copy the result to clipboard or "Download" to save as a text file</li>
+                            </ol>
+                            
+                            <div class="mt-3">
+                                <h6>Example Usage:</h6>
+                                <pre class="bg-light p-2 rounded"><code>&lt;!-- In HTML --&gt;
+&lt;img src="data:image/png;base64,YOUR_BASE64_STRING"&gt;
+
+/* In CSS */
+.background {
+    background-image: url('data:image/png;base64,YOUR_BASE64_STRING');
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supported Formats -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Supported Formats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="far fa-check-circle text-success me-2"></i>JPG / JPEG</li>
+                                        <li><i class="far fa-check-circle text-success me-2"></i>PNG</li>
+                                        <li><i class="far fa-check-circle text-success me-2"></i>GIF</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="far fa-check-circle text-success me-2"></i>WebP</li>
+                                        <li><i class="far fa-check-circle text-success me-2"></i>BMP</li>
+                                        <li><i class="far fa-check-circle text-success me-2"></i>SVG</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="alert alert-warning mt-2 mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Note:</strong> For very large images, the conversion might take a moment.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Ad (Leaderboard) -->
+            <div id="ad-bottom" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../js/ads.js"></script>
+    <script src="../js/main.js"></script>
+    
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const imagePreview = document.getElementById('imagePreview');
+            const base64Output = document.getElementById('base64Output');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileInfo = document.getElementById('fileInfo');
+            const outputTypeRadios = document.getElementsByName('outputType');
+            
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            clearBtn.addEventListener('click', resetTool);
+            copyBtn.addEventListener('click', copyToClipboard);
+            downloadBtn.addEventListener('click', downloadBase64);
+            
+            // Drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            // Output type change
+            outputTypeRadios.forEach(radio => {
+                radio.addEventListener('change', updateOutput);
+            });
+            
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                const files = e.target.files || e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFiles(files) {
+                const file = files[0];
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    showNotification('Please select a valid image file', 'error');
+                    return;
+                }
+                
+                // Update file info
+                fileName.textContent = file.name;
+                fileSize.textContent = `(${formatFileSize(file.size)})`;
+                fileInfo.classList.remove('d-none');
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    
+                    // Convert to Base64
+                    convertToBase64(file);
+                };
+                reader.readAsDataURL(file);
+                
+                // Enable buttons
+                copyBtn.disabled = false;
+                downloadBtn.disabled = false;
+            }
+            
+            function convertToBase64(file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    updateOutput(base64String);
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            function updateOutput(base64String) {
+                if (!base64String && imagePreview.src) {
+                    base64String = imagePreview.src;
+                }
+                
+                if (!base64String) return;
+                
+                const outputType = document.querySelector('input[name="outputType"]:checked').value;
+                let output;
+                
+                if (outputType === 'base64') {
+                    // Extract just the Base64 part (remove the data URL prefix)
+                    const commaIndex = base64String.indexOf(',');
+                    output = commaIndex !== -1 ? base64String.substring(commaIndex + 1) : base64String;
+                } else {
+                    output = base64String;
+                }
+                
+                base64Output.value = output;
+            }
+            
+            function copyToClipboard() {
+                if (!base64Output.value) return;
+                
+                base64Output.select();
+                document.execCommand('copy');
+                
+                // Change button text temporarily
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                
+                // Reset button text after 2 seconds
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
+                
+                showNotification('Copied to clipboard!', 'success');
+            }
+            
+            function downloadBase64() {
+                if (!base64Output.value) return;
+                
+                const blob = new Blob([base64Output.value], { type: 'text/plain;charset=utf-8' });
+                const fileName = `base64_${new Date().getTime()}.txt`;
+                saveAs(blob, fileName);
+                
+                showNotification('Download started!', 'success');
+            }
+            
+            function resetTool() {
+                fileInput.value = '';
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+                base64Output.value = '';
+                fileInfo.classList.add('d-none');
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                dropZone.classList.remove('dragover');
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Helper function to show notifications
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    // Fallback notification
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

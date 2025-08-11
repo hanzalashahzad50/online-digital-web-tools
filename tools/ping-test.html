@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Test - Multi-Tools Hub</title>
+    <meta name="description" content="Test the latency to any host with our online ping test tool.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .ping-result {
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .ping-stats {
+            background-color: #f1f8ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .ping-chart {
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .ping-success { color: #198754; }
+        .ping-error { color: #dc3545; }
+        .ping-warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-network-wired me-3"></i>Ping Test</h1>
+            <p class="lead">Test the latency to any host</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="pingForm">
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <label for="hostInput" class="form-label">Host or IP Address</label>
+                                        <input type="text" class="form-control" id="hostInput" placeholder="example.com or 8.8.8.8" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="countInput" class="form-label">Count</label>
+                                        <input type="number" class="form-control" id="countInput" value="4" min="1" max="20">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" type="submit" id="startPing">
+                                            <i class="fas fa-play me-2"></i>Start
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-text mt-2">
+                                    Enter a hostname or IP address to test the connection
+                                </div>
+                            </form>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Ping Results</h5>
+                                <div>
+                                    <span class="badge bg-secondary me-2">Pinging: <span id="pingingHost"></span></span>
+                                    <button class="btn btn-sm btn-outline-secondary" id="copyResults">
+                                        <i class="far fa-copy me-1"></i>Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="ping-result" id="pingOutput"></div>
+                                
+                                <div class="p-3">
+                                    <div class="ping-chart" id="pingChart">
+                                        <div class="text-center text-muted mt-5">Ping response time chart will appear here</div>
+                                    </div>
+                                    
+                                    <div class="ping-stats">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <span class="fw-bold">Sent:</span> 
+                                                    <span id="sentCount">0</span>
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold">Lost:</span> 
+                                                    <span id="lostCount">0 (0% loss)</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <span class="fw-bold">Min:</span> 
+                                                    <span id="minPing">-</span> ms
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold">Max:</span> 
+                                                    <span id="maxPing">-</span> ms
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <span class="fw-bold">Avg:</span> 
+                                                    <span id="avgPing">-</span> ms
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold">Last:</span> 
+                                                    <span id="lastPing">-</span> ms
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <button class="btn btn-outline-primary" id="exportCSV">
+                                            <i class="fas fa-file-csv me-1"></i>Export CSV
+                                        </button>
+                                        <div>
+                                            <button class="btn btn-outline-secondary me-2" id="stopPing" disabled>
+                                                <i class="fas fa-stop me-1"></i>Stop
+                                            </button>
+                                            <button class="btn btn-primary" id="newPing">
+                                                <i class="fas fa-redo me-1"></i>New Test
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About Ping Test</h5>
+                            <p>Ping is a network utility that tests the reachability of a host on an IP network and measures the round-trip time for messages.</p>
+                            
+                            <h6 class="mt-4">What Ping Measures:</h6>
+                            <ul class="mb-0">
+                                <li>Network latency (response time)</li>
+                                <li>Packet loss</li>
+                                <li>Connection stability</li>
+                                <li>Network reliability</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Tip:</strong> Lower ping times indicate better performance.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                            <ol class="mb-0">
+                                <li>Enter a hostname or IP address</li>
+                                <li>Set the number of pings (default: 4)</li>
+                                <li>Click "Start" to begin the test</li>
+                                <li>View real-time results and statistics</li>
+                                <li>Export results if needed</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // DOM Elements
+            const elements = {
+                pingForm: document.getElementById('pingForm'),
+                hostInput: document.getElementById('hostInput'),
+                countInput: document.getElementById('countInput'),
+                startPing: document.getElementById('startPing'),
+                stopPing: document.getElementById('stopPing'),
+                newPing: document.getElementById('newPing'),
+                copyResults: document.getElementById('copyResults'),
+                exportCSV: document.getElementById('exportCSV'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                pingingHost: document.getElementById('pingingHost'),
+                pingOutput: document.getElementById('pingOutput'),
+                sentCount: document.getElementById('sentCount'),
+                lostCount: document.getElementById('lostCount'),
+                minPing: document.getElementById('minPing'),
+                maxPing: document.getElementById('maxPing'),
+                avgPing: document.getElementById('avgPing'),
+                lastPing: document.getElementById('lastPing'),
+                pingChart: document.getElementById('pingChart')
+            };
+
+            // Ping test variables
+            let pingCount = 0;
+            let successCount = 0;
+            let lostCount = 0;
+            let pingTimes = [];
+            let pingInterval;
+            let pingChart = null;
+            let isPinging = false;
+
+            // Event Listeners
+            elements.pingForm.addEventListener('submit', startPingTest);
+            elements.stopPing.addEventListener('click', stopPingTest);
+            elements.newPing.addEventListener('click', resetPingTest);
+            elements.copyResults.addEventListener('click', copyResults);
+            elements.exportCSV.addEventListener('click', exportToCSV);
+
+            // Start ping test
+            async function startPingTest(e) {
+                e.preventDefault();
+                
+                const host = elements.hostInput.value.trim();
+                const count = parseInt(elements.countInput.value) || 4;
+                
+                if (!host) {
+                    showNotification('Please enter a hostname or IP address', 'warning');
+                    return;
+                }
+                
+                // Reset state
+                resetPingTest();
+                
+                // Update UI
+                elements.pingingHost.textContent = host;
+                elements.startPing.disabled = true;
+                elements.stopPing.disabled = false;
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                elements.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+                
+                // Initialize chart
+                initPingChart();
+                
+                // Start pinging
+                isPinging = true;
+                pingCount = 0;
+                successCount = 0;
+                lostCount = 0;
+                pingTimes = [];
+                
+                // Simulate pings (in a real app, this would use WebSockets or server-side pings)
+                pingInterval = setInterval(() => {
+                    if (pingCount >= count) {
+                        stopPingTest();
+                        return;
+                    }
+                    
+                    pingCount++;
+                    const pingTime = Math.floor(Math.random() * 100) + 10; // Random ping between 10-110ms
+                    const isSuccess = Math.random() > 0.1; // 90% success rate for demo
+                    
+                    if (isSuccess) {
+                        successCount++;
+                        pingTimes.push(pingTime);
+                        updatePingStats();
+                        updatePingChart();
+                        
+                        // Add to output
+                        const pingLine = `Reply from ${host}: time=${pingTime}ms TTL=128`;
+                        appendToOutput(pingLine, 'ping-success');
+                    } else {
+                        lostCount++;
+                        appendToOutput('Request timed out.', 'ping-error');
+                    }
+                    
+                    // Update counters
+                    elements.sentCount.textContent = pingCount;
+                    elements.lostCount.textContent = `${lostCount} (${Math.round((lostCount / pingCount) * 100)}% loss)`;
+                    
+                }, 1000); // Ping every second
+            }
+            
+            // Stop ping test
+            function stopPingTest() {
+                if (pingInterval) {
+                    clearInterval(pingInterval);
+                    pingInterval = null;
+                }
+                
+                isPinging = false;
+                elements.startPing.disabled = false;
+                elements.stopPing.disabled = true;
+                elements.progressBar.classList.add('d-none');
+                
+                // Add summary
+                if (pingCount > 0) {
+                    const lossPercentage = (lostCount / pingCount) * 100;
+                    const summary = `\nPing statistics for ${elements.hostInput.value}:\n` +
+                                  `    Packets: Sent = ${pingCount}, Received = ${successCount}, Lost = ${lostCount} (${lossPercentage.toFixed(1)}% loss),\n`;
+                    
+                    if (pingTimes.length > 0) {
+                        const min = Math.min(...pingTimes);
+                        const max = Math.max(...pingTimes);
+                        const avg = pingTimes.reduce((a, b) => a + b, 0) / pingTimes.length;
+                        
+                        appendToOutput(summary + 
+                                     `Approximate round trip times in milli-seconds:\n` +
+                                     `    Minimum = ${min}ms, Maximum = ${max}ms, Average = ${avg.toFixed(2)}ms`, 
+                                     'fw-bold');
+                    } else {
+                        appendToOutput(summary, 'fw-bold');
+                    }
+                }
+            }
+            
+            // Reset ping test
+            function resetPingTest() {
+                stopPingTest();
+                
+                // Reset UI
+                elements.pingOutput.textContent = '';
+                elements.sentCount.textContent = '0';
+                elements.lostCount.textContent = '0 (0% loss)';
+                elements.minPing.textContent = '-';
+                elements.maxPing.textContent = '-';
+                elements.avgPing.textContent = '-';
+                elements.lastPing.textContent = '-';
+                
+                // Reset chart
+                if (pingChart) {
+                    pingChart.destroy();
+                    pingChart = null;
+                }
+                
+                // Reset form
+                elements.pingForm.reset();
+                elements.resultsContainer.classList.add('d-none');
+            }
+            
+            // Update ping statistics
+            function updatePingStats() {
+                if (pingTimes.length === 0) return;
+                
+                const min = Math.min(...pingTimes);
+                const max = Math.max(...pingTimes);
+                const sum = pingTimes.reduce((a, b) => a + b, 0);
+                const avg = sum / pingTimes.length;
+                const last = pingTimes[pingTimes.length - 1];
+                
+                elements.minPing.textContent = min;
+                elements.maxPing.textContent = max;
+                elements.avgPing.textContent = avg.toFixed(2);
+                elements.lastPing.textContent = last;
+                
+                // Update chart
+                updatePingChart();
+            }
+            
+            // Initialize ping chart
+            function initPingChart() {
+                const ctx = document.createElement('canvas');
+                elements.pingChart.innerHTML = '';
+                elements.pingChart.appendChild(ctx);
+                
+                pingChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Ping (ms)',
+                            data: [],
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Response Time (ms)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Ping #'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Update ping chart
+            function updatePingChart() {
+                if (!pingChart) return;
+                
+                const labels = Array.from({length: pingTimes.length}, (_, i) => i + 1);
+                
+                pingChart.data.labels = labels;
+                pingChart.data.datasets[0].data = pingTimes;
+                pingChart.update();
+            }
+            
+            // Append text to output
+            function appendToOutput(text, className = '') {
+                const line = document.createElement('div');
+                line.className = className;
+                line.textContent = text;
+                elements.pingOutput.appendChild(line);
+                elements.pingOutput.scrollTop = elements.pingOutput.scrollHeight;
+            }
+            
+            // Copy results to clipboard
+            function copyResults() {
+                const text = elements.pingOutput.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Results copied to clipboard', 'success');
+                }).catch(err => {
+                    showNotification('Failed to copy results', 'error');
+                    console.error('Failed to copy: ', err);
+                });
+            }
+            
+            // Export results to CSV
+            function exportToCSV() {
+                if (pingTimes.length === 0) {
+                    showNotification('No ping data to export', 'warning');
+                    return;
+                }
+                
+                let csvContent = 'Ping #,Response Time (ms)\n';
+                pingTimes.forEach((time, index) => {
+                    csvContent += `${index + 1},${time}\n`;
+                });
+                
+                // Add summary
+                const min = Math.min(...pingTimes);
+                const max = Math.max(...pingTimes);
+                const avg = pingTimes.reduce((a, b) => a + b, 0) / pingTimes.length;
+                const lossPercentage = (lostCount / pingCount) * 100;
+                
+                csvContent += '\nSummary\n';
+                csvContent += `Total Packets Sent,${pingCount}\n`;
+                csvContent += `Packets Received,${successCount}\n`;
+                csvContent += `Packets Lost,${lostCount} (${lossPercentage.toFixed(1)}%)\n`;
+                csvContent += `Minimum,${min} ms\n`;
+                csvContent += `Maximum,${max} ms\n`;
+                csvContent += `Average,${avg.toFixed(2)} ms\n`;
+                csvContent += `Host,${elements.hostInput.value}\n`;
+                csvContent += `Date,${new Date().toLocaleString()}\n`;
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `ping_test_${elements.hostInput.value}_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

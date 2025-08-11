@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Efficiency Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online fuel efficiency converter. Convert between mpg, l/100km, km/l, and more fuel efficiency units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-gas-pump"></i> Fuel Efficiency Converter</h1>
+                    <p class="lead">Convert between different fuel efficiency units and calculate fuel consumption for your trips.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exchange-alt"></i> Unit Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select class="form-select" id="fromUnit">
+                                        <option value="mpg_us">MPG (US)</option>
+                                        <option value="mpg_uk">MPG (UK)</option>
+                                        <option value="l_100km">L/100km</option>
+                                        <option value="km_l">km/L</option>
+                                        <option value="gal_100mi">gal/100mi</option>
+                                        <option value="mi_gal">mi/gal</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select class="form-select" id="toUnit">
+                                        <option value="l_100km">L/100km</option>
+                                        <option value="mpg_us">MPG (US)</option>
+                                        <option value="mpg_uk">MPG (UK)</option>
+                                        <option value="km_l">km/L</option>
+                                        <option value="gal_100mi">gal/100mi</option>
+                                        <option value="mi_gal">mi/gal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="inputValue" class="form-label">Value:</label>
+                                    <input type="number" class="form-control" id="inputValue" placeholder="Enter value" step="0.01">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resultValue" class="form-label">Result:</label>
+                                    <input type="text" class="form-control" id="resultValue" readonly>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="convertFuelEfficiency()">
+                                    <i class="fas fa-calculator"></i> Convert
+                                </button>
+                                <button class="btn btn-secondary" onclick="swapUnits()">
+                                    <i class="fas fa-exchange-alt"></i> Swap
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearConverter()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-route"></i> Trip Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="distance" class="form-label">Distance:</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="distance" placeholder="Distance" step="0.1">
+                                        <select class="form-select" id="distanceUnit" style="max-width: 80px;">
+                                            <option value="km">km</option>
+                                            <option value="mi">mi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="efficiency" class="form-label">Fuel Efficiency:</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="efficiency" placeholder="Efficiency" step="0.1">
+                                        <select class="form-select" id="efficiencyUnit" style="max-width: 100px;">
+                                            <option value="l_100km">L/100km</option>
+                                            <option value="mpg_us">MPG (US)</option>
+                                            <option value="mpg_uk">MPG (UK)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="fuelPrice" class="form-label">Fuel Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="fuelPrice" placeholder="Price per unit" step="0.01">
+                                        <select class="form-select" id="priceUnit" style="max-width: 80px;">
+                                            <option value="per_liter">/L</option>
+                                            <option value="per_gallon">/gal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="calculateTrip()">
+                                <i class="fas fa-calculator"></i> Calculate Trip Cost
+                            </button>
+                            
+                            <div id="tripResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Trip Results:</h6>
+                                    <div id="tripDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> All Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions" class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="conversionsTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="ad-placeholder mb-4">
+                    <div class="ad-content">
+                        <i class="fas fa-ad"></i>
+                        <p>Advertisement Space</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Facts</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>MPG (US):</strong> Miles per US gallon</li>
+                            <li><strong>MPG (UK):</strong> Miles per UK gallon (1.2 US gallons)</li>
+                            <li><strong>L/100km:</strong> Liters per 100 kilometers</li>
+                            <li><strong>km/L:</strong> Kilometers per liter</li>
+                            <li><strong>Electric vehicles</strong> use kWh/100km or mi/kWh</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-car"></i> Common Values</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Economy Car:</small><br>
+                            <span class="badge bg-success">6-8 L/100km</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">SUV:</small><br>
+                            <span class="badge bg-warning">10-15 L/100km</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Truck:</small><br>
+                            <span class="badge bg-danger">15-20 L/100km</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Fuel efficiency conversion factors (to L/100km as base)
+        const fuelEfficiencyFactors = {
+            'mpg_us': 235.214, // 235.214 / mpg = L/100km
+            'mpg_uk': 282.481, // 282.481 / mpg = L/100km
+            'l_100km': 1, // Base unit
+            'km_l': 100, // 100 / km/l = L/100km
+            'gal_100mi': 2.352, // 2.352 * gal/100mi = L/100km
+            'mi_gal': 235.214 // 235.214 / mi/gal = L/100km
+        };
+
+        function convertFuelEfficiency() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            
+            if (isNaN(inputValue)) {
+                MultiTools.showNotification('Please enter a valid number', 'error');
+                return;
+            }
+
+            // Convert to base unit (L/100km)
+            let baseValue;
+            if (fromUnit === 'mpg_us' || fromUnit === 'mpg_uk' || fromUnit === 'mi_gal') {
+                baseValue = fuelEfficiencyFactors[fromUnit] / inputValue;
+            } else if (fromUnit === 'km_l') {
+                baseValue = fuelEfficiencyFactors[fromUnit] / inputValue;
+            } else {
+                baseValue = inputValue * fuelEfficiencyFactors[fromUnit];
+            }
+
+            // Convert from base unit to target unit
+            let result;
+            if (toUnit === 'mpg_us' || toUnit === 'mpg_uk' || toUnit === 'mi_gal') {
+                result = fuelEfficiencyFactors[toUnit] / baseValue;
+            } else if (toUnit === 'km_l') {
+                result = fuelEfficiencyFactors[toUnit] / baseValue;
+            } else {
+                result = baseValue / fuelEfficiencyFactors[toUnit];
+            }
+
+            document.getElementById('resultValue').value = result.toFixed(2);
+            updateAllConversions(inputValue, fromUnit);
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = document.getElementById('inputValue').value;
+            const resultValue = document.getElementById('resultValue').value;
+
+            document.getElementById('fromUnit').value = toUnit;
+            document.getElementById('toUnit').value = fromUnit;
+            document.getElementById('inputValue').value = resultValue;
+            document.getElementById('resultValue').value = inputValue;
+        }
+
+        function clearConverter() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('resultValue').value = '';
+            document.getElementById('conversionsTable').innerHTML = '';
+        }
+
+        function updateAllConversions(value, fromUnit) {
+            const table = document.getElementById('conversionsTable');
+            table.innerHTML = '';
+
+            Object.keys(fuelEfficiencyFactors).forEach(unit => {
+                if (unit !== fromUnit) {
+                    let convertedValue;
+                    const baseValue = fuelEfficiencyFactors[fromUnit] * value;
+                    
+                    if (unit === 'mpg_us' || unit === 'mpg_uk' || unit === 'mi_gal') {
+                        convertedValue = fuelEfficiencyFactors[unit] / baseValue;
+                    } else if (unit === 'km_l') {
+                        convertedValue = fuelEfficiencyFactors[unit] / baseValue;
+                    } else {
+                        convertedValue = baseValue / fuelEfficiencyFactors[unit];
+                    }
+
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${getUnitName(unit)}</strong></td>
+                        <td>${convertedValue.toFixed(2)}</td>
+                    `;
+                }
+            });
+        }
+
+        function getUnitName(unit) {
+            const names = {
+                'mpg_us': 'MPG (US)',
+                'mpg_uk': 'MPG (UK)',
+                'l_100km': 'L/100km',
+                'km_l': 'km/L',
+                'gal_100mi': 'gal/100mi',
+                'mi_gal': 'mi/gal'
+            };
+            return names[unit] || unit;
+        }
+
+        function calculateTrip() {
+            const distance = parseFloat(document.getElementById('distance').value);
+            const distanceUnit = document.getElementById('distanceUnit').value;
+            const efficiency = parseFloat(document.getElementById('efficiency').value);
+            const efficiencyUnit = document.getElementById('efficiencyUnit').value;
+            const fuelPrice = parseFloat(document.getElementById('fuelPrice').value);
+            const priceUnit = document.getElementById('priceUnit').value;
+
+            if (isNaN(distance) || isNaN(efficiency) || isNaN(fuelPrice)) {
+                MultiTools.showNotification('Please fill all fields with valid numbers', 'error');
+                return;
+            }
+
+            // Convert distance to km
+            const distanceKm = distanceUnit === 'mi' ? distance * 1.60934 : distance;
+
+            // Convert efficiency to L/100km
+            let efficiencyL100km;
+            if (efficiencyUnit === 'mpg_us') {
+                efficiencyL100km = 235.214 / efficiency;
+            } else if (efficiencyUnit === 'mpg_uk') {
+                efficiencyL100km = 282.481 / efficiency;
+            } else {
+                efficiencyL100km = efficiency;
+            }
+
+            // Calculate fuel consumption
+            const fuelConsumption = (efficiencyL100km * distanceKm) / 100;
+
+            // Convert fuel price to $/L
+            let pricePerLiter;
+            if (priceUnit === 'per_gallon') {
+                pricePerLiter = fuelPrice / 3.78541; // Convert $/gal to $/L
+            } else {
+                pricePerLiter = fuelPrice;
+            }
+
+            // Calculate total cost
+            const totalCost = fuelConsumption * pricePerLiter;
+
+            // Display results
+            const resultsDiv = document.getElementById('tripResults');
+            const detailsDiv = document.getElementById('tripDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Distance:</strong> ${distance.toFixed(1)} ${distanceUnit}<br>
+                        <strong>Fuel Efficiency:</strong> ${efficiency.toFixed(1)} ${getUnitName(efficiencyUnit)}<br>
+                        <strong>Fuel Consumption:</strong> ${fuelConsumption.toFixed(2)} L
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Fuel Price:</strong> $${fuelPrice.toFixed(2)}/${priceUnit === 'per_gallon' ? 'gal' : 'L'}<br>
+                        <strong>Total Cost:</strong> <span class="text-success fw-bold">$${totalCost.toFixed(2)}</span><br>
+                        <strong>Cost per km:</strong> $${(totalCost / distanceKm).toFixed(3)}
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Auto-convert on input change
+        document.getElementById('inputValue').addEventListener('input', function() {
+            if (this.value && !isNaN(this.value)) {
+                convertFuelEfficiency();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default values for demo
+            document.getElementById('inputValue').value = '30';
+            convertFuelEfficiency();
+        });
+    </script>
+</body>
+</html> 

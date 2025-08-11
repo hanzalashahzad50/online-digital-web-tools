@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Calculate subnets, network addresses, and more with our online subnet calculator.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .result-card { border-left: 4px solid #0d6efd; margin-bottom: 15px; }
+        .binary-ip { font-family: monospace; font-size: 0.9em; word-break: break-all; }
+        .network-bits { color: #198754; }
+        .subnet-bits { color: #dc3545; }
+        .host-bits { color: #6c757d; }
+        .copy-btn { cursor: pointer; opacity: 0.7; }
+        .copy-btn:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-calculator me-3"></i>Subnet Calculator</h1>
+            <p class="lead">Calculate network addresses, subnets, and more</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="subnetForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="ipAddress" class="form-label">IP Address</label>
+                                        <input type="text" class="form-control" id="ipAddress" placeholder="192.168.1.1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="subnetMask" class="form-label">Subnet Mask</label>
+                                        <select class="form-select" id="subnetMask">
+                                            <option value="">Select or type</option>
+                                            <option value="255.255.255.0">255.255.255.0 (/24)</option>
+                                            <option value="255.255.0.0">255.255.0.0 (/16)</option>
+                                            <option value="255.0.0.0">255.0.0.0 (/8)</option>
+                                            <option value="255.255.255.128">255.255.255.128 (/25)</option>
+                                            <option value="255.255.255.192">255.255.255.192 (/26)</option>
+                                            <option value="255.255.255.224">255.255.255.224 (/27)</option>
+                                            <option value="255.255.255.240">255.255.255.240 (/28)</option>
+                                            <option value="255.255.255.248">255.255.255.248 (/29)</option>
+                                            <option value="255.255.255.252">255.255.255.252 (/30)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="cidr" class="form-label">CIDR</label>
+                                        <input type="number" class="form-control" id="cidr" min="0" max="32" placeholder="24">
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="fas fa-calculator me-2"></i>Calculate
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Subnet Calculation Results</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card result-card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Network Information</h6>
+                                                <table class="table table-sm table-borderless">
+                                                    <tr>
+                                                        <th>IP Address:</th>
+                                                        <td><span id="resultIp"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Subnet Mask:</th>
+                                                        <td><span id="resultSubnetMask"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>CIDR Notation:</th>
+                                                        <td><span id="resultCidr"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Network Address:</th>
+                                                        <td><span id="resultNetwork"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Broadcast Address:</th>
+                                                        <td><span id="resultBroadcast"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>First Host:</th>
+                                                        <td><span id="resultFirstHost"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Last Host:</th>
+                                                        <td><span id="resultLastHost"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Total Hosts:</th>
+                                                        <td><span id="resultTotalHosts"></span></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card result-card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Binary Representation</h6>
+                                                <div class="mb-3">
+                                                    <div class="small text-muted mb-1">IP Address:</div>
+                                                    <div class="binary-ip" id="binaryIp"></div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="small text-muted mb-1">Subnet Mask:</div>
+                                                    <div class="binary-ip" id="binarySubnetMask"></div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="small text-muted mb-1">Network Address:</div>
+                                                    <div class="binary-ip" id="binaryNetwork"></div>
+                                                </div>
+                                                <div class="small text-muted">
+                                                    <span class="network-bits">Green</span> = Network | 
+                                                    <span class="subnet-bits">Red</span> = Subnet | 
+                                                    <span class="host-bits">Gray</span> = Host
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About Subnet Calculator</h5>
+                            <p>A subnet calculator helps divide an IP network into subnetworks by calculating network address, subnet mask, and broadcast address.</p>
+                            
+                            <h6 class="mt-4">Common Subnet Masks:</h6>
+                            <ul class="small">
+                                <li><strong>255.255.255.0</strong> (/24) - 254 hosts</li>
+                                <li><strong>255.255.0.0</strong> (/16) - 65,534 hosts</li>
+                                <li><strong>255.0.0.0</strong> (/8) - 16,777,214 hosts</li>
+                                <li><strong>255.255.255.128</strong> (/25) - 126 hosts</li>
+                                <li><strong>255.255.255.192</strong> (/26) - 62 hosts</li>
+                                <li><strong>255.255.255.224</strong> (/27) - 30 hosts</li>
+                                <li><strong>255.255.255.240</strong> (/28) - 14 hosts</li>
+                                <li><strong>255.255.255.248</strong> (/29) - 6 hosts</li>
+                                <li><strong>255.255.255.252</strong> (/30) - 2 hosts</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
+                            <ul class="small mb-0">
+                                <li class="mb-2">CIDR notation (e.g., /24) represents the number of network bits.</li>
+                                <li class="mb-2">The first and last addresses in a subnet are reserved.</li>
+                                <li>Use the binary view to understand how subnetting works.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // DOM Elements
+            const form = document.getElementById('subnetForm');
+            const ipAddress = document.getElementById('ipAddress');
+            const subnetMask = document.getElementById('subnetMask');
+            const cidr = document.getElementById('cidr');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            // Event Listeners
+            form.addEventListener('submit', calculateSubnet);
+            subnetMask.addEventListener('change', updateCidrFromMask);
+            cidr.addEventListener('input', updateMaskFromCidr);
+            
+            // Update CIDR from subnet mask
+            function updateCidrFromMask() {
+                const mask = subnetMask.value;
+                if (!mask) {
+                    cidr.value = '';
+                    return;
+                }
+                
+                const cidrValue = mask.split('.').reduce((count, octet) => {
+                    return count + parseInt(octet).toString(2).replace(/0/g, '').length;
+                }, 0);
+                
+                cidr.value = cidrValue;
+            }
+            
+            // Update subnet mask from CIDR
+            function updateMaskFromCidr() {
+                let cidrValue = parseInt(cidr.value);
+                if (isNaN(cidrValue) || cidrValue < 0 || cidrValue > 32) {
+                    subnetMask.value = '';
+                    return;
+                }
+                
+                let mask = [0, 0, 0, 0];
+                for (let i = 0; i < 4; i++) {
+                    if (cidrValue >= 8) {
+                        mask[i] = 255;
+                        cidrValue -= 8;
+                    } else if (cidrValue > 0) {
+                        mask[i] = 256 - Math.pow(2, 8 - cidrValue);
+                        cidrValue = 0;
+                    }
+                }
+                
+                subnetMask.value = mask.join('.');
+            }
+            
+            // Validate IP address
+            function isValidIp(ip) {
+                const octets = ip.split('.');
+                if (octets.length !== 4) return false;
+                
+                return octets.every(octet => {
+                    const num = parseInt(octet, 10);
+                    return num >= 0 && num <= 255 && octet === num.toString();
+                });
+            }
+            
+            // Format binary with highlighting
+            function formatBinary(ip, cidr) {
+                const parts = ip.split('.').map(Number);
+                let binary = '';
+                let bits = 0;
+                
+                for (let i = 0; i < 4; i++) {
+                    const octet = parts[i].toString(2).padStart(8, '0');
+                    
+                    for (let j = 0; j < 8; j++) {
+                        const bitPos = (i * 8) + j;
+                        let charClass = '';
+                        
+                        if (bitPos < cidr) {
+                            charClass = 'network-bits';
+                        } else {
+                            charClass = 'host-bits';
+                        }
+                        
+                        binary += `<span class="${charClass}">${octet[j]}</span>`;
+                        bits++;
+                        
+                        if (j === 3 || j === 7) binary += ' ';
+                    }
+                    
+                    if (i < 3) binary += '<span class="text-muted">.</span> ';
+                }
+                
+                return binary;
+            }
+            
+            // Main calculation function
+            function calculateSubnet(e) {
+                e.preventDefault();
+                
+                // Get input values
+                const ip = ipAddress.value.trim();
+                let mask = subnetMask.value;
+                let cidrValue = parseInt(cidr.value);
+                
+                // Validate IP address
+                if (!isValidIp(ip)) {
+                    showNotification('Please enter a valid IP address', 'error');
+                    return;
+                }
+                
+                // Validate subnet mask or CIDR
+                if (!mask && (isNaN(cidrValue) || cidrValue < 0 || cidrValue > 32)) {
+                    showNotification('Please enter a valid subnet mask or CIDR', 'error');
+                    return;
+                }
+                
+                // If CIDR is provided but mask is not, calculate mask from CIDR
+                if (!mask && !isNaN(cidrValue)) {
+                    updateMaskFromCidr();
+                    mask = subnetMask.value;
+                }
+                // If mask is provided but CIDR is not, calculate CIDR from mask
+                else if (mask && (isNaN(cidrValue) || cidrValue === 0)) {
+                    updateCidrFromMask();
+                    cidrValue = parseInt(cidr.value);
+                }
+                
+                // Parse IP and mask
+                const ipParts = ip.split('.').map(Number);
+                const maskParts = mask.split('.').map(Number);
+                
+                // Calculate network address
+                const networkParts = [];
+                for (let i = 0; i < 4; i++) {
+                    networkParts.push(ipParts[i] & maskParts[i]);
+                }
+                
+                // Calculate wildcard mask
+                const wildcardParts = maskParts.map(octet => 255 - octet);
+                
+                // Calculate broadcast address
+                const broadcastParts = [];
+                for (let i = 0; i < 4; i++) {
+                    broadcastParts.push(networkParts[i] | wildcardParts[i]);
+                }
+                
+                // Calculate first and last host
+                const firstHost = [...networkParts];
+                firstHost[3] += 1;
+                
+                const lastHost = [...broadcastParts];
+                lastHost[3] -= 1;
+                
+                // Calculate total hosts
+                const hostBits = 32 - cidrValue;
+                const totalHosts = Math.pow(2, hostBits) - 2;
+                
+                // Update UI with results
+                document.getElementById('resultIp').textContent = ip;
+                document.getElementById('resultSubnetMask').textContent = mask;
+                document.getElementById('resultCidr').textContent = `/${cidrValue}`;
+                document.getElementById('resultNetwork').textContent = networkParts.join('.');
+                document.getElementById('resultBroadcast').textContent = broadcastParts.join('.');
+                document.getElementById('resultFirstHost').textContent = firstHost.join('.');
+                document.getElementById('resultLastHost').textContent = lastHost.join('.');
+                document.getElementById('resultTotalHosts').textContent = totalHosts.toLocaleString();
+                
+                // Update binary representations
+                document.getElementById('binaryIp').innerHTML = formatBinary(ip, cidrValue);
+                document.getElementById('binarySubnetMask').innerHTML = formatBinary(mask, cidrValue);
+                document.getElementById('binaryNetwork').innerHTML = formatBinary(networkParts.join('.'), cidrValue);
+                
+                // Show results
+                resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

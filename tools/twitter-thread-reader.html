@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Thread Reader - Multi-Tools Hub</title>
+    <meta name="description" content="Read and follow Twitter threads in a clean, easy-to-read format.">
+    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .tweet-card {
+            border-radius: 12px;
+            border: 1px solid #e1e8ed;
+            margin-bottom: 15px;
+            background: white;
+            transition: all 0.2s;
+        }
+        .tweet-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .tweet-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px 0;
+        }
+        .tweet-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        .tweet-user {
+            flex-grow: 1;
+        }
+        .tweet-name {
+            font-weight: 700;
+            color: #0f1419;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .tweet-username {
+            color: #536471;
+            margin: 0;
+            font-size: 0.9em;
+        }
+        .tweet-content {
+            padding: 12px 16px;
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #0f1419;
+            white-space: pre-line;
+            word-wrap: break-word;
+        }
+        .tweet-media {
+            margin-top: 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .tweet-media img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #e1e8ed;
+        }
+        .tweet-stats {
+            display: flex;
+            padding: 8px 16px;
+            border-top: 1px solid #e1e8ed;
+            color: #536471;
+            font-size: 0.9em;
+        }
+        .tweet-stat {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .tweet-stat i {
+            margin-right: 5px;
+        }
+        .tweet-replies {
+            color: #536471;
+        }
+        .tweet-likes {
+            color: #e0245e;
+        }
+        .tweet-retweets {
+            color: #17bf63;
+        }
+        .tweet-views {
+            color: #1da1f2;
+        }
+        .thread-line {
+            position: absolute;
+            left: 24px;
+            top: 60px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e1e8ed;
+            z-index: 1;
+        }
+        .tweet-container {
+            position: relative;
+            padding-left: 50px;
+        }
+        .tweet-container:last-child .thread-line {
+            display: none;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .error-message {
+            display: none;
+            color: #e0245e;
+            margin-top: 10px;
+        }
+        .tweet-date {
+            color: #536471;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+        .tweet-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 16px;
+            border-top: 1px solid #e1e8ed;
+        }
+        .tweet-action {
+            color: #536471;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .tweet-action:hover {
+            background-color: #f7f9fa;
+            color: #1da1f2;
+        }
+        .tweet-action i {
+            margin-right: 5px;
+        }
+        .tweet-reply {
+            color: #1da1f2;
+        }
+        .tweet-retweet {
+            color: #17bf63;
+        }
+        .tweet-like {
+            color: #e0245e;
+        }
+        .tweet-share {
+            color: #1da1f2;
+        }
+        .tweet-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        .tweet-link:hover {
+            text-decoration: none;
+        }
+        .tweet-mention, .tweet-hashtag {
+            color: #1da1f2;
+            text-decoration: none;
+        }
+        .tweet-mention:hover, .tweet-hashtag:hover {
+            text-decoration: underline;
+        }
+        .tweet-code {
+            background: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        .tweet-quote {
+            border-left: 3px solid #1da1f2;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background: #f7f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+        .tweet-quote-user {
+            font-weight: 700;
+            color: #0f1419;
+        }
+        .tweet-quote-username {
+            color: #536471;
+            margin-left: 5px;
+        }
+        .tweet-quote-content {
+            margin-top: 5px;
+            color: #0f1419;
+        }
+        .tweet-quote-media {
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tweet-quote-media img {
+            width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Placeholder -->
+    <div id="header-placeholder"></div>
+
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="text-center mb-3">
+                    <i class="fab fa-twitter text-primary me-2"></i>Twitter Thread Reader
+                </h1>
+                <p class="text-center text-muted mb-4">Read and follow Twitter threads in a clean, easy-to-read format</p>
+                
+                <!-- Top Ad Banner -->
+                <div class="text-center mb-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form id="threadForm">
+                            <div class="mb-3">
+                                <label for="threadUrl" class="form-label">Twitter Thread URL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                    <input type="url" class="form-control" id="threadUrl" 
+                                           placeholder="https://twitter.com/username/status/1234567890" required>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search me-1"></i> Load Thread
+                                    </button>
+                                </div>
+                                <div class="form-text">Paste the URL of any tweet that's part of a thread</div>
+                            </div>
+                        </form>
+                        
+                        <div id="loadingSpinner" class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0">Loading thread...</p>
+                        </div>
+                        
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">An error occurred while loading the thread. Please try again.</span>
+                        </div>
+                        
+                        <div id="threadContainer" class="mt-4">
+                            <!-- Thread will be loaded here -->
+                        </div>
+                        
+                            
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>How to Use</h5>
+                            <ol class="mb-0">
+                                <li>Find a Twitter thread you want to read</li>
+                                <li>Copy the URL of any tweet in the thread</li>
+                                <li>Paste it in the input field above and click "Load Thread"</li>
+                                <li>Read the entire thread in a clean, distraction-free format</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bottom Ad Banner -->
+                <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Highlight.js for code syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="../js/header-footer.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        // Ensure header and footer are loaded even if the script is loaded after DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof loadHeader === 'function') loadHeader();
+                if (typeof loadFooter === 'function') loadFooter();
+            });
+        } else {
+            if (typeof loadHeader === 'function') loadHeader();
+            if (typeof loadFooter === 'function') loadFooter();
+        }
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize highlight.js
+            hljs.highlightAll();
+            
+            // Handle form submission
+            document.getElementById('threadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const threadUrl = document.getElementById('threadUrl').value.trim();
+                
+                if (!threadUrl) {
+                    showError('Please enter a Twitter URL');
+                    return;
+                }
+                
+                // Extract tweet ID from URL
+                const tweetId = extractTweetId(threadUrl);
+                if (!tweetId) {
+                    showError('Invalid Twitter URL. Please make sure it\'s a valid tweet URL.');
+                    return;
+                }
+                
+                // Show loading spinner
+                document.getElementById('loadingSpinner').style.display = 'block';
+                document.getElementById('errorMessage').classList.add('d-none');
+                
+                // In a real implementation, you would make an API call to fetch the thread
+                // For this example, we'll simulate a delay and show sample data
+                setTimeout(() => {
+                    try {
+                        // Simulate API call
+                        const threadData = getSampleThreadData(tweetId);
+                        displayThread(threadData);
+                    } catch (error) {
+                        console.error('Error loading thread:', error);
+                        showError('Failed to load thread. ' + error.message);
+                    } finally {
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                    }
+                }, 1000);
+            });
+            
+            // Extract tweet ID from URL
+            function extractTweetId(url) {
+                // Handle different Twitter URL formats
+                const matches = url.match(/twitter\.com\/\w+\/status\/(\d+)/) || 
+                               url.match(/x\.com\/\w+\/status\/(\d+)/) || 
+                               url.match(/status\/(\d+)/);
+                
+                return matches ? matches[1] : null;
+            }
+            
+            // Display error message
+            function showError(message) {
+                const errorElement = document.getElementById('errorMessage');
+                document.getElementById('errorText').textContent = message;
+                errorElement.classList.remove('d-none');
+            }
+            
+            // Display the thread
+            function displayThread(threadData) {
+                const container = document.getElementById('threadContainer');
+                container.innerHTML = '';
+                
+                threadData.forEach((tweet, index) => {
+                    const tweetElement = createTweetElement(tweet, index === 0);
+                    container.appendChild(tweetElement);
+                });
+                
+                // Re-initialize highlight.js for code blocks in the new content
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+                
+                // Scroll to the first tweet
+                if (container.firstChild) {
+                    container.firstChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+            
+            // Create a tweet element
+            function createTweetElement(tweet, isOriginal) {
+                const container = document.createElement('div');
+                container.className = 'tweet-container mb-4';
+                
+                // Add thread line for replies
+                if (!isOriginal) {
+                    const line = document.createElement('div');
+                    line.className = 'thread-line';
+                    container.appendChild(line);
+                }
+                
+                const tweetCard = document.createElement('div');
+                tweetCard.className = 'tweet-card' + (isOriginal ? ' border-primary border-2' : '');
+                
+                // Header with user info
+                let headerHTML = `
+                    <div class="tweet-header">
+                        <img src="${tweet.user.avatar}" alt="${tweet.user.name}" class="tweet-avatar">
+                        <div class="tweet-user">
+                            <div class="d-flex align-items-center">
+                                <h3 class="tweet-name">${tweet.user.name}</h3>
+                                <span class="tweet-username ms-2">@${tweet.user.username}</span>
+                            </div>
+                            <div class="tweet-date">${formatDate(tweet.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="tweet-content">
+                        ${formatTweetText(tweet.text, tweet.entities)}
+                    </div>
+                `;
+                
+                // Add media if available
+                if (tweet.media && tweet.media.length > 0) {
+                    headerHTML += `
+                        <div class="tweet-media">
+                            <img src="${tweet.media[0].url}" alt="Tweet media" class="img-fluid">
+                        </div>
+                    `;
+                }
+                
+                // Add quoted tweet if available
+                if (tweet.quoted_tweet) {
+                    const qt = tweet.quoted_tweet;
+                    headerHTML += `
+                        <div class="tweet-quote">
+                            <div>
+                                <span class="tweet-quote-user">${qt.user.name}</span>
+                                <span class="tweet-quote-username">@${qt.user.username}</span>
+                            </div>
+                            <div class="tweet-quote-content">
+                                ${formatTweetText(qt.text, qt.entities || {})}
+                            </div>
+                            ${qt.media && qt.media.length > 0 ? `
+                                <div class="tweet-quote-media">
+                                    <img src="${qt.media[0].url}" alt="Quoted tweet media" class="img-fluid">
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+                
+                // Tweet stats and actions
+                headerHTML += `
+                    <div class="tweet-stats">
+                        <div class="tweet-stat">
+                            <i class="far fa-comment"></i> ${formatNumber(tweet.stats.replies)}
+                        </div>
+                        <div class="tweet-stat">
+                            <i class="fas fa-retweet"></i> ${formatNumber(tweet.stats.retweets)}
+                        </div>
+                        <div class="tweet-stat">
+                            <i class="far fa-heart"></i> ${formatNumber(tweet.stats.likes)}
+                        </div>
+                        <div class="tweet-stat">
+                            <i class="far fa-eye"></i> ${formatNumber(tweet.stats.views)}
+                        </div>
+                    </div>
+                    <div class="tweet-actions">
+                        <a href="https://twitter.com/intent/tweet?in_reply_to=${tweet.id}" class="tweet-action tweet-reply" target="_blank">
+                            <i class="far fa-comment"></i> Reply
+                        </a>
+                        <a href="https://twitter.com/intent/retweet?tweet_id=${tweet.id}" class="tweet-action tweet-retweet" target="_blank">
+                            <i class="fas fa-retweet"></i> Retweet
+                        </a>
+                        <a href="https://twitter.com/intent/like?tweet_id=${tweet.id}" class="tweet-action tweet-like" target="_blank">
+                            <i class="far fa-heart"></i> Like
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://twitter.com/' + tweet.user.username + '/status/' + tweet.id)}" class="tweet-action tweet-share" target="_blank">
+                            <i class="fas fa-share"></i> Share
+                        </a>
+                    </div>
+                `;
+                
+                tweetCard.innerHTML = headerHTML;
+                container.appendChild(tweetCard);
+                return container;
+            }
+            
+            // Format tweet text with mentions, hashtags, and links
+            function formatTweetText(text, entities) {
+                if (!text) return '';
+                
+                let formattedText = text;
+                
+                // Replace URLs
+                if (entities.urls) {
+                    entities.urls.forEach(url => {
+                        const displayUrl = url.display_url.startsWith('http') ? 
+                            new URL(url.expanded_url).hostname : 
+                            url.display_url;
+                        formattedText = formattedText.replace(
+                            url.url, 
+                            `<a href="${url.expanded_url}" class="text-primary" target="_blank">${displayUrl}</a>`
+                        );
+                    });
+                }
+                
+                // Replace mentions
+                if (entities.mentions) {
+                    entities.mentions.forEach(mention => {
+                        const mentionUrl = `https://twitter.com/${mention.username}`;
+                        formattedText = formattedText.replace(
+                            `@${mention.username}`, 
+                            `<a href="${mentionUrl}" class="tweet-mention" target="_blank">@${mention.username}</a>`
+                        );
+                    });
+                }
+                
+                // Replace hashtags
+                if (entities.hashtags) {
+                    entities.hashtags.forEach(hashtag => {
+                        const tagUrl = `https://twitter.com/hashtag/${encodeURIComponent(hashtag.tag)}`;
+                        formattedText = formattedText.replace(
+                            `#${hashtag.tag}`, 
+                            `<a href="${tagUrl}" class="tweet-hashtag" target="_blank">#${hashtag.tag}</a>`
+                        );
+                    });
+                }
+                
+                // Replace newlines with <br>
+                formattedText = formattedText.replace(/\n/g, '<br>');
+                
+                // Simple regex to detect code blocks (```code```)
+                formattedText = formattedText.replace(/```(\w*)\n([\s\S]*?)\n```/g, 
+                    '<pre><code class="$1">$2</code></pre>');
+                
+                return formattedText;
+            }
+            
+            // Format date
+            function formatDate(dateString) {
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            }
+            
+            // Format large numbers (e.g., 1.2K, 3.4M)
+            function formatNumber(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+            
+            // Sample data for demonstration
+            function getSampleThreadData(tweetId) {
+                return [
+                    {
+                        id: tweetId || '1234567890',
+                        text: "Let's talk about building a Twitter Thread Reader! 🧵\n\nA thread reader makes it easier to follow long conversations by displaying them in a clean, easy-to-read format.\n\nHere's how it works:",
+                        created_at: new Date(Date.now() - 3600000).toISOString(),
+                        user: {
+                            name: "Tech Enthusiast",
+                            username: "techenthusiast",
+                            avatar: "https://i.pravatar.cc/100?img=1"
+                        },
+                        stats: {
+                            replies: 42,
+                            retweets: 128,
+                            likes: 567,
+                            views: 12345
+                        },
+                        entities: {
+                            mentions: [],
+                            hashtags: [],
+                            urls: []
+                        },
+                        media: [
+                            { url: "https://picsum.photos/800/400?random=1" }
+                        ]
+                    },
+                    {
+                        id: (parseInt(tweetId || '1234567890') + 1).toString(),
+                        text: "1. First, we need to extract the tweet ID from the URL. This is the unique identifier for each tweet.\n\nFor example, in 'twitter.com/username/status/1234567890', the ID is '1234567890'.",
+                        created_at: new Date(Date.now() - 3300000).toISOString(),
+                        user: {
+                            name: "Tech Enthusiast",
+                            username: "techenthusiast",
+                            avatar: "https://i.pravatar.cc/100?img=1"
+                        },
+                        stats: {
+                            replies: 15,
+                            retweets: 32,
+                            likes: 189,
+                            views: 5678
+                        },
+                        entities: {
+                            mentions: [],
+                            hashtags: [],
+                            urls: []
+                        }
+                    },
+                    {
+                        id: (parseInt(tweetId || '1234567890') + 2).toString(),
+                        text: "2. Next, we use the Twitter API to fetch the thread. We need to:\n- Get the original tweet\n- Find all replies from the same author\n- Reconstruct the conversation in order\n\nHere's a code snippet to get started:\n\n```javascript\nasync function fetchThread(tweetId) {\n  const response = await fetch(`/api/thread/${tweetId}`);\n  return await response.json();\n}\n```",
+                        created_at: new Date(Date.now() - 3000000).toISOString(),
+                        user: {
+                            name: "Tech Enthusiast",
+                            username: "techenthusiast",
+                            avatar: "https://i.pravatar.cc/100?img=1"
+                        },
+                        stats: {
+                            replies: 8,
+                            retweets: 24,
+                            likes: 97,
+                            views: 3456
+                        },
+                        entities: {
+                            mentions: [],
+                            hashtags: [],
+                            urls: []
+                        },
+                        quoted_tweet: {
+                            id: '9876543210',
+                            text: "Check out this amazing thread about building web tools! #webdev #coding",
+                            created_at: new Date(Date.now() - 3500000).toISOString(),
+                            user: {
+                                name: "Web Dev Tips",
+                                username: "webdevtips",
+                                avatar: "https://i.pravatar.cc/100?img=2"
+                            },
+                            media: [
+                                { url: "https://picsum.photos/400/200?random=2" }
+                            ]
+                        }
+                    },
+                    {
+                        id: (parseInt(tweetId || '1234567890') + 3).toString(),
+                        text: "3. Finally, we display the thread in a clean, readable format with proper styling for:\n- User avatars and names\n- Tweet content with formatting\n- Media (images, videos, GIFs)\n- Engagement metrics\n- Reply/retweet/like actions\n\nWhat features would you like to see in a thread reader? Let me know in the replies! 👇",
+                        created_at: new Date(Date.now() - 2700000).toISOString(),
+                        user: {
+                            name: "Tech Enthusiast",
+                            username: "techenthusiast",
+                            avatar: "https://i.pravatar.cc/100?img=1"
+                        },
+                        stats: {
+                            replies: 27,
+                            retweets: 45,
+                            likes: 231,
+                            views: 7890
+                        },
+                        entities: {
+                            mentions: [],
+                            hashtags: [],
+                            urls: []
+                        }
+                    }
+                ];
+            }
+            
+            // Load header and footer
+            loadHeader();
+            loadFooter();
+        });
+    </script>
+</body>
+</html>

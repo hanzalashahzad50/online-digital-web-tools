@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volume Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online volume converter. Convert between liters, gallons, cubic meters, and more volume units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-cube me-3"></i>Volume Converter</h1>
+            <p class="lead">Convert between liters, gallons, cubic meters, and more volume units</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Volume Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select id="fromUnit" class="form-select">
+                                        <option value="liter">Liter (L)</option>
+                                        <option value="milliliter">Milliliter (mL)</option>
+                                        <option value="cubic-meter">Cubic Meter (m³)</option>
+                                        <option value="cubic-centimeter">Cubic Centimeter (cm³)</option>
+                                        <option value="gallon">US Gallon (gal)</option>
+                                        <option value="quart">US Quart (qt)</option>
+                                        <option value="pint">US Pint (pt)</option>
+                                        <option value="cup">US Cup (cup)</option>
+                                        <option value="fluid-ounce">US Fluid Ounce (fl oz)</option>
+                                        <option value="tablespoon">US Tablespoon (tbsp)</option>
+                                        <option value="teaspoon">US Teaspoon (tsp)</option>
+                                        <option value="imperial-gallon">Imperial Gallon (imp gal)</option>
+                                        <option value="cubic-foot">Cubic Foot (ft³)</option>
+                                        <option value="cubic-inch">Cubic Inch (in³)</option>
+                                        <option value="barrel">Barrel (bbl)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select id="toUnit" class="form-select">
+                                        <option value="gallon">US Gallon (gal)</option>
+                                        <option value="liter">Liter (L)</option>
+                                        <option value="milliliter">Milliliter (mL)</option>
+                                        <option value="cubic-meter">Cubic Meter (m³)</option>
+                                        <option value="cubic-centimeter">Cubic Centimeter (cm³)</option>
+                                        <option value="quart">US Quart (qt)</option>
+                                        <option value="pint">US Pint (pt)</option>
+                                        <option value="cup">US Cup (cup)</option>
+                                        <option value="fluid-ounce">US Fluid Ounce (fl oz)</option>
+                                        <option value="tablespoon">US Tablespoon (tbsp)</option>
+                                        <option value="teaspoon">US Teaspoon (tsp)</option>
+                                        <option value="imperial-gallon">Imperial Gallon (imp gal)</option>
+                                        <option value="cubic-foot">Cubic Foot (ft³)</option>
+                                        <option value="cubic-inch">Cubic Inch (in³)</option>
+                                        <option value="barrel">Barrel (bbl)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromValue" class="form-label">Enter Value:</label>
+                                    <input type="number" id="fromValue" class="form-control" placeholder="1" step="0.000001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toValue" class="form-label">Result:</label>
+                                    <input type="text" id="toValue" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Convert
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap Units
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Units Conversion -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Units Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-cube fa-3x mb-3"></i>
+                                    <p>Enter a value to see all unit conversions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Volumes -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common Volumes</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Everyday Items:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item</th>
+                                                    <th>Volume</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Teaspoon</td>
+                                                    <td>5 mL</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Tablespoon</td>
+                                                    <td>15 mL</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cup</td>
+                                                    <td>240 mL</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Water Bottle</td>
+                                                    <td>500 mL</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Milk Jug</td>
+                                                    <td>1 L</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Gas Tank</td>
+                                                    <td>50 L</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Large Volumes:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Container</th>
+                                                    <th>Volume</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Swimming Pool</td>
+                                                    <td>100,000 L</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Olympic Pool</td>
+                                                    <td>2,500,000 L</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Oil Tanker</td>
+                                                    <td>300,000,000 L</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Lake Michigan</td>
+                                                    <td>4.9 × 10¹² L</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Pacific Ocean</td>
+                                                    <td>7.1 × 10²⁰ L</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Volume Calculator -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Volume Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="shape" class="form-label">Shape:</label>
+                                    <select id="shape" class="form-select">
+                                        <option value="cube">Cube</option>
+                                        <option value="sphere">Sphere</option>
+                                        <option value="cylinder">Cylinder</option>
+                                        <option value="cone">Cone</option>
+                                        <option value="rectangular-prism">Rectangular Prism</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="dimension1" class="form-label">Dimension 1:</label>
+                                    <input type="number" id="dimension1" class="form-control" placeholder="Length/Radius" step="0.01">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="dimension2" class="form-label">Dimension 2:</label>
+                                    <input type="number" id="dimension2" class="form-control" placeholder="Width/Height" step="0.01">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dimension3" class="form-label">Dimension 3:</label>
+                                    <input type="number" id="dimension3" class="form-control" placeholder="Height" step="0.01">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="calculatedVolume" class="form-label">Calculated Volume:</label>
+                                    <input type="text" id="calculatedVolume" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <button id="calculateVolumeBtn" class="btn btn-success">
+                                <i class="fas fa-calculator me-2"></i>Calculate Volume
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('drink')">
+                                    Drink Volume
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('cooking')">
+                                    Cooking Volume
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('fuel')">
+                                    Fuel Volume
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('water')">
+                                    Water Volume
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Factors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Factors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>In Liters</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 US gallon</td>
+                                            <td>3.78541 L</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 US quart</td>
+                                            <td>0.946353 L</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 US pint</td>
+                                            <td>0.473176 L</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 US cup</td>
+                                            <td>0.236588 L</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 cubic meter</td>
+                                            <td>1,000 L</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Volume Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Volume Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 liter = 1.05669 US quarts</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 US gallon = 4 US quarts</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 cubic meter = 1,000 liters</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 milliliter = 1 cubic centimeter</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 barrel = 42 US gallons</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Cooking Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-utensils me-2"></i>Cooking Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Measurement</th>
+                                            <th>Volume</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 teaspoon</td>
+                                            <td>5 mL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 tablespoon</td>
+                                            <td>15 mL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 cup</td>
+                                            <td>240 mL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 pint</td>
+                                            <td>473 mL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 quart</td>
+                                            <td>946 mL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 gallon</td>
+                                            <td>3.785 L</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ad Section -->
+                    <div class="ad-placeholder">
+                        <p class="text-muted">Advertisement Space</p>
+                        <div class="ad-content">
+                            <i class="fas fa-ad fa-2x text-muted"></i>
+                            <p>Your ad could be here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volume Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Volume Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Metric System:</h6>
+                                    <ul>
+                                        <li><strong>Milliliter (mL):</strong> 1/1000 of a liter</li>
+                                        <li><strong>Liter (L):</strong> Base unit of volume</li>
+                                        <li><strong>Cubic Meter (m³):</strong> 1000 liters</li>
+                                        <li><strong>Cubic Centimeter (cm³):</strong> 1 milliliter</li>
+                                    </ul>
+                                    
+                                    <h6>US Customary Units:</h6>
+                                    <ul>
+                                        <li><strong>Teaspoon (tsp):</strong> 5 milliliters</li>
+                                        <li><strong>Tablespoon (tbsp):</strong> 3 teaspoons</li>
+                                        <li><strong>Cup (cup):</strong> 16 tablespoons</li>
+                                        <li><strong>Pint (pt):</strong> 2 cups</li>
+                                        <li><strong>Quart (qt):</strong> 2 pints</li>
+                                        <li><strong>Gallon (gal):</strong> 4 quarts</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Other Units:</h6>
+                                    <ul>
+                                        <li><strong>Imperial Gallon:</strong> Used in UK</li>
+                                        <li><strong>Cubic Foot:</strong> Used in construction</li>
+                                        <li><strong>Cubic Inch:</strong> Used in engineering</li>
+                                        <li><strong>Barrel:</strong> Used for oil and liquids</li>
+                                    </ul>
+                                    
+                                    <h6>Usage by Context:</h6>
+                                    <ul>
+                                        <li><strong>Cooking:</strong> Cups, tablespoons, teaspoons</li>
+                                        <li><strong>Beverages:</strong> Liters, gallons, fluid ounces</li>
+                                        <li><strong>Construction:</strong> Cubic meters, cubic feet</li>
+                                        <li><strong>Science:</strong> Milliliters, cubic centimeters</li>
+                                        <li><strong>Industry:</strong> Barrels, cubic meters</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Volume Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromValue = document.getElementById('fromValue');
+            const toValue = document.getElementById('toValue');
+            const convertBtn = document.getElementById('convertBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const shape = document.getElementById('shape');
+            const dimension1 = document.getElementById('dimension1');
+            const dimension2 = document.getElementById('dimension2');
+            const dimension3 = document.getElementById('dimension3');
+            const calculatedVolume = document.getElementById('calculatedVolume');
+            const calculateVolumeBtn = document.getElementById('calculateVolumeBtn');
+
+            // Conversion factors (all in liters)
+            const conversionFactors = {
+                'liter': 1,
+                'milliliter': 0.001,
+                'cubic-meter': 1000,
+                'cubic-centimeter': 0.001,
+                'gallon': 3.78541,
+                'quart': 0.946353,
+                'pint': 0.473176,
+                'cup': 0.236588,
+                'fluid-ounce': 0.0295735,
+                'tablespoon': 0.0147868,
+                'teaspoon': 0.00492892,
+                'imperial-gallon': 4.54609,
+                'cubic-foot': 28.3168,
+                'cubic-inch': 0.0163871,
+                'barrel': 158.987
+            };
+
+            // Unit symbols
+            const unitSymbols = {
+                'liter': 'L',
+                'milliliter': 'mL',
+                'cubic-meter': 'm³',
+                'cubic-centimeter': 'cm³',
+                'gallon': 'gal',
+                'quart': 'qt',
+                'pint': 'pt',
+                'cup': 'cup',
+                'fluid-ounce': 'fl oz',
+                'tablespoon': 'tbsp',
+                'teaspoon': 'tsp',
+                'imperial-gallon': 'imp gal',
+                'cubic-foot': 'ft³',
+                'cubic-inch': 'in³',
+                'barrel': 'bbl'
+            };
+
+            // Convert button
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapUnits);
+            clearBtn.addEventListener('click', clearForm);
+            calculateVolumeBtn.addEventListener('click', calculateVolume);
+
+            // Auto-convert on input change
+            fromValue.addEventListener('input', debounce(convert, 300));
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+
+            function convert() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+
+                if (isNaN(value)) {
+                    toValue.value = '';
+                    updateAllConversions();
+                    return;
+                }
+
+                // Convert to liters first, then to target unit
+                const liters = value * conversionFactors[from];
+                const result = liters / conversionFactors[to];
+
+                // Format result based on magnitude
+                toValue.value = formatResult(result);
+                updateAllConversions();
+            }
+
+            function calculateVolume() {
+                const shapeType = shape.value;
+                const d1 = parseFloat(dimension1.value);
+                const d2 = parseFloat(dimension2.value);
+                const d3 = parseFloat(dimension3.value);
+
+                if (isNaN(d1) || d1 <= 0) {
+                    calculatedVolume.value = '';
+                    return;
+                }
+
+                let volume = 0;
+                switch (shapeType) {
+                    case 'cube':
+                        volume = d1 * d1 * d1;
+                        calculatedVolume.value = `${volume.toFixed(2)} cubic units`;
+                        break;
+                    case 'sphere':
+                        volume = (4/3) * Math.PI * Math.pow(d1, 3);
+                        calculatedVolume.value = `${volume.toFixed(2)} cubic units`;
+                        break;
+                    case 'cylinder':
+                        if (isNaN(d2) || d2 <= 0) {
+                            calculatedVolume.value = '';
+                            return;
+                        }
+                        volume = Math.PI * Math.pow(d1, 2) * d2;
+                        calculatedVolume.value = `${volume.toFixed(2)} cubic units`;
+                        break;
+                    case 'cone':
+                        if (isNaN(d2) || d2 <= 0) {
+                            calculatedVolume.value = '';
+                            return;
+                        }
+                        volume = (1/3) * Math.PI * Math.pow(d1, 2) * d2;
+                        calculatedVolume.value = `${volume.toFixed(2)} cubic units`;
+                        break;
+                    case 'rectangular-prism':
+                        if (isNaN(d2) || d2 <= 0 || isNaN(d3) || d3 <= 0) {
+                            calculatedVolume.value = '';
+                            return;
+                        }
+                        volume = d1 * d2 * d3;
+                        calculatedVolume.value = `${volume.toFixed(2)} cubic units`;
+                        break;
+                }
+            }
+
+            function formatResult(value) {
+                if (value === 0) return '0';
+                
+                if (value < 0.000001 || value > 999999) {
+                    return value.toExponential(6);
+                } else if (value < 0.01) {
+                    return value.toFixed(6);
+                } else if (value < 1) {
+                    return value.toFixed(4);
+                } else if (value < 100) {
+                    return value.toFixed(3);
+                } else if (value < 10000) {
+                    return value.toFixed(2);
+                } else {
+                    return value.toFixed(1);
+                }
+            }
+
+            function updateAllConversions() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+
+                if (isNaN(value)) {
+                    document.getElementById('allConversions').innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-cube fa-3x mb-3"></i>
+                            <p>Enter a value to see all unit conversions</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const liters = value * conversionFactors[from];
+                let conversionsHTML = '<div class="row">';
+
+                Object.keys(conversionFactors).forEach(unit => {
+                    const result = liters / conversionFactors[unit];
+                    const symbol = unitSymbols[unit];
+                    const formattedResult = formatResult(result);
+                    
+                    conversionsHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="conversion-item p-2 border rounded">
+                                <div class="unit-name">${unit.replace('-', ' ').toUpperCase()}</div>
+                                <div class="unit-value">${formattedResult} ${symbol}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                conversionsHTML += '</div>';
+                document.getElementById('allConversions').innerHTML = conversionsHTML;
+            }
+
+            function swapUnits() {
+                const tempUnit = fromUnit.value;
+                const tempValue = fromValue.value;
+                
+                fromUnit.value = toUnit.value;
+                toUnit.value = tempUnit;
+                fromValue.value = toValue.value;
+                
+                convert();
+            }
+
+            function clearForm() {
+                fromValue.value = '';
+                toValue.value = '';
+                dimension1.value = '';
+                dimension2.value = '';
+                dimension3.value = '';
+                calculatedVolume.value = '';
+                updateAllConversions();
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Quick conversion functions
+            window.loadQuickConversion = function(type) {
+                const conversions = {
+                    drink: { value: 500, unit: 'milliliter', description: 'Drink Volume' },
+                    cooking: { value: 1, unit: 'cup', description: 'Cooking Volume' },
+                    fuel: { value: 50, unit: 'liter', description: 'Fuel Volume' },
+                    water: { value: 1, unit: 'gallon', description: 'Water Volume' }
+                };
+
+                const conversion = conversions[type];
+                fromValue.value = conversion.value;
+                fromUnit.value = conversion.unit;
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .conversion-item {
+                    background: #f8f9fa;
+                    transition: transform 0.2s;
+                }
+                .conversion-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .unit-name {
+                    font-size: 12px;
+                    color: #6c757d;
+                    font-weight: bold;
+                }
+                .unit-value {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

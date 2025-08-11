@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate XML sitemaps for your website to improve search engine visibility.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .url-list { max-height: 300px; overflow-y: auto; }
+        .sitemap-preview { 
+            background: #f8f9fa; 
+            padding: 1rem; 
+            border-radius: 4px; 
+            max-height: 400px; 
+            overflow-y: auto; 
+            font-family: monospace; 
+            white-space: pre;
+            font-size: 0.9rem;
+        }
+        .progress { height: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-sitemap me-3"></i>Sitemap Generator</h1>
+            <p class="lead">Create XML sitemaps to improve your website's search engine visibility</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Enter URLs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="urlsInput" class="form-label">Enter URLs (one per line)</label>
+                                <textarea class="form-control" id="urlsInput" rows="10" placeholder="https://example.com/page1
+https://example.com/page2
+https://example.com/blog/post"></textarea>
+                                <div class="form-text">Enter one URL per line. Include full URLs with http:// or https://</div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="sitemapName" class="form-label">Sitemap Filename</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="sitemapName" value="sitemap">
+                                        <span class="input-group-text">.xml</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="defaultPriority" class="form-label">Default Priority</label>
+                                    <select class="form-select" id="defaultPriority">
+                                        <option value="1.0">1.0 (Highest)</option>
+                                        <option value="0.8" selected>0.8 (High)</option>
+                                        <option value="0.5">0.5 (Medium)</option>
+                                        <option value="0.3">0.3 (Low)</option>
+                                        <option value="0.1">0.1 (Lowest)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="includeLastMod" checked>
+                                <label class="form-check-label" for="includeLastMod">Include last modification date</label>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-primary" id="generateBtn">
+                                    <i class="fas fa-magic me-2"></i>Generate Sitemap
+                                </button>
+                                <span id="urlCount" class="text-muted align-self-center">0 URLs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4" id="resultsCard" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-code me-2"></i>Sitemap Preview</h5>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary me-1" id="copyBtn">
+                                    <i class="far fa-copy me-1"></i>Copy
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" id="downloadBtn">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="sitemap-preview" id="sitemapPreview">
+                                <!-- Sitemap XML will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered list-group-flush">
+                                <li class="list-group-item ps-0 border-0">Enter your website URLs (one per line)</li>
+                                <li class="list-group-item ps-0 border-0">Configure sitemap settings</li>
+                                <li class="list-group-item ps-0 border-0">Click "Generate Sitemap"</li>
+                                <li class="list-group-item ps-0 border-0">Copy or download the sitemap</li>
+                            </ol>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tip:</strong> For large websites, consider splitting your sitemap into multiple files.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="changeFreq" class="form-label">Default Change Frequency</label>
+                                <select class="form-select" id="changeFreq">
+                                    <option value="always">always</option>
+                                    <option value="hourly">hourly</option>
+                                    <option value="daily" selected>daily</option>
+                                    <option value="weekly">weekly</option>
+                                    <option value="monthly">monthly</option>
+                                    <option value="yearly">yearly</option>
+                                    <option value="never">never</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="includeChangeFreq" checked>
+                                <label class="form-check-label" for="includeChangeFreq">Include change frequency</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // DOM Elements
+            const urlsInput = document.getElementById('urlsInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const sitemapPreview = document.getElementById('sitemapPreview');
+            const resultsCard = document.getElementById('resultsCard');
+            const urlCount = document.getElementById('urlCount');
+            
+            // Settings
+            const sitemapName = document.getElementById('sitemapName');
+            const defaultPriority = document.getElementById('defaultPriority');
+            const changeFreq = document.getElementById('changeFreq');
+            const includeLastMod = document.getElementById('includeLastMod');
+            const includeChangeFreq = document.getElementById('includeChangeFreq');
+
+            // Event Listeners
+            generateBtn.addEventListener('click', generateSitemap);
+            copyBtn.addEventListener('click', copySitemap);
+            downloadBtn.addEventListener('click', downloadSitemap);
+            urlsInput.addEventListener('input', updateUrlCount);
+            
+            // Update URL count
+            function updateUrlCount() {
+                const urls = getUrlsFromInput();
+                urlCount.textContent = `${urls.length} ${urls.length === 1 ? 'URL' : 'URLs'}`;
+            }
+            
+            // Get URLs from input
+            function getUrlsFromInput() {
+                return urlsInput.value
+                    .split('\n')
+                    .map(url => url.trim())
+                    .filter(url => url !== '');
+            }
+            
+            // Generate sitemap XML
+            function generateSitemap() {
+                const urls = getUrlsFromInput();
+                
+                if (urls.length === 0) {
+                    showNotification('Please enter at least one URL', 'warning');
+                    return;
+                }
+                
+                const now = new Date().toISOString();
+                let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+                xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
+                xml += '        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n';
+                xml += '        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9\n';
+                xml += '        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n\n';
+                
+                urls.forEach(url => {
+                    xml += '    <url>\n';
+                    xml += `        <loc>${escapeXml(url)}</loc>\n`;
+                    
+                    if (includeLastMod.checked) {
+                        xml += `        <lastmod>${now}</lastmod>\n`;
+                    }
+                    
+                    if (includeChangeFreq.checked) {
+                        xml += `        <changefreq>${changeFreq.value}</changefreq>\n`;
+                    }
+                    
+                    xml += `        <priority>${defaultPriority.value}</priority>\n`;
+                    xml += '    </url>\n';
+                });
+                
+                xml += '</urlset>';
+                
+                // Display the generated XML
+                sitemapPreview.textContent = xml;
+                resultsCard.style.display = 'block';
+                
+                // Scroll to results
+                resultsCard.scrollIntoView({ behavior: 'smooth' });
+                
+                showNotification('Sitemap generated successfully!', 'success');
+            }
+            
+            // Copy sitemap to clipboard
+            function copySitemap() {
+                const xml = sitemapPreview.textContent;
+                navigator.clipboard.writeText(xml).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                    showNotification('Sitemap copied to clipboard', 'success');
+                });
+            }
+            
+            // Download sitemap
+            function downloadSitemap() {
+                const xml = sitemapPreview.textContent;
+                const blob = new Blob([xml], { type: 'application/xml' });
+                const filename = `${sitemapName.value || 'sitemap'}.xml`;
+                saveAs(blob, filename);
+                showNotification('Sitemap downloaded', 'success');
+            }
+            
+            // Helper function to escape XML special characters
+            function escapeXml(unsafe) {
+                return unsafe
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&apos;');
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+            
+            // Initial update of URL count
+            updateUrlCount();
+        });
+    </script>
+</body>
+</html>

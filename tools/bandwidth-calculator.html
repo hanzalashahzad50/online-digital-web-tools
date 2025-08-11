@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandwidth Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Calculate bandwidth requirements, transfer times, and data usage with our online bandwidth calculator.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .result-card { border-left: 4px solid #0d6efd; margin-bottom: 15px; }
+        .copy-btn { cursor: pointer; opacity: 0.7; }
+        .copy-btn:hover { opacity: 1; }
+        .formula-box {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        .example-btn {
+            cursor: pointer;
+            font-size: 0.8em;
+            padding: 0.1rem 0.4rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-tachometer-alt me-3"></i>Bandwidth Calculator</h1>
+            <p class="lead">Calculate transfer times, data usage, and bandwidth requirements</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <ul class="nav nav-tabs mb-4" id="calcTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="time-tab" data-bs-toggle="tab" data-bs-target="#time" type="button" role="tab">
+                                        Transfer Time
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab">
+                                        Data Transfer
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="speed-tab" data-bs-toggle="tab" data-bs-target="#speed" type="button" role="tab">
+                                        Speed Required
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content" id="calcTabsContent">
+                                <!-- Transfer Time Calculator -->
+                                <div class="tab-pane fade show active" id="time" role="tabpanel">
+                                    <form id="timeForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="dataAmount" class="form-label">Data Amount</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="dataAmount" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="dataUnit" style="max-width: 120px;">
+                                                        <option value="bytes">Bytes</option>
+                                                        <option value="kb" selected>KB</option>
+                                                        <option value="mb">MB</option>
+                                                        <option value="gb">GB</option>
+                                                        <option value="tb">TB</option>
+                                                        <option value="pb">PB</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="speedAmount" class="form-label">Speed</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="speedAmount" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="speedUnit" style="max-width: 120px;">
+                                                        <option value="bps">bps</option>
+                                                        <option value="kbps" selected>Kbps</option>
+                                                        <option value="mbps">Mbps</option>
+                                                        <option value="gbps">Gbps</option>
+                                                        <option value="tbps">Tbps</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-calculator me-2"></i>Calculate
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm example-btn" onclick="fillExample('time')">
+                                                    Example <i class="fas fa-lightbulb"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="results-container mt-4 d-none" id="timeResults">
+                                        <h5>Transfer Time:</h5>
+                                        <div class="card result-card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="text-muted small">Seconds</div>
+                                                        <h4 id="timeSeconds">-</h4>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="text-muted small">Minutes:Seconds</div>
+                                                        <h4 id="timeMinutes">-</h4>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="text-muted small">Hours:Minutes:Seconds</div>
+                                                        <h4 id="timeHours">-</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="formula-box mt-3">
+                                                    <div class="small text-muted mb-1">Formula:</div>
+                                                    Time (seconds) = (Data Size in bits) / (Speed in bits per second)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Data Transfer Calculator -->
+                                <div class="tab-pane fade" id="data" role="tabpanel">
+                                    <form id="dataForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="timeValue" class="form-label">Time</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="timeValue" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="timeUnit" style="max-width: 120px;">
+                                                        <option value="seconds">Seconds</option>
+                                                        <option value="minutes">Minutes</option>
+                                                        <option value="hours">Hours</option>
+                                                        <option value="days">Days</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="dataSpeed" class="form-label">Speed</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="dataSpeed" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="dataSpeedUnit" style="max-width: 120px;">
+                                                        <option value="bps">bps</option>
+                                                        <option value="kbps" selected>Kbps</option>
+                                                        <option value="mbps">Mbps</option>
+                                                        <option value="gbps">Gbps</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-calculator me-2"></i>Calculate
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm example-btn" onclick="fillExample('data')">
+                                                    Example <i class="fas fa-lightbulb"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="results-container mt-4 d-none" id="dataResults">
+                                        <h5>Data Transferred:</h5>
+                                        <div class="card result-card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">Bytes</div>
+                                                        <h5 id="dataBytes">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">KB</div>
+                                                        <h5 id="dataKB">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">MB</div>
+                                                        <h5 id="dataMB">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">GB</div>
+                                                        <h5 id="dataGB">-</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="formula-box mt-3">
+                                                    <div class="small text-muted mb-1">Formula:</div>
+                                                    Data Size (bits) = Speed (bits per second) × Time (seconds)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Speed Required Calculator -->
+                                <div class="tab-pane fade" id="speed" role="tabpanel">
+                                    <form id="speedForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="speedDataAmount" class="form-label">Data Amount</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="speedDataAmount" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="speedDataUnit" style="max-width: 120px;">
+                                                        <option value="bytes">Bytes</option>
+                                                        <option value="kb" selected>KB</option>
+                                                        <option value="mb">MB</option>
+                                                        <option value="gb">GB</option>
+                                                        <option value="tb">TB</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="timeLimit" class="form-label">Time Limit</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="timeLimit" step="0.01" min="0.01" required>
+                                                    <select class="form-select" id="timeLimitUnit" style="max-width: 120px;">
+                                                        <option value="seconds">Seconds</option>
+                                                        <option value="minutes" selected>Minutes</option>
+                                                        <option value="hours">Hours</option>
+                                                        <option value="days">Days</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-calculator me-2"></i>Calculate
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm example-btn" onclick="fillExample('speed')">
+                                                    Example <i class="fas fa-lightbulb"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="results-container mt-4 d-none" id="speedResults">
+                                        <h5>Required Speed:</h5>
+                                        <div class="card result-card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">bps</div>
+                                                        <h5 id="speedBps">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">Kbps</div>
+                                                        <h5 id="speedKbps">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">Mbps</div>
+                                                        <h5 id="speedMbps">-</h5>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="text-muted small">Gbps</div>
+                                                        <h5 id="speedGbps">-</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="formula-box mt-3">
+                                                    <div class="small text-muted mb-1">Formula:</div>
+                                                    Speed (bits per second) = Data Size (bits) / Time (seconds)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>Bandwidth Reference</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Bits</th>
+                                            <th>Bytes</th>
+                                            <th>Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 bit (b)</td>
+                                            <td>1</td>
+                                            <td>0.125</td>
+                                            <td>Single binary digit</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 byte (B)</td>
+                                            <td>8</td>
+                                            <td>1</td>
+                                            <td>Single character</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 kilobit (Kb)</td>
+                                            <td>1,000</td>
+                                            <td>125</td>
+                                            <td>Dial-up modem speed</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 kilobyte (KB)</td>
+                                            <td>8,000</td>
+                                            <td>1,000</td>
+                                            <td>1/2 page of text</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 megabit (Mb)</td>
+                                            <td>1,000,000</td>
+                                            <td>125,000</td>
+                                            <td>Broadband speed</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 megabyte (MB)</td>
+                                            <td>8,000,000</td>
+                                            <td>1,000,000</td>
+                                            <td>Small image file</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 gigabit (Gb)</td>
+                                            <td>1,000,000,000</td>
+                                            <td>125,000,000</td>
+                                            <td>Fiber optic speed</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 gigabyte (GB)</td>
+                                            <td>8,000,000,000</td>
+                                            <td>1,000,000,000</td>
+                                            <td>HD movie (1 hour)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
+                            <ul class="small mb-0">
+                                <li class="mb-2">1 byte = 8 bits (always use uppercase 'B' for bytes and lowercase 'b' for bits)</li>
+                                <li class="mb-2">Internet speeds are typically advertised in bits per second (Mbps)</li>
+                                <li class="mb-2">File sizes are typically measured in bytes (KB, MB, GB)</li>
+                                <li class="mb-2">When calculating transfer times, remember to account for overhead (actual speed is typically 80-95% of the advertised speed)</li>
+                                <li>Use the examples to quickly test the calculator with common scenarios</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-calculator me-2"></i>Common Conversions</h5>
+                            <div class="small">
+                                <div class="d-flex justify-content-between py-1 border-bottom">
+                                    <span>1 Mbps =</span>
+                                    <span>0.125 MB/s</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-1 border-bottom">
+                                    <span>1 MB/s =</span>
+                                    <span>8 Mbps</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-1 border-bottom">
+                                    <span>1 GB =</span>
+                                    <span>8,000 Mb</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-1">
+                                    <span>1 hour video call (HD) ≈</span>
+                                    <span>1.35 GB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Helper function to format numbers with commas
+            function formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Helper function to format time
+            function formatTime(seconds) {
+                if (isNaN(seconds) || !isFinite(seconds)) return '-';
+                
+                const days = Math.floor(seconds / 86400);
+                seconds %= 86400;
+                const hours = Math.floor(seconds / 3600);
+                seconds %= 3600;
+                const minutes = Math.floor(seconds / 60);
+                seconds = Math.floor(seconds % 60);
+                
+                let result = [];
+                if (days > 0) result.push(`${days}d`);
+                if (hours > 0 || days > 0) result.push(hours.toString().padStart(2, '0') + 'h');
+                if (minutes > 0 || hours > 0 || days > 0) result.push(minutes.toString().padStart(2, '0') + 'm');
+                result.push(seconds.toString().padStart(2, '0') + 's');
+                
+                return result.join(' ');
+            }
+
+            // Convert data size to bits
+            function toBits(amount, unit) {
+                const units = {
+                    'bits': 1,
+                    'bytes': 8,
+                    'kb': 8000,
+                    'mb': 8000000,
+                    'gb': 8000000000,
+                    'tb': 8000000000000,
+                    'pb': 8000000000000000
+                };
+                return amount * (units[unit] || 1);
+            }
+
+            // Convert bits to different units
+            function fromBits(bits, targetUnit) {
+                const units = {
+                    'bits': 1,
+                    'bytes': 0.125,
+                    'kb': 0.000125,
+                    'mb': 0.000000125,
+                    'gb': 1.25e-10,
+                    'tb': 1.25e-13,
+                    'pb': 1.25e-16
+                };
+                return bits * (units[targetUnit] || 1);
+            }
+
+            // Convert time to seconds
+            function toSeconds(amount, unit) {
+                const units = {
+                    'seconds': 1,
+                    'minutes': 60,
+                    'hours': 3600,
+                    'days': 86400
+                };
+                return amount * (units[unit] || 1);
+            }
+
+            // Calculate transfer time
+            function calculateTransferTime() {
+                const dataAmount = parseFloat(document.getElementById('dataAmount').value);
+                const dataUnit = document.getElementById('dataUnit').value;
+                const speedAmount = parseFloat(document.getElementById('speedAmount').value);
+                const speedUnit = document.getElementById('speedUnit').value;
+                
+                if (isNaN(dataAmount) || isNaN(speedAmount) || dataAmount <= 0 || speedAmount <= 0) {
+                    showNotification('Please enter valid positive numbers', 'error');
+                    return;
+                }
+                
+                const dataBits = toBits(dataAmount, dataUnit);
+                const speedBits = toBits(speedAmount, speedUnit);
+                
+                if (speedBits === 0) {
+                    showNotification('Speed cannot be zero', 'error');
+                    return;
+                }
+                
+                const seconds = dataBits / speedBits;
+                
+                // Display results
+                document.getElementById('timeSeconds').textContent = formatNumber(Math.ceil(seconds));
+                document.getElementById('timeMinutes').textContent = formatTime(seconds);
+                document.getElementById('timeHours').textContent = formatTime(seconds);
+                
+                // Show results
+                document.getElementById('timeResults').classList.remove('d-none');
+            }
+
+            // Calculate data transfer
+            function calculateDataTransfer() {
+                const timeValue = parseFloat(document.getElementById('timeValue').value);
+                const timeUnit = document.getElementById('timeUnit').value;
+                const speedValue = parseFloat(document.getElementById('dataSpeed').value);
+                const speedUnit = document.getElementById('dataSpeedUnit').value;
+                
+                if (isNaN(timeValue) || isNaN(speedValue) || timeValue <= 0 || speedValue <= 0) {
+                    showNotification('Please enter valid positive numbers', 'error');
+                    return;
+                }
+                
+                const seconds = toSeconds(timeValue, timeUnit);
+                const speedBits = toBits(speedValue, speedUnit);
+                const totalBits = speedBits * seconds;
+                
+                // Display results
+                document.getElementById('dataBytes').textContent = formatNumber(Math.ceil(totalBits / 8));
+                document.getElementById('dataKB').textContent = formatNumber((totalBits / 8000).toFixed(2));
+                document.getElementById('dataMB').textContent = formatNumber((totalBits / 8000000).toFixed(4));
+                document.getElementById('dataGB').textContent = formatNumber((totalBits / 8000000000).toFixed(6));
+                
+                // Show results
+                document.getElementById('dataResults').classList.remove('d-none');
+            }
+
+            // Calculate required speed
+            function calculateRequiredSpeed() {
+                const dataAmount = parseFloat(document.getElementById('speedDataAmount').value);
+                const dataUnit = document.getElementById('speedDataUnit').value;
+                const timeLimit = parseFloat(document.getElementById('timeLimit').value);
+                const timeUnit = document.getElementById('timeLimitUnit').value;
+                
+                if (isNaN(dataAmount) || isNaN(timeLimit) || dataAmount <= 0 || timeLimit <= 0) {
+                    showNotification('Please enter valid positive numbers', 'error');
+                    return;
+                }
+                
+                const dataBits = toBits(dataAmount, dataUnit);
+                const seconds = toSeconds(timeLimit, timeUnit);
+                
+                if (seconds === 0) {
+                    showNotification('Time cannot be zero', 'error');
+                    return;
+                }
+                
+                const speedBps = dataBits / seconds;
+                
+                // Display results
+                document.getElementById('speedBps').textContent = formatNumber(Math.ceil(speedBps));
+                document.getElementById('speedKbps').textContent = formatNumber((speedBps / 1000).toFixed(2));
+                document.getElementById('speedMbps').textContent = formatNumber((speedBps / 1000000).toFixed(4));
+                document.getElementById('speedGbps').textContent = formatNumber((speedBps / 1000000000).toFixed(6));
+                
+                // Show results
+                document.getElementById('speedResults').classList.remove('d-none');
+            }
+
+            // Fill example values
+            window.fillExample = function(type) {
+                if (type === 'time') {
+                    document.getElementById('dataAmount').value = '100';
+                    document.getElementById('dataUnit').value = 'mb';
+                    document.getElementById('speedAmount').value = '10';
+                    document.getElementById('speedUnit').value = 'mbps';
+                } else if (type === 'data') {
+                    document.getElementById('timeValue').value = '5';
+                    document.getElementById('timeUnit').value = 'minutes';
+                    document.getElementById('dataSpeed').value = '50';
+                    document.getElementById('dataSpeedUnit').value = 'mbps';
+                } else if (type === 'speed') {
+                    document.getElementById('speedDataAmount').value = '4.7';
+                    document.getElementById('speedDataUnit').value = 'gb';
+                    document.getElementById('timeLimit').value = '10';
+                    document.getElementById('timeLimitUnit').value = 'minutes';
+                }
+            };
+
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+
+            // Event listeners
+            document.getElementById('timeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateTransferTime();
+            });
+
+            document.getElementById('dataForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateDataTransfer();
+            });
+
+            document.getElementById('speedForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateRequiredSpeed();
+            });
+
+            // Initialize first tab
+            const firstTab = new bootstrap.Tab(document.querySelector('#time-tab'));
+            firstTab.show();
+        });
+    </script>
+</body>
+</html>

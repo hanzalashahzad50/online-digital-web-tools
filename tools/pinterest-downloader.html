@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinterest Image Downloader - Multi-Tools Hub</title>
+    <meta name="description" content="Download high-quality images from Pinterest. Save any pin to your device with one click.">
+    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        :root {
+            --pinterest-red: #E60023;
+            --pinterest-black: #111111;
+            --pinterest-gray: #EFEFEF;
+        }
+        
+        body { background-color: #F8F8F8; }
+        
+        .pinterest-card {
+            background: white; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .pinterest-card:hover { transform: translateY(-5px); }
+        
+        .pinterest-image-container {
+            position: relative; padding-top: 133.33%;
+            overflow: hidden; background: #f5f5f5;
+        }
+        
+        .pinterest-image {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; transition: transform 0.5s ease;
+        }
+        
+        .pinterest-card:hover .pinterest-image { transform: scale(1.05); }
+        
+        .pinterest-info { padding: 16px; }
+        
+        .pinterest-title {
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--pinterest-black);
+            display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
+            min-height: 2.8em;
+        }
+        
+        .btn-pinterest {
+            background: var(--pinterest-red);
+            color: white; font-weight: 600;
+            border: none; padding: 10px 20px;
+            border-radius: 24px; transition: all 0.3s;
+        }
+        
+        .btn-pinterest:hover {
+            background: #ad081b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 0, 35, 0.3);
+        }
+        
+        .download-option {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 12px 16px;
+            margin-bottom: 10px; background: white;
+            border-radius: 8px; border: 1px solid #e1e1e1;
+        }
+        
+        .ad-banner {
+            margin: 20px 0; border-radius: 8px;
+            overflow: hidden; border: 1px solid #E8E8E8;
+        }
+        
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--pinterest-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pinterest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px; margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="text-center mb-3">
+                    <i class="fab fa-pinterest text-danger me-2"></i>Pinterest Image Downloader
+                </h1>
+                <p class="text-center text-muted mb-4">Download high-quality images from any Pinterest pin or board</p>
+                
+                <!-- Top Ad Banner -->
+                <div class="text-center mb-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+                
+                <!-- Main Form -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <form id="downloadForm" class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fab fa-pinterest text-danger"></i>
+                                </span>
+                                <input type="url" class="form-control" id="pinterestUrl" 
+                                       placeholder="Paste Pinterest pin or board URL here" required>
+                                <button class="btn btn-pinterest" type="submit">
+                                    <i class="fas fa-search me-1"></i> Find Images
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Loading State -->
+                        <div id="loadingState" class="text-center py-5" style="display: none;">
+                            <div class="loading-spinner"></div>
+                            <p class="mt-3 mb-0">Finding images...</p>
+                        </div>
+                        
+                        <!-- Error Message -->
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">Error message here</span>
+                        </div>
+                        
+                        <!-- Initial State -->
+                        <div id="initialState" class="text-center py-5">
+                            <i class="fab fa-pinterest" style="font-size: 4rem; color: var(--pinterest-red);"></i>
+                            <h4 class="mt-3">Paste a Pinterest URL</h4>
+                            <p class="text-muted">Enter a pin or board URL to download images</p>
+                        </div>
+                        
+                        <!-- Results -->
+                        <div id="results" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="mb-0"><span id="resultCount">0</span> Images Found</h5>
+                                <button class="btn btn-sm btn-outline-secondary" id="selectAllBtn">
+                                    <i class="far fa-square me-1"></i> Select All
+                                </button>
+                            </div>
+                            
+                            <!-- Single Pin View -->
+                            <div id="singlePinView" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="pinterest-card">
+                                            <div class="pinterest-image-container">
+                                                <img id="pinImage" src="" alt="Pinterest Pin" class="pinterest-image">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Download Options</h5>
+                                        <div class="download-options" id="downloadOptions">
+                                            <!-- Options will be added here -->
+                                        </div>
+                                        
+                                        <!-- Middle Ad Placeholder -->
+                                        <div id="middle-content-ad" class="mt-4"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Board View -->
+                            <div id="boardView" style="display: none;">
+                                <div class="pinterest-grid" id="pinsGrid">
+                                    <!-- Pins will be added here -->
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-pinterest" id="loadMoreBtn">
+                                        <i class="fas fa-sync-alt me-1"></i> Load More
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                
+                <!-- Bottom Ad Banner -->
+                <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/header-footer.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        // Ensure header and footer are loaded even if the script is loaded after DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof loadHeader === 'function') loadHeader();
+                if (typeof loadFooter === 'function') loadFooter();
+            });
+        } else {
+            if (typeof loadHeader === 'function') loadHeader();
+            if (typeof loadFooter === 'function') loadFooter();
+        }
+    </script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('downloadForm');
+        const pinterestUrlInput = document.getElementById('pinterestUrl');
+        const loadingState = document.getElementById('loadingState');
+        const errorMessage = document.getElementById('errorMessage');
+        const results = document.getElementById('results');
+        const initialState = document.getElementById('initialState');
+        const singlePinView = document.getElementById('singlePinView');
+        const boardView = document.getElementById('boardView');
+        const downloadOptions = document.getElementById('downloadOptions');
+        const pinsGrid = document.getElementById('pinsGrid');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        
+        let selectedPins = new Set();
+        let currentPage = 1;
+        
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = pinterestUrlInput.value.trim();
+            
+            if (!isValidPinterestUrl(url)) {
+                showError('Please enter a valid Pinterest URL');
+                return;
+            }
+            
+            // Show loading state
+            loadingState.style.display = 'block';
+            errorMessage.classList.add('d-none');
+            results.style.display = 'none';
+            initialState.style.display = 'none';
+            singlePinView.style.display = 'none';
+            boardView.style.display = 'none';
+            
+            // Reset pagination
+            currentPage = 1;
+            selectedPins.clear();
+            
+            // Simulate API call
+            setTimeout(() => {
+                try {
+                    const isBoardUrl = url.includes('/pin/') ? false : true;
+                    
+                    if (isBoardUrl) {
+                        displayBoardResults(getSampleBoardData());
+                        boardView.style.display = 'block';
+                    } else {
+                        displayPinDetails(getSamplePinData());
+                        singlePinView.style.display = 'block';
+                    }
+                    
+                    document.getElementById('resultCount').textContent = isBoardUrl ? '12' : '1';
+                    results.style.display = 'block';
+                    loadingState.style.display = 'none';
+                    
+                    // Scroll to results
+                    results.scrollIntoView({ behavior: 'smooth' });
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Failed to load Pinterest content');
+                    loadingState.style.display = 'none';
+                    initialState.style.display = 'block';
+                }
+            }, 1000);
+        });
+        
+        // Handle select all button
+        selectAllBtn.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.pin-checkbox');
+            const allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allSelected;
+                updatePinSelection(checkbox);
+            });
+            
+            selectAllBtn.innerHTML = allSelected ? 
+                '<i class="far fa-square me-1"></i> Select All' : 
+                '<i class="fas fa-check-square me-1"></i> Deselect All';
+        });
+        
+        // Validate Pinterest URL
+        function isValidPinterestUrl(url) {
+            const pinterestRegex = /^https?:\/\/(?:www\.)?pinterest\.(?:com|it|de|co\.uk|fr|es|com\.br|com\.au|ca|pt|ru|nl|co|co\.nz|co\.za|co\.in|com\.mx|com\.ar|com\.pe|com\.ve|com\.co|com\.ec|com\.py|com\.gt|com\.uy|com\.bo|com\.do|com\.sv|com\.hn|com\.ni|com\.cr|com\.pa|com\.py|com\.sv|com\.hn|com\.ni|com\.cr|com\.pa|com\.py|com\.sv|com\.hn|com\.ni|com\.cr|com\.pa)\/(?:[^\/]+\/)?(?:pin\/\d+|\w+\/\w+)/i;
+            return pinterestRegex.test(url);
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.classList.remove('d-none');
+            document.getElementById('errorText').textContent = message;
+        }
+        
+        // Display pin details (single pin view)
+        function displayPinDetails(pinData) {
+            document.getElementById('pinImage').src = pinData.imageUrl;
+            
+            // Generate download options
+            downloadOptions.innerHTML = '';
+            
+            const qualities = [
+                { name: 'Original Quality', size: pinData.size, type: 'original' },
+                { name: 'Large', size: Math.round(pinData.size * 0.8), type: 'large' },
+                { name: 'Medium', size: Math.round(pinData.size * 0.5), type: 'medium' }
+            ];
+            
+            qualities.forEach(quality => {
+                const option = document.createElement('div');
+                option.className = 'download-option';
+                option.innerHTML = `
+                    <div>
+                        <strong>${quality.name}</strong>
+                        <div class="text-muted small">${formatFileSize(quality.size)}</div>
+                    </div>
+                    <a href="${pinData.imageUrl}" class="btn btn-pinterest btn-sm" download="pinterest-image-${Date.now()}">
+                        <i class="fas fa-download me-1"></i> Download
+                    </a>
+                `;
+                downloadOptions.appendChild(option);
+            });
+        }
+        
+        // Display board results (grid view)
+        function displayBoardResults(boardData) {
+            pinsGrid.innerHTML = '';
+            displayPins(boardData.pins);
+            
+            // Update result count
+            document.getElementById('resultCount').textContent = boardData.totalPins;
+            
+            // Show/hide load more button
+            loadMoreBtn.style.display = boardData.hasMore ? 'inline-block' : 'none';
+        }
+        
+        // Display pins in the grid
+        function displayPins(pins) {
+            pins.forEach(pin => {
+                const pinElement = document.createElement('div');
+                pinElement.className = 'pinterest-card';
+                pinElement.innerHTML = `
+                    <div class="position-relative">
+                        <div class="form-check position-absolute" style="top: 10px; left: 10px; z-index: 10;">
+                            <input class="form-check-input pin-checkbox" type="checkbox" 
+                                   id="pin-${pin.id}" data-pin-id="${pin.id}">
+                        </div>
+                        <div class="pinterest-image-container">
+                            <img src="${pin.imageUrl}" alt="${pin.title || 'Pinterest pin'}" class="pinterest-image">
+                        </div>
+                    </div>
+                    <div class="pinterest-info">
+                        <h6 class="pinterest-title">${pin.title || 'Untitled Pin'}</h6>
+                    </div>
+                `;
+                
+                // Add click handler for the checkbox
+                const checkbox = pinElement.querySelector('.pin-checkbox');
+                checkbox.addEventListener('change', function() {
+                    updatePinSelection(this);
+                });
+                
+                pinsGrid.appendChild(pinElement);
+            });
+        }
+        
+        // Update pin selection
+        function updatePinSelection(checkbox) {
+            const pinId = checkbox.dataset.pinId;
+            
+            if (checkbox.checked) {
+                selectedPins.add(pinId);
+            } else {
+                selectedPins.delete(pinId);
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            const kb = bytes / 1024;
+            if (kb < 1024) return kb.toFixed(1) + ' KB';
+            return (kb / 1024).toFixed(1) + ' MB';
+        }
+        
+        // Sample data for demonstration
+        function getSamplePinData() {
+            return {
+                id: 'pin' + Date.now(),
+                title: 'Beautiful Landscape Photography',
+                imageUrl: 'https://source.unsplash.com/random/800x1000/?nature,landscape',
+                size: 2450000 // 2.45 MB
+            };
+        }
+        
+        function getSampleBoardData() {
+            const pins = [];
+            const totalPins = 12;
+            
+            for (let i = 1; i <= totalPins; i++) {
+                pins.push({
+                    id: 'pin' + i,
+                    title: i % 3 === 0 ? 'Amazing Travel Destination' : 
+                           i % 2 === 0 ? 'Delicious Recipe Idea' : 'Home Decoration Inspiration',
+                    imageUrl: `https://source.unsplash.com/random/800x1000/?pinterest,${i}`,
+                    likes: Math.floor(Math.random() * 10000),
+                    saves: Math.floor(Math.random() * 5000)
+                });
+            }
+            
+            return {
+                pins: pins,
+                totalPins: 36,
+                hasMore: true
+            };
+        }
+        
+        // Load more pins
+        loadMoreBtn.addEventListener('click', function() {
+            currentPage++;
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Loading...';
+            
+            // Simulate loading more pins
+            setTimeout(() => {
+                const newPins = [];
+                const startIndex = (currentPage - 1) * 12 + 1;
+                
+                for (let i = 0; i < 12; i++) {
+                    newPins.push({
+                        id: 'pin' + (startIndex + i),
+                        title: 'Sample Pin ' + (startIndex + i),
+                        imageUrl: `https://source.unsplash.com/random/800x1000/?pinterest,${startIndex + i}`,
+                        likes: Math.floor(Math.random() * 10000),
+                        saves: Math.floor(Math.random() * 5000)
+                    });
+                }
+                
+                displayPins(newPins);
+                
+                // Disable button if we've reached the end
+                if (currentPage * 12 >= 36) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.textContent = 'No more pins to load';
+                } else {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> Load More';
+                }
+                
+                // Scroll to newly loaded pins
+                const newPinsElement = document.querySelector(`#pin-${startIndex}`);
+                if (newPinsElement) {
+                    newPinsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 1000);
+        });
+        
+        // Load header and footer
+        loadHeader();
+        loadFooter();
+    });
+    </script>
+</body>
+</html>

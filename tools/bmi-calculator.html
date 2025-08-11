@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online BMI calculator. Calculate your Body Mass Index and get health insights.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .ad-banner {
+            width: 1080px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-weight me-3"></i>BMI Calculator</h1>
+            <p class="lead">Calculate your Body Mass Index and get health insights</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>BMI Calculation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="weight" class="form-label">Weight</label>
+                                    <div class="input-group">
+                                        <input type="number" id="weight" class="form-control" placeholder="70" step="0.1">
+                                        <select id="weightUnit" class="form-select" style="max-width: 80px;">
+                                            <option value="kg">kg</option>
+                                            <option value="lbs">lbs</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="height" class="form-label">Height</label>
+                                    <div class="input-group">
+                                        <input type="number" id="height" class="form-control" placeholder="170" step="0.1">
+                                        <select id="heightUnit" class="form-select" style="max-width: 80px;">
+                                            <option value="cm">cm</option>
+                                            <option value="ft">ft</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">Age</label>
+                                    <input type="number" id="age" class="form-control" placeholder="25" min="2" max="120">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select id="gender" class="form-select">
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="calculateBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Calculate BMI
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BMI Result -->
+                    <div id="bmiResult" class="card mt-4 d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Your BMI Result</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3">
+                                    <div class="bmi-value">
+                                        <h2 id="bmiValue" class="text-primary">0</h2>
+                                        <p class="text-muted">Your BMI</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="bmi-category">
+                                        <h4 id="bmiCategory" class="text-success">Normal</h4>
+                                        <p class="text-muted">Category</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="bmi-percentile">
+                                        <h4 id="bmiPercentile" class="text-info">50%</h4>
+                                        <p class="text-muted">Percentile</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BMI Scale -->
+                            <div class="bmi-scale mt-4">
+                                <h6>BMI Scale:</h6>
+                                <div class="progress" style="height: 30px;">
+                                    <div class="progress-bar bg-danger" style="width: 15%">Underweight</div>
+                                    <div class="progress-bar bg-success" style="width: 25%">Normal</div>
+                                    <div class="progress-bar bg-warning" style="width: 25%">Overweight</div>
+                                    <div class="progress-bar bg-danger" style="width: 35%">Obese</div>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        < 18.5 | 18.5 - 24.9 | 25 - 29.9 | ≥ 30
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Recommendations -->
+                    <div id="healthRecommendations" class="card mt-4 d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Health Recommendations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recommendationsContent">
+                                <!-- Recommendations will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- BMI Categories -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>BMI Categories</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="bmi-category-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-danger">Underweight</span>
+                                    <span class="text-muted">&lt; 18.5</span>
+                                </div>
+                                <small class="text-muted">May indicate malnutrition or health issues</small>
+                            </div>
+                            <div class="bmi-category-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">Normal Weight</span>
+                                    <span class="text-muted">18.5 - 24.9</span>
+                                </div>
+                                <small class="text-muted">Healthy weight range</small>
+                            </div>
+                            <div class="bmi-category-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-warning">Overweight</span>
+                                    <span class="text-muted">25.0 - 29.9</span>
+                                </div>
+                                <small class="text-muted">May increase health risks</small>
+                            </div>
+                            <div class="bmi-category-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-danger">Obese</span>
+                                    <span class="text-muted">≥ 30.0</span>
+                                </div>
+                                <small class="text-muted">Significantly increased health risks</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ideal Weight Range -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Ideal Weight Range</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="idealWeightRange">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-calculator fa-2x mb-2"></i>
+                                    <p>Enter your height to see ideal weight range</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BMI Formula -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>BMI Formula</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="formula">
+                                <strong>BMI = Weight (kg) / Height (m)²</strong>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    For imperial units:<br>
+                                    BMI = (Weight (lbs) × 703) / Height (in)²
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+
+            <!-- BMI Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About BMI</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>What is BMI?</h6>
+                                    <p>Body Mass Index (BMI) is a simple calculation using a person's height and weight. It's a screening tool that may indicate whether a person is underweight, normal weight, overweight, or obese.</p>
+                                    
+                                    <h6>Limitations:</h6>
+                                    <ul>
+                                        <li>Doesn't measure body fat directly</li>
+                                        <li>May not be accurate for athletes</li>
+                                        <li>Doesn't account for muscle mass</li>
+                                        <li>May vary by age and ethnicity</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Health Implications:</h6>
+                                    <ul>
+                                        <li><strong>Underweight:</strong> May indicate malnutrition</li>
+                                        <li><strong>Normal:</strong> Generally healthy weight</li>
+                                        <li><strong>Overweight:</strong> Increased health risks</li>
+                                        <li><strong>Obese:</strong> Higher risk of chronic diseases</li>
+                                    </ul>
+                                    
+                                    <h6>Important Note:</h6>
+                                    <p>BMI is just one indicator of health. Always consult with healthcare professionals for personalized advice.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Ad Banner -->
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // BMI Calculator specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const weightInput = document.getElementById('weight');
+            const heightInput = document.getElementById('height');
+            const ageInput = document.getElementById('age');
+            const genderSelect = document.getElementById('gender');
+            const weightUnitSelect = document.getElementById('weightUnit');
+            const heightUnitSelect = document.getElementById('heightUnit');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const bmiResult = document.getElementById('bmiResult');
+            const healthRecommendations = document.getElementById('healthRecommendations');
+
+            // Calculate BMI
+            calculateBtn.addEventListener('click', calculateBMI);
+
+            // Auto-calculate when inputs change
+            [weightInput, heightInput, ageInput, genderSelect].forEach(input => {
+                input.addEventListener('input', debounce(calculateBMI, 500));
+            });
+
+            // Clear button
+            clearBtn.addEventListener('click', function() {
+                weightInput.value = '';
+                heightInput.value = '';
+                ageInput.value = '';
+                genderSelect.value = '';
+                bmiResult.classList.add('d-none');
+                healthRecommendations.classList.add('d-none');
+                document.getElementById('idealWeightRange').innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-calculator fa-2x mb-2"></i>
+                        <p>Enter your height to see ideal weight range</p>
+                    </div>
+                `;
+            });
+
+            function calculateBMI() {
+                const weight = parseFloat(weightInput.value);
+                const height = parseFloat(heightInput.value);
+                const age = parseInt(ageInput.value);
+                const gender = genderSelect.value;
+                const weightUnit = weightUnitSelect.value;
+                const heightUnit = heightUnitSelect.value;
+
+                if (!weight || !height) {
+                    bmiResult.classList.add('d-none');
+                    healthRecommendations.classList.add('d-none');
+                    return;
+                }
+
+                // Convert to metric units
+                const weightKg = weightUnit === 'lbs' ? weight * 0.453592 : weight;
+                const heightM = heightUnit === 'ft' ? height * 0.3048 : height / 100;
+
+                if (heightM === 0) {
+                    MultiTools.showNotification('Height cannot be zero', 'error');
+                    return;
+                }
+
+                const bmi = weightKg / (heightM * heightM);
+                const category = getBMICategory(bmi);
+                const percentile = calculatePercentile(bmi, age, gender);
+
+                // Display results
+                document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+                document.getElementById('bmiCategory').textContent = category.name;
+                document.getElementById('bmiPercentile').textContent = percentile + '%';
+
+                // Update category color
+                const categoryElement = document.getElementById('bmiCategory');
+                categoryElement.className = `text-${category.color}`;
+
+                bmiResult.classList.remove('d-none');
+                healthRecommendations.classList.remove('d-none');
+
+                // Show recommendations
+                showRecommendations(category, bmi, age, gender);
+
+                // Show ideal weight range
+                showIdealWeightRange(heightM, heightUnit);
+            }
+
+            function getBMICategory(bmi) {
+                if (bmi < 18.5) {
+                    return { name: 'Underweight', color: 'danger', risk: 'low' };
+                } else if (bmi < 25) {
+                    return { name: 'Normal Weight', color: 'success', risk: 'low' };
+                } else if (bmi < 30) {
+                    return { name: 'Overweight', color: 'warning', risk: 'moderate' };
+                } else {
+                    return { name: 'Obese', color: 'danger', risk: 'high' };
+                }
+            }
+
+            function calculatePercentile(bmi, age, gender) {
+                // Simplified percentile calculation
+                // In a real application, this would use actual population data
+                if (bmi < 18.5) return Math.floor(Math.random() * 10) + 5;
+                if (bmi < 25) return Math.floor(Math.random() * 40) + 30;
+                if (bmi < 30) return Math.floor(Math.random() * 20) + 70;
+                return Math.floor(Math.random() * 10) + 90;
+            }
+
+            function showRecommendations(category, bmi, age, gender) {
+                const content = document.getElementById('recommendationsContent');
+                let recommendations = '';
+
+                switch(category.name) {
+                    case 'Underweight':
+                        recommendations = `
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-lightbulb me-2"></i>Recommendations for Underweight:</h6>
+                                <ul>
+                                    <li>Increase caloric intake with healthy foods</li>
+                                    <li>Include protein-rich foods in your diet</li>
+                                    <li>Consider strength training exercises</li>
+                                    <li>Consult with a healthcare provider</li>
+                                </ul>
+                            </div>
+                        `;
+                        break;
+                    case 'Normal Weight':
+                        recommendations = `
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-check-circle me-2"></i>Great! You're in a healthy range:</h6>
+                                <ul>
+                                    <li>Maintain a balanced diet</li>
+                                    <li>Stay physically active</li>
+                                    <li>Get regular health checkups</li>
+                                    <li>Monitor your weight regularly</li>
+                                </ul>
+                            </div>
+                        `;
+                        break;
+                    case 'Overweight':
+                        recommendations = `
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Recommendations for Overweight:</h6>
+                                <ul>
+                                    <li>Reduce caloric intake</li>
+                                    <li>Increase physical activity</li>
+                                    <li>Focus on whole foods</li>
+                                    <li>Consider consulting a dietitian</li>
+                                </ul>
+                            </div>
+                        `;
+                        break;
+                    case 'Obese':
+                        recommendations = `
+                            <div class="alert alert-danger">
+                                <h6><i class="fas fa-exclamation-circle me-2"></i>Recommendations for Obesity:</h6>
+                                <ul>
+                                    <li>Consult with healthcare professionals</li>
+                                    <li>Create a structured weight loss plan</li>
+                                    <li>Increase physical activity gradually</li>
+                                    <li>Consider medical weight loss options</li>
+                                </ul>
+                            </div>
+                        `;
+                        break;
+                }
+
+                content.innerHTML = recommendations;
+            }
+
+            function showIdealWeightRange(heightM, heightUnit) {
+                const minBMI = 18.5;
+                const maxBMI = 24.9;
+                const minWeight = minBMI * heightM * heightM;
+                const maxWeight = maxBMI * heightM * heightM;
+
+                let minWeightDisplay, maxWeightDisplay;
+                if (heightUnit === 'ft') {
+                    minWeightDisplay = (minWeight * 2.20462).toFixed(1) + ' lbs';
+                    maxWeightDisplay = (maxWeight * 2.20462).toFixed(1) + ' lbs';
+                } else {
+                    minWeightDisplay = minWeight.toFixed(1) + ' kg';
+                    maxWeightDisplay = maxWeight.toFixed(1) + ' kg';
+                }
+
+                document.getElementById('idealWeightRange').innerHTML = `
+                    <div class="text-center">
+                        <h6 class="text-success">Healthy Weight Range</h6>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-success">${minWeightDisplay}</span>
+                            <span class="text-muted">to</span>
+                            <span class="badge bg-success">${maxWeightDisplay}</span>
+                        </div>
+                        <small class="text-muted">Based on BMI 18.5-24.9</small>
+                    </div>
+                `;
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Add some CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .bmi-category-item {
+                    padding: 10px;
+                    border-left: 4px solid #dee2e6;
+                }
+                .bmi-category-item .badge {
+                    font-size: 0.8em;
+                }
+                .formula {
+                    font-family: 'Courier New', monospace;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                }
+                .bmi-value h2, .bmi-category h4, .bmi-percentile h4 {
+                    margin-bottom: 0;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

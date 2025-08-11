@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online temperature converter. Convert between Celsius, Fahrenheit, and Kelvin with ease.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-thermometer-half me-3"></i>Temperature Converter</h1>
+            <p class="lead">Convert between Celsius, Fahrenheit, and Kelvin with precision</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Temperature Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="celsius" class="form-label">Celsius (°C)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="celsius" class="form-control" placeholder="0">
+                                        <span class="input-group-text">°C</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="fahrenheit" class="form-label">Fahrenheit (°F)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="fahrenheit" class="form-control" placeholder="32">
+                                        <span class="input-group-text">°F</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="kelvin" class="form-label">Kelvin (K)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="kelvin" class="form-control" placeholder="273.15">
+                                        <span class="input-group-text">K</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Temperature Reference -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Common Temperature Reference</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Everyday Temperatures:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Description</th>
+                                                    <th>°C</th>
+                                                    <th>°F</th>
+                                                    <th>K</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Absolute Zero</td>
+                                                    <td>-273.15</td>
+                                                    <td>-459.67</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Freezing Point of Water</td>
+                                                    <td>0</td>
+                                                    <td>32</td>
+                                                    <td>273.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Room Temperature</td>
+                                                    <td>20</td>
+                                                    <td>68</td>
+                                                    <td>293.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Body Temperature</td>
+                                                    <td>37</td>
+                                                    <td>98.6</td>
+                                                    <td>310.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Boiling Point of Water</td>
+                                                    <td>100</td>
+                                                    <td>212</td>
+                                                    <td>373.15</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Weather Temperatures:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Description</th>
+                                                    <th>°C</th>
+                                                    <th>°F</th>
+                                                    <th>K</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Very Cold</td>
+                                                    <td>-20</td>
+                                                    <td>-4</td>
+                                                    <td>253.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cold</td>
+                                                    <td>0</td>
+                                                    <td>32</td>
+                                                    <td>273.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cool</td>
+                                                    <td>10</td>
+                                                    <td>50</td>
+                                                    <td>283.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Warm</td>
+                                                    <td>25</td>
+                                                    <td>77</td>
+                                                    <td>298.15</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Hot</td>
+                                                    <td>35</td>
+                                                    <td>95</td>
+                                                    <td>308.15</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Temperature Scale Visual -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-thermometer-half me-2"></i>Temperature Scale</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="temperature-scale">
+                                <div class="scale-item hot">
+                                    <span class="temp">100°C</span>
+                                    <div class="scale-bar"></div>
+                                    <span class="temp">212°F</span>
+                                </div>
+                                <div class="scale-item warm">
+                                    <span class="temp">50°C</span>
+                                    <div class="scale-bar"></div>
+                                    <span class="temp">122°F</span>
+                                </div>
+                                <div class="scale-item mild">
+                                    <span class="temp">20°C</span>
+                                    <div class="scale-bar"></div>
+                                    <span class="temp">68°F</span>
+                                </div>
+                                <div class="scale-item cool">
+                                    <span class="temp">0°C</span>
+                                    <div class="scale-bar"></div>
+                                    <span class="temp">32°F</span>
+                                </div>
+                                <div class="scale-item cold">
+                                    <span class="temp">-20°C</span>
+                                    <div class="scale-bar"></div>
+                                    <span class="temp">-4°F</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Formulas -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Formulas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="formula-item mb-3">
+                                <strong>Celsius to Fahrenheit:</strong>
+                                <div class="formula">°F = (°C × 9/5) + 32</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Fahrenheit to Celsius:</strong>
+                                <div class="formula">°C = (°F - 32) × 5/9</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Celsius to Kelvin:</strong>
+                                <div class="formula">K = °C + 273.15</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Kelvin to Celsius:</strong>
+                                <div class="formula">°C = K - 273.15</div>
+                            </div>
+                            <div class="formula-item mb-3">
+                                <strong>Fahrenheit to Kelvin:</strong>
+                                <div class="formula">K = (°F - 32) × 5/9 + 273.15</div>
+                            </div>
+                            <div class="formula-item">
+                                <strong>Kelvin to Fahrenheit:</strong>
+                                <div class="formula">°F = (K - 273.15) × 9/5 + 32</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- Temperature Facts -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Temperature Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Temperature Scales:</h6>
+                                    <ul>
+                                        <li><strong>Celsius (°C):</strong> Based on water's freezing (0°C) and boiling (100°C) points</li>
+                                        <li><strong>Fahrenheit (°F):</strong> Based on brine's freezing point (0°F) and human body temperature (96°F)</li>
+                                        <li><strong>Kelvin (K):</strong> Absolute temperature scale starting from absolute zero</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Interesting Facts:</h6>
+                                    <ul>
+                                        <li>Absolute zero (-273.15°C) is the coldest possible temperature</li>
+                                        <li>The Sun's surface temperature is about 5,500°C (9,932°F)</li>
+                                        <li>Human body temperature is typically 37°C (98.6°F)</li>
+                                        <li>Water boils at different temperatures depending on altitude</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Temperature Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const celsiusInput = document.getElementById('celsius');
+            const fahrenheitInput = document.getElementById('fahrenheit');
+            const kelvinInput = document.getElementById('kelvin');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // Add event listeners to all inputs
+            celsiusInput.addEventListener('input', function() {
+                if (this.value !== '') {
+                    convertFromCelsius(parseFloat(this.value));
+                } else {
+                    clearOtherInputs('celsius');
+                }
+            });
+
+            fahrenheitInput.addEventListener('input', function() {
+                if (this.value !== '') {
+                    convertFromFahrenheit(parseFloat(this.value));
+                } else {
+                    clearOtherInputs('fahrenheit');
+                }
+            });
+
+            kelvinInput.addEventListener('input', function() {
+                if (this.value !== '') {
+                    convertFromKelvin(parseFloat(this.value));
+                } else {
+                    clearOtherInputs('kelvin');
+                }
+            });
+
+            // Clear button
+            clearBtn.addEventListener('click', function() {
+                celsiusInput.value = '';
+                fahrenheitInput.value = '';
+                kelvinInput.value = '';
+            });
+
+            function convertFromCelsius(celsius) {
+                const fahrenheit = (celsius * 9/5) + 32;
+                const kelvin = celsius + 273.15;
+                
+                fahrenheitInput.value = fahrenheit.toFixed(2);
+                kelvinInput.value = kelvin.toFixed(2);
+            }
+
+            function convertFromFahrenheit(fahrenheit) {
+                const celsius = (fahrenheit - 32) * 5/9;
+                const kelvin = (fahrenheit - 32) * 5/9 + 273.15;
+                
+                celsiusInput.value = celsius.toFixed(2);
+                kelvinInput.value = kelvin.toFixed(2);
+            }
+
+            function convertFromKelvin(kelvin) {
+                const celsius = kelvin - 273.15;
+                const fahrenheit = (kelvin - 273.15) * 9/5 + 32;
+                
+                celsiusInput.value = celsius.toFixed(2);
+                fahrenheitInput.value = fahrenheit.toFixed(2);
+            }
+
+            function clearOtherInputs(excludeInput) {
+                if (excludeInput !== 'celsius') celsiusInput.value = '';
+                if (excludeInput !== 'fahrenheit') fahrenheitInput.value = '';
+                if (excludeInput !== 'kelvin') kelvinInput.value = '';
+            }
+
+            // Add some CSS for the temperature scale
+            const style = document.createElement('style');
+            style.textContent = `
+                .temperature-scale {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .scale-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .scale-bar {
+                    flex: 1;
+                    height: 20px;
+                    border-radius: 10px;
+                }
+                .temp {
+                    font-size: 12px;
+                    font-weight: bold;
+                    min-width: 50px;
+                }
+                .hot .scale-bar { background: linear-gradient(to right, #ff4444, #ff6666); }
+                .warm .scale-bar { background: linear-gradient(to right, #ffaa44, #ffcc66); }
+                .mild .scale-bar { background: linear-gradient(to right, #44ff44, #66ff66); }
+                .cool .scale-bar { background: linear-gradient(to right, #4444ff, #6666ff); }
+                .cold .scale-bar { background: linear-gradient(to right, #4444aa, #6666cc); }
+                .formula {
+                    font-family: 'Courier New', monospace;
+                    background: #f8f9fa;
+                    padding: 5px;
+                    border-radius: 3px;
+                    margin-top: 5px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

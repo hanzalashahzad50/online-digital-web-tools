@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker & Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online color picker and converter. Convert between color formats, create palettes, and get color information.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .color-preview { height: 150px; border-radius: 8px; margin-bottom: 15px; position: relative; }
+        .color-info { background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; position: absolute; bottom: 0; left: 0; right: 0; }
+        .color-format { cursor: pointer; padding: 5px 10px; border-radius: 4px; margin: 2px; }
+        .color-format.active { background-color: #0d6efd; color: white; }
+        .palette-item { height: 60px; border-radius: 4px; margin-bottom: 10px; cursor: pointer; position: relative; }
+        .palette-value { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.7); color: white; padding: 2px 5px; font-size: 0.7rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-palette me-3"></i>Color Picker</h1>
+            <p class="lead">Pick colors, convert between formats, and create beautiful palettes</p>
+        </div>
+        
+        <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-eye-dropper me-2"></i>Color Picker</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="color-preview" id="colorPreview">
+                                    <div class="color-info" id="colorInfo">#000000</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Red: <span id="redValue">0</span></label>
+                                    <input type="range" class="form-range" id="redSlider" min="0" max="255" value="0">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Green: <span id="greenValue">0</span></label>
+                                    <input type="range" class="form-range" id="greenSlider" min="0" max="255" value="0">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Blue: <span id="blueValue">0</span></label>
+                                    <input type="range" class="form-range" id="blueSlider" min="0" max="255" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Color Format</label>
+                                    <div class="d-flex flex-wrap mb-3">
+                                        <span class="color-format active" data-format="hex">HEX</span>
+                                        <span class="color-format" data-format="rgb">RGB</span>
+                                        <span class="color-format" data-format="hsl">HSL</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="colorInput" value="#000000">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Color Picker</label>
+                                    <input type="color" class="form-control form-control-color w-100" id="colorPicker" value="#000000">
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button id="copyBtn" class="btn btn-primary">
+                                        <i class="fas fa-copy me-2"></i>Copy Color
+                                    </button>
+                                    <button id="randomBtn" class="btn btn-outline-secondary">
+                                        <i class="fas fa-random me-2"></i>Random Color
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-swatchbook me-2"></i>Color Palettes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="paletteContainer">
+                            <!-- Generated palettes will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div id="ad-sidebar" class="mb-4"></div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Color Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr><th>HEX</th><td id="infoHex">#000000</td></tr>
+                            <tr><th>RGB</th><td id="infoRgb">rgb(0, 0, 0)</td></tr>
+                            <tr><th>HSL</th><td id="infoHsl">hsl(0, 0%, 0%)</td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-magic me-2"></i>Color Harmony</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2" id="colorHarmonyContainer">
+                            <!-- Color harmony schemes will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ad-bottom" class="container mt-4 mb-4"></div>
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const colorPreview = document.getElementById('colorPreview');
+            const colorInfo = document.getElementById('colorInfo');
+            const colorInput = document.getElementById('colorInput');
+            const colorPicker = document.getElementById('colorPicker');
+            const paletteContainer = document.getElementById('paletteContainer');
+            const colorHarmonyContainer = document.getElementById('colorHarmonyContainer');
+            
+            // Sliders
+            const redSlider = document.getElementById('redSlider');
+            const greenSlider = document.getElementById('greenSlider');
+            const blueSlider = document.getElementById('blueSlider');
+            
+            // Info display
+            const infoHex = document.getElementById('infoHex');
+            const infoRgb = document.getElementById('infoRgb');
+            const infoHsl = document.getElementById('infoHsl');
+            
+            // State
+            let currentFormat = 'hex';
+            let currentColor = { r: 0, g: 0, b: 0, h: 0, s: 0, l: 0 };
+            
+            // Initialize
+            function init() {
+                setupEventListeners();
+                updateColorFromRGB(0, 0, 0);
+                generatePalette();
+                updateColorHarmony();
+            }
+            
+            // Set up event listeners
+            function setupEventListeners() {
+                // Slider events
+                [redSlider, greenSlider, blueSlider].forEach(slider => {
+                    slider.addEventListener('input', handleSliderChange);
+                });
+                
+                // Color picker events
+                colorPicker.addEventListener('input', handleColorPickerChange);
+                
+                // Color format events
+                document.querySelectorAll('.color-format').forEach(format => {
+                    format.addEventListener('click', handleFormatClick);
+                });
+                
+                // Button events
+                document.getElementById('copyBtn').addEventListener('click', copyColorToClipboard);
+                document.getElementById('randomBtn').addEventListener('click', generateRandomColor);
+                
+                // Input events
+                colorInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') updateColorFromInput();
+                });
+            }
+            
+            // Handle slider changes
+            function handleSliderChange() {
+                const r = parseInt(redSlider.value);
+                const g = parseInt(greenSlider.value);
+                const b = parseInt(blueSlider.value);
+                updateColorFromRGB(r, g, b);
+            }
+            
+            // Handle color picker changes
+            function handleColorPickerChange(e) {
+                const hex = e.target.value;
+                const rgb = hexToRgb(hex);
+                if (rgb) updateColorFromRGB(rgb.r, rgb.g, rgb.b);
+            }
+            
+            // Handle format click
+            function handleFormatClick(e) {
+                document.querySelectorAll('.color-format').forEach(f => f.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFormat = e.target.dataset.format;
+                updateColorDisplay();
+            }
+            
+            // Update color from RGB values
+            function updateColorFromRGB(r, g, b) {
+                currentColor.r = r;
+                currentColor.g = g;
+                currentColor.b = b;
+                
+                // Update HSL values
+                const hsl = rgbToHsl(r, g, b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateUI();
+            }
+            
+            // Update UI elements
+            function updateUI() {
+                updateSlidersFromColor();
+                updateColorPreview();
+                updateColorDisplay();
+                updateColorInfo();
+                updateColorHarmony();
+            }
+            
+            // Update sliders from current color
+            function updateSlidersFromColor() {
+                redSlider.value = currentColor.r;
+                greenSlider.value = currentColor.g;
+                blueSlider.value = currentColor.b;
+                
+                document.getElementById('redValue').textContent = currentColor.r;
+                document.getElementById('greenValue').textContent = currentColor.g;
+                document.getElementById('blueValue').textContent = currentColor.b;
+                
+                // Update color picker
+                colorPicker.value = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+            }
+            
+            // Update color preview
+            function updateColorPreview() {
+                const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                colorPreview.style.backgroundColor = hex;
+                
+                // Update text color based on brightness
+                const brightness = (currentColor.r * 299 + currentColor.g * 587 + currentColor.b * 114) / 1000;
+                colorPreview.style.color = brightness > 128 ? '#000000' : '#ffffff';
+            }
+            
+            // Update color display based on current format
+            function updateColorDisplay() {
+                let displayText = '';
+                
+                switch (currentFormat) {
+                    case 'hex':
+                        displayText = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                        break;
+                    case 'rgb':
+                        displayText = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+                        break;
+                    case 'hsl':
+                        displayText = `hsl(${Math.round(currentColor.h)}, ${Math.round(currentColor.s)}%, ${Math.round(currentColor.l)}%)`;
+                        break;
+                }
+                
+                colorInfo.textContent = displayText;
+                colorInput.value = displayText;
+            }
+            
+            // Update color information
+            function updateColorInfo() {
+                infoHex.textContent = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                infoRgb.textContent = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+                infoHsl.textContent = `hsl(${Math.round(currentColor.h)}, ${Math.round(currentColor.s)}%, ${Math.round(currentColor.l)}%)`;
+            }
+            
+            // Generate a random color
+            function generateRandomColor() {
+                const r = Math.floor(Math.random() * 256);
+                const g = Math.floor(Math.random() * 256);
+                const b = Math.floor(Math.random() * 256);
+                updateColorFromRGB(r, g, b);
+            }
+            
+            // Copy color to clipboard
+            function copyColorToClipboard() {
+                navigator.clipboard.writeText(colorInfo.textContent).then(() => {
+                    const btn = document.getElementById('copyBtn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+                    setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+                });
+            }
+            
+            // Generate color palette
+            function generatePalette() {
+                paletteContainer.innerHTML = '';
+                
+                const schemes = [
+                    { name: 'Analogous', colors: generateAnalogousScheme() },
+                    { name: 'Monochromatic', colors: generateMonochromaticScheme() },
+                    { name: 'Triadic', colors: generateTriadicScheme() }
+                ];
+                
+                schemes.forEach(scheme => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6 mb-4';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card h-100';
+                    
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = 'card-header';
+                    cardHeader.textContent = scheme.name;
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.className = 'card-body p-2';
+                    
+                    const row = document.createElement('div');
+                    row.className = 'row g-1';
+                    
+                    scheme.colors.forEach(color => {
+                        const colorCol = document.createElement('div');
+                        colorCol.className = 'col';
+                        
+                        const colorBox = document.createElement('div');
+                        colorBox.className = 'palette-item';
+                        colorBox.style.backgroundColor = color;
+                        
+                        const value = document.createElement('div');
+                        value.className = 'palette-value';
+                        value.textContent = color;
+                        
+                        colorBox.appendChild(value);
+                        colorCol.appendChild(colorBox);
+                        row.appendChild(colorCol);
+                        
+                        // Add click event to select color
+                        colorBox.addEventListener('click', () => {
+                            const rgb = hexToRgb(color);
+                            if (rgb) updateColorFromRGB(rgb.r, rgb.g, rgb.b);
+                        });
+                    });
+                    
+                    cardBody.appendChild(row);
+                    card.appendChild(cardHeader);
+                    card.appendChild(cardBody);
+                    col.appendChild(card);
+                    paletteContainer.appendChild(col);
+                });
+            }
+            
+            // Update color harmony
+            function updateColorHarmony() {
+                colorHarmonyContainer.innerHTML = '';
+                
+                const harmonies = [
+                    { name: 'Complementary', colors: generateComplementaryScheme() },
+                    { name: 'Split Complementary', colors: generateSplitComplementaryScheme() },
+                    { name: 'Tetradic', colors: generateTetradicScheme() }
+                ];
+                
+                harmonies.forEach(harmony => {
+                    const col = document.createElement('div');
+                    col.className = 'col-12 mb-3';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = 'card-header py-2';
+                    cardHeader.textContent = harmony.name;
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.className = 'card-body p-2';
+                    
+                    const row = document.createElement('div');
+                    row.className = 'row g-1';
+                    
+                    harmony.colors.forEach(color => {
+                        const colorCol = document.createElement('div');
+                        colorCol.className = 'col';
+                        
+                        const colorBox = document.createElement('div');
+                        colorBox.className = 'palette-item';
+                        colorBox.style.backgroundColor = color;
+                        
+                        const value = document.createElement('div');
+                        value.className = 'palette-value';
+                        value.textContent = color;
+                        
+                        colorBox.appendChild(value);
+                        colorCol.appendChild(colorBox);
+                        row.appendChild(colorCol);
+                        
+                        // Add click event to select color
+                        colorBox.addEventListener('click', () => {
+                            const rgb = hexToRgb(color);
+                            if (rgb) updateColorFromRGB(rgb.r, rgb.g, rgb.b);
+                        });
+                    });
+                    
+                    cardBody.appendChild(row);
+                    card.appendChild(cardHeader);
+                    card.appendChild(cardBody);
+                    col.appendChild(card);
+                    colorHarmonyContainer.appendChild(col);
+                });
+            }
+            
+            // Color conversion functions
+            function rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(x => {
+                    const hex = x.toString(16);
+                    return hex.length === 1 ? '0' + hex : hex;
+                }).join('');
+            }
+            
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+            
+            function rgbToHsl(r, g, b) {
+                r /= 255, g /= 255, b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+                
+                if (max === min) {
+                    h = s = 0; // achromatic
+                } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                
+                return {
+                    h: Math.round(h * 360),
+                    s: Math.round(s * 100),
+                    l: Math.round(l * 100)
+                };
+            }
+            
+            // Color scheme generators
+            function generateAnalogousScheme() {
+                const colors = [];
+                const h = currentColor.h;
+                
+                for (let i = -2; i <= 2; i++) {
+                    const newH = (h + i * 30 + 360) % 360;
+                    colors.push(hslToHex(newH, currentColor.s, currentColor.l));
+                }
+                
+                return colors;
+            }
+            
+            function generateMonochromaticScheme() {
+                const colors = [];
+                const l = currentColor.l;
+                
+                for (let i = -2; i <= 2; i++) {
+                    const newL = Math.min(100, Math.max(0, l + i * 15));
+                    colors.push(hslToHex(currentColor.h, currentColor.s, newL));
+                }
+                
+                return colors;
+            }
+            
+            function generateTriadicScheme() {
+                const h = currentColor.h;
+                return [
+                    hslToHex(h, currentColor.s, currentColor.l),
+                    hslToHex((h + 120) % 360, currentColor.s, currentColor.l),
+                    hslToHex((h + 240) % 360, currentColor.s, currentColor.l)
+                ];
+            }
+            
+            function generateComplementaryScheme() {
+                const h = currentColor.h;
+                return [
+                    hslToHex(h, currentColor.s, currentColor.l),
+                    hslToHex((h + 180) % 360, currentColor.s, currentColor.l)
+                ];
+            }
+            
+            function generateSplitComplementaryScheme() {
+                const h = currentColor.h;
+                return [
+                    hslToHex(h, currentColor.s, currentColor.l),
+                    hslToHex((h + 150) % 360, currentColor.s, currentColor.l),
+                    hslToHex((h + 210) % 360, currentColor.s, currentColor.l)
+                ];
+            }
+            
+            function generateTetradicScheme() {
+                const h = currentColor.h;
+                return [
+                    hslToHex(h, currentColor.s, currentColor.l),
+                    hslToHex((h + 60) % 360, currentColor.s, currentColor.l),
+                    hslToHex((h + 180) % 360, currentColor.s, currentColor.l),
+                    hslToHex((h + 240) % 360, currentColor.s, currentColor.l)
+                ];
+            }
+            
+            function hslToHex(h, s, l) {
+                h /= 360;
+                s /= 100;
+                l /= 100;
+                
+                let r, g, b;
+                
+                if (s === 0) {
+                    r = g = b = l;
+                } else {
+                    const hue2rgb = (p, q, t) => {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1/6) return p + (q - p) * 6 * t;
+                        if (t < 1/2) return q;
+                        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                        return p;
+                    };
+                    
+                    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    const p = 2 * l - q;
+                    
+                    r = Math.round(hue2rgb(p, q, h + 1/3) * 255);
+                    g = Math.round(hue2rgb(p, q, h) * 255);
+                    b = Math.round(hue2rgb(p, q, h - 1/3) * 255);
+                }
+                
+                return rgbToHex(r, g, b);
+            }
+            
+            // Initialize
+            init();
+        });
+    </script>
+</body>
+</html>

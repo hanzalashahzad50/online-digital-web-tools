@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online age calculator. Calculate your exact age from birth date with years, months, days, and more.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link href="../css/style.css" rel="stylesheet">
+    <style>
+        .ad-banner {
+            width: 1080px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-birthday-cake me-3"></i>Age Calculator</h1>
+            <p class="lead">Calculate your exact age from birth date with detailed breakdown</p>
+        </div>
+        
+
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Calculate Age</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="birthDate" class="form-label">Birth Date:</label>
+                                    <input type="date" id="birthDate" class="form-control">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="calculationDate" class="form-label">Calculate Age On (Optional):</label>
+                                    <input type="date" id="calculationDate" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="calculateBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Calculate Age
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Age Results -->
+                    <div id="ageResults" class="card mt-4 d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Age Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 mb-3">
+                                    <div class="age-item">
+                                        <h2 id="years" class="text-primary">0</h2>
+                                        <small class="text-muted">Years</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="age-item">
+                                        <h2 id="months" class="text-success">0</h2>
+                                        <small class="text-muted">Months</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="age-item">
+                                        <h2 id="days" class="text-info">0</h2>
+                                        <small class="text-muted">Days</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="age-item">
+                                        <h2 id="totalDays" class="text-warning">0</h2>
+                                        <small class="text-muted">Total Days</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h6>Detailed Breakdown:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Weeks:</strong> <span id="weeks">0</span></li>
+                                        <li><strong>Hours:</strong> <span id="hours">0</span></li>
+                                        <li><strong>Minutes:</strong> <span id="minutes">0</span></li>
+                                        <li><strong>Seconds:</strong> <span id="seconds">0</span></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Life Milestones:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Next Birthday:</strong> <span id="nextBirthday">-</span></li>
+                                        <li><strong>Days Until Birthday:</strong> <span id="daysUntilBirthday">-</span></li>
+                                        <li><strong>Age in Dog Years:</strong> <span id="dogYears">-</span></li>
+                                        <li><strong>Age in Cat Years:</strong> <span id="catYears">-</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Life Timeline -->
+                    <div id="lifeTimeline" class="card mt-4 d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Life Timeline</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="timelineContent">
+                                <!-- Timeline will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+                    
+                    <!-- Age Statistics -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Age Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="ageStats">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                    <p>Enter birth date to see statistics</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Age Calculator -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Age Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="quickBirthYear" class="form-label">Birth Year:</label>
+                                <select id="quickBirthYear" class="form-select">
+                                    <option value="">Select Year</option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button id="quickCalculateBtn" class="btn btn-outline-primary btn-sm">
+                                    Quick Calculate
+                                </button>
+                            </div>
+                            <div id="quickResult" class="mt-3 d-none">
+                                <div class="alert alert-info">
+                                    <strong>Age:</strong> <span id="quickAge">-</span> years
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Age Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Age Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>Average human lifespan: 72.6 years</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 dog year ≈ 7 human years</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 cat year ≈ 4 human years</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>Leap years add 1 extra day</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>Age calculation includes leap years</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Age Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Age Calculation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>How Age is Calculated:</h6>
+                                    <p>Age calculation takes into account the exact number of years, months, and days between your birth date and the calculation date. It properly handles leap years and varying month lengths.</p>
+                                    
+                                    <h6>Leap Years:</h6>
+                                    <ul>
+                                        <li>Years divisible by 4 are leap years</li>
+                                        <li>Years divisible by 100 are not leap years (unless also divisible by 400)</li>
+                                        <li>Leap years have 366 days instead of 365</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Age Categories:</h6>
+                                    <ul>
+                                        <li><strong>Infant:</strong> 0-1 years</li>
+                                        <li><strong>Toddler:</strong> 1-3 years</li>
+                                        <li><strong>Child:</strong> 4-12 years</li>
+                                        <li><strong>Teenager:</strong> 13-19 years</li>
+                                        <li><strong>Young Adult:</strong> 20-39 years</li>
+                                        <li><strong>Middle Age:</strong> 40-59 years</li>
+                                        <li><strong>Senior:</strong> 60+ years</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ad Banner -->
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        // Age Calculator specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const birthDateInput = document.getElementById('birthDate');
+            const calculationDateInput = document.getElementById('calculationDate');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const quickBirthYearSelect = document.getElementById('quickBirthYear');
+            const quickCalculateBtn = document.getElementById('quickCalculateBtn');
+
+            // Set default calculation date to today
+            const today = new Date().toISOString().split('T')[0];
+            calculationDateInput.value = today;
+
+            // Populate quick birth year dropdown
+            populateBirthYears();
+
+            // Calculate age
+            calculateBtn.addEventListener('click', calculateAge);
+            clearBtn.addEventListener('click', clearForm);
+
+            // Auto-calculate when dates change
+            birthDateInput.addEventListener('change', calculateAge);
+            calculationDateInput.addEventListener('change', calculateAge);
+
+            // Quick calculate
+            quickCalculateBtn.addEventListener('click', quickCalculate);
+
+            function calculateAge() {
+                const birthDate = new Date(birthDateInput.value);
+                const calculationDate = new Date(calculationDateInput.value);
+
+                if (!birthDateInput.value) {
+                    hideResults();
+                    return;
+                }
+
+                if (birthDate > calculationDate) {
+                    MultiTools.showNotification('Birth date cannot be in the future', 'error');
+                    return;
+                }
+
+                const age = getAge(birthDate, calculationDate);
+                displayResults(age, birthDate, calculationDate);
+                updateStatistics(age);
+                generateTimeline(birthDate, calculationDate);
+            }
+
+            function getAge(birthDate, calculationDate) {
+                let years = calculationDate.getFullYear() - birthDate.getFullYear();
+                let months = calculationDate.getMonth() - birthDate.getMonth();
+                let days = calculationDate.getDate() - birthDate.getDate();
+
+                if (days < 0) {
+                    months--;
+                    const lastMonth = new Date(calculationDate.getFullYear(), calculationDate.getMonth(), 0);
+                    days += lastMonth.getDate();
+                }
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                const totalDays = Math.floor((calculationDate - birthDate) / (1000 * 60 * 60 * 24));
+                const weeks = Math.floor(totalDays / 7);
+                const hours = totalDays * 24;
+                const minutes = hours * 60;
+                const seconds = minutes * 60;
+
+                return {
+                    years,
+                    months,
+                    days,
+                    totalDays,
+                    weeks,
+                    hours,
+                    minutes,
+                    seconds
+                };
+            }
+
+            function displayResults(age, birthDate, calculationDate) {
+                document.getElementById('years').textContent = age.years;
+                document.getElementById('months').textContent = age.months;
+                document.getElementById('days').textContent = age.days;
+                document.getElementById('totalDays').textContent = age.totalDays;
+                document.getElementById('weeks').textContent = age.weeks;
+                document.getElementById('hours').textContent = age.hours.toLocaleString();
+                document.getElementById('minutes').textContent = age.minutes.toLocaleString();
+                document.getElementById('seconds').textContent = age.seconds.toLocaleString();
+
+                // Calculate next birthday
+                const nextBirthday = getNextBirthday(birthDate, calculationDate);
+                document.getElementById('nextBirthday').textContent = nextBirthday.date;
+                document.getElementById('daysUntilBirthday').textContent = nextBirthday.daysUntil;
+
+                // Calculate pet years
+                document.getElementById('dogYears').textContent = Math.floor(age.years * 7);
+                document.getElementById('catYears').textContent = Math.floor(age.years * 4);
+
+                document.getElementById('ageResults').classList.remove('d-none');
+                document.getElementById('lifeTimeline').classList.remove('d-none');
+            }
+
+            function getNextBirthday(birthDate, calculationDate) {
+                const currentYear = calculationDate.getFullYear();
+                const nextBirthday = new Date(currentYear, birthDate.getMonth(), birthDate.getDate());
+                
+                if (nextBirthday < calculationDate) {
+                    nextBirthday.setFullYear(currentYear + 1);
+                }
+
+                const daysUntil = Math.ceil((nextBirthday - calculationDate) / (1000 * 60 * 60 * 24));
+                return {
+                    date: nextBirthday.toLocaleDateString(),
+                    daysUntil: daysUntil
+                };
+            }
+
+            function updateStatistics(age) {
+                const stats = document.getElementById('ageStats');
+                const lifeExpectancy = 72.6; // Average global life expectancy
+                const lifePercentage = (age.years / lifeExpectancy) * 100;
+
+                stats.innerHTML = `
+                    <div class="text-center">
+                        <h6>Life Progress</h6>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" style="width: ${Math.min(lifePercentage, 100)}%">
+                                ${lifePercentage.toFixed(1)}%
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            ${age.years} years lived out of ~${lifeExpectancy} years
+                        </small>
+                    </div>
+                `;
+            }
+
+            function generateTimeline(birthDate, calculationDate) {
+                const timeline = document.getElementById('timelineContent');
+                const age = getAge(birthDate, calculationDate);
+                const milestones = [
+                    { age: 0, event: 'Birth' },
+                    { age: 1, event: 'First Birthday' },
+                    { age: 5, event: 'Start School' },
+                    { age: 13, event: 'Teenager' },
+                    { age: 16, event: 'Can Drive (US)' },
+                    { age: 18, event: 'Adult' },
+                    { age: 21, event: 'Legal Drinking Age (US)' },
+                    { age: 25, event: 'Car Insurance Discount' },
+                    { age: 30, event: 'Thirties' },
+                    { age: 40, event: 'Forties' },
+                    { age: 50, event: 'Half Century' },
+                    { age: 65, event: 'Retirement Age' },
+                    { age: 100, event: 'Century' }
+                ];
+
+                let timelineHTML = '<div class="timeline">';
+                milestones.forEach(milestone => {
+                    const isPast = age.years >= milestone.age;
+                    const isCurrent = age.years === milestone.age;
+                    const status = isCurrent ? 'current' : (isPast ? 'past' : 'future');
+                    
+                    timelineHTML += `
+                        <div class="timeline-item ${status}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>${milestone.event}</h6>
+                                <small>Age ${milestone.age}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+                timelineHTML += '</div>';
+
+                timeline.innerHTML = timelineHTML;
+            }
+
+            function quickCalculate() {
+                const selectedYear = quickBirthYearSelect.value;
+                if (!selectedYear) {
+                    MultiTools.showNotification('Please select a birth year', 'warning');
+                    return;
+                }
+
+                const currentYear = new Date().getFullYear();
+                const age = currentYear - selectedYear;
+                
+                document.getElementById('quickAge').textContent = age;
+                document.getElementById('quickResult').classList.remove('d-none');
+            }
+
+            function populateBirthYears() {
+                const currentYear = new Date().getFullYear();
+                for (let year = currentYear; year >= currentYear - 120; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    quickBirthYearSelect.appendChild(option);
+                }
+            }
+
+            function clearForm() {
+                birthDateInput.value = '';
+                calculationDateInput.value = today;
+                quickBirthYearSelect.value = '';
+                hideResults();
+            }
+
+            function hideResults() {
+                document.getElementById('ageResults').classList.add('d-none');
+                document.getElementById('lifeTimeline').classList.add('d-none');
+                document.getElementById('quickResult').classList.add('d-none');
+                document.getElementById('ageStats').innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                        <p>Enter birth date to see statistics</p>
+                    </div>
+                `;
+            }
+
+            // Add CSS for timeline
+            const style = document.createElement('style');
+            style.textContent = `
+                .timeline {
+                    position: relative;
+                    padding-left: 30px;
+                }
+                .timeline-item {
+                    position: relative;
+                    margin-bottom: 20px;
+                    padding-left: 20px;
+                }
+                .timeline-marker {
+                    position: absolute;
+                    left: -25px;
+                    top: 5px;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    border: 2px solid #dee2e6;
+                }
+                .timeline-item.past .timeline-marker {
+                    background-color: var(--success-color);
+                    border-color: var(--success-color);
+                }
+                .timeline-item.current .timeline-marker {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                }
+                .timeline-item.future .timeline-marker {
+                    background-color: #dee2e6;
+                }
+                .timeline-content {
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .age-item h2 {
+                    margin-bottom: 0;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

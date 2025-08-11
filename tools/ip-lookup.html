@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Find detailed information about any IP address including location, ISP, and more.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .info-card { border-left: 4px solid #0d6efd; margin-bottom: 15px; }
+        .info-label { font-weight: 600; color: #495057; }
+        .info-value { word-break: break-all; }
+        #map { height: 300px; width: 100%; border-radius: 8px; margin-top: 15px; }
+        .flag-icon { margin-right: 5px; }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/flag-icon-css@3.5.0/css/flag-icon.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-map-marker-alt me-3"></i>IP Lookup</h1>
+            <p class="lead">Find detailed information about any IP address</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="ipLookupForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="ipInput" placeholder="Enter IP address" value="">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search me-2"></i>Lookup
+                                    </button>
+                                </div>
+                                <div class="form-text mt-2">
+                                    Leave empty to check your own IP address
+                                </div>
+                            </form>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">IP Information</h5>
+                                <span id="ipStatus" class="badge bg-success">Online</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-card p-3 mb-3">
+                                            <div class="info-label">IP Address</div>
+                                            <div class="info-value" id="ipAddress">-</div>
+                                        </div>
+                                        <div class="info-card p-3 mb-3">
+                                            <div class="info-label">Location</div>
+                                            <div class="info-value" id="location">
+                                                <span id="flag" class="flag-icon"></span>
+                                                <span id="locationText">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="info-card p-3 mb-3">
+                                            <div class="info-label">ISP</div>
+                                            <div class="info-value" id="isp">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-card p-3 mb-3">
+                                            <div class="info-label">Organization</div>
+                                            <div class="info-value" id="org">-</div>
+                                        </div>
+                                        <div class="info-card p-3 mb-3">
+                                            <div class="info-label">Timezone</div>
+                                            <div class="info-value" id="timezone">-</div>
+                                        </div>
+                                        <div class="info-card p-3">
+                                            <div class="info-label">Coordinates</div>
+                                            <div class="info-value" id="coordinates">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="map"></div>
+                                
+                                <div class="mt-4">
+                                    <h6>Additional Information</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-sm">
+                                            <tbody id="additionalInfo">
+                                                <!-- Additional info will be inserted here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About IP Lookup</h5>
+                            <p>IP Lookup provides detailed information about any IP address, including its geographic location, ISP, and more.</p>
+                            
+                            <h6 class="mt-4">Information Provided:</h6>
+                            <ul class="mb-0">
+                                <li>IP address details</li>
+                                <li>Geographic location</li>
+                                <li>Internet Service Provider</li>
+                                <li>Organization</li>
+                                <li>Timezone</li>
+                                <li>Map visualization</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                            <ol class="mb-0">
+                                <li>Enter an IP address (or leave blank for your IP)</li>
+                                <li>Click "Lookup" to view information</li>
+                                <li>View detailed IP information</li>
+                                <li>Check the location on the map</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Sample IP data for demo
+            const sampleIPData = {
+                ip: '8.8.8.8',
+                type: 'IPv4',
+                continent_code: 'NA',
+                continent_name: 'North America',
+                country_code: 'US',
+                country_name: 'United States',
+                region_code: 'CA',
+                region_name: 'California',
+                city: 'Mountain View',
+                zip: '94043',
+                latitude: 37.40599,
+                longitude: -122.078514,
+                location: {
+                    geoname_id: 5375480,
+                    capital: 'Washington D.C.',
+                    languages: [{
+                        code: 'en',
+                        name: 'English',
+                        native: 'English'
+                    }],
+                    country_flag: 'https://assets.ipstack.com/flags/us.svg',
+                    country_flag_emoji: '🇺🇸',
+                    country_flag_emoji_unicode: 'U+1F1FA U+1F1F8',
+                    calling_code: '1',
+                    is_eu: false
+                },
+                time_zone: {
+                    id: 'America/Los_Angeles',
+                    current_time: '2023-08-05T15:30:00-07:00',
+                    gmt_offset: -25200,
+                    code: 'PDT',
+                    is_daylight_saving: true
+                },
+                currency: {
+                    code: 'USD',
+                    name: 'US Dollar',
+                    plural: 'US dollars',
+                    symbol: '$',
+                    symbol_native: '$'
+                },
+                connection: {
+                    asn: 15169,
+                    isp: 'Google LLC'
+                },
+                security: {
+                    is_proxy: false,
+                    proxy_type: null,
+                    is_crawler: false,
+                    crawler_name: null,
+                    crawler_type: null,
+                    is_tor: false,
+                    threat_level: 'low',
+                    threat_types: null
+                }
+            };
+
+            // DOM Elements
+            const elements = {
+                ipForm: document.getElementById('ipLookupForm'),
+                ipInput: document.getElementById('ipInput'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                ipAddress: document.getElementById('ipAddress'),
+                locationText: document.getElementById('locationText'),
+                flag: document.getElementById('flag'),
+                isp: document.getElementById('isp'),
+                org: document.getElementById('org'),
+                timezone: document.getElementById('timezone'),
+                coordinates: document.getElementById('coordinates'),
+                additionalInfo: document.getElementById('additionalInfo'),
+                ipStatus: document.getElementById('ipStatus')
+            };
+
+            // Event Listeners
+            elements.ipForm.addEventListener('submit', lookupIP);
+
+            // Initialize map
+            let map;
+            let marker;
+            
+            function initMap(lat, lng) {
+                if (map) {
+                    map.remove();
+                }
+                
+                map = L.map('map').setView([lat, lng], 10);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                marker = L.marker([lat, lng]).addTo(map);
+            }
+
+            // Lookup IP function
+            async function lookupIP(e) {
+                e.preventDefault();
+                let ip = elements.ipInput.value.trim();
+                
+                // If no IP provided, get user's IP
+                if (!ip) {
+                    try {
+                        const response = await fetch('https://api.ipify.org?format=json');
+                        const data = await response.json();
+                        ip = data.ip;
+                        elements.ipInput.value = ip;
+                    } catch (error) {
+                        showNotification('Failed to get your IP address', 'error');
+                        return;
+                    }
+                }
+                
+                // Validate IP
+                if (!isValidIP(ip)) {
+                    showNotification('Please enter a valid IP address', 'warning');
+                    return;
+                }
+                
+                // Show loading
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.add('d-none');
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // For demo, use sample data with the entered IP
+                const ipData = {...sampleIPData};
+                ipData.ip = ip;
+                
+                // Display results
+                displayResults(ipData);
+                
+                // Hide loading
+                elements.progressBar.classList.add('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                elements.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Validate IP address
+            function isValidIP(ip) {
+                // Simple IP validation (IPv4 and IPv6)
+                const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+                const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+                return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+            }
+            
+            // Display results
+            function displayResults(data) {
+                // Basic info
+                elements.ipAddress.textContent = data.ip;
+                elements.locationText.textContent = `${data.city}, ${data.region_name}, ${data.country_name}`;
+                elements.flag.className = `flag-icon flag-icon-${data.country_code.toLowerCase()}`;
+                elements.isp.textContent = data.connection.isp;
+                elements.org.textContent = data.organization || data.connection.isp;
+                elements.timezone.textContent = `${data.time_zone.id} (${data.time_zone.code})`;
+                elements.coordinates.textContent = `${data.latitude}, ${data.longitude}`;
+                
+                // Set status
+                elements.ipStatus.className = 'badge ' + (data.security.threat_level === 'high' ? 'bg-danger' : 'bg-success');
+                elements.ipStatus.textContent = data.security.threat_level === 'high' ? 'Suspicious' : 'Safe';
+                
+                // Additional info
+                elements.additionalInfo.innerHTML = `
+                    <tr>
+                        <th>IP Type</th>
+                        <td>${data.type}</td>
+                    </tr>
+                    <tr>
+                        <th>Continent</th>
+                        <td>${data.continent_name} (${data.continent_code})</td>
+                    </tr>
+                    <tr>
+                        <th>Country</th>
+                        <td>${data.country_name} (${data.country_code})</td>
+                    </tr>
+                    <tr>
+                        <th>Region</th>
+                        <td>${data.region_name} (${data.region_code})</td>
+                    </tr>
+                    <tr>
+                        <th>City</th>
+                        <td>${data.city}</td>
+                    </tr>
+                    <tr>
+                        <th>ZIP Code</th>
+                        <td>${data.zip}</td>
+                    </tr>
+                    <tr>
+                        <th>Calling Code</th>
+                        <td>+${data.location.calling_code}</td>
+                    </tr>
+                    <tr>
+                        <th>Currency</th>
+                        <td>${data.currency.name} (${data.currency.code})</td>
+                    </tr>
+                    <tr>
+                        <th>Languages</th>
+                        <td>${data.location.languages.map(lang => `${lang.name} (${lang.code})`).join(', ')}</td>
+                    </tr>
+                    <tr>
+                        <th>Current Time</th>
+                        <td>${new Date(data.time_zone.current_time).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <th>GMT Offset</th>
+                        <td>${data.time_zone.gmt_offset / 3600} hours</td>
+                    </tr>
+                    <tr>
+                        <th>Daylight Saving</th>
+                        <td>${data.time_zone.is_daylight_saving ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <th>ASN</th>
+                        <td>${data.connection.asn}</td>
+                    </tr>
+                    <tr>
+                        <th>ISP</th>
+                        <td>${data.connection.isp}</td>
+                    </tr>
+                    <tr>
+                        <th>Organization</th>
+                        <td>${data.organization || data.connection.isp}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Proxy</th>
+                        <td>${data.security.is_proxy ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <th>Is TOR</th>
+                        <td>${data.security.is_tor ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Crawler</th>
+                        <td>${data.security.is_crawler ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <th>Threat Level</th>
+                        <td>${data.security.threat_level}</td>
+                    </tr>
+                `;
+                
+                // Initialize map
+                initMap(data.latitude, data.longitude);
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+            
+            // Auto-lookup on page load for user's IP
+            window.addEventListener('load', function() {
+                if (!elements.ipInput.value) {
+                    elements.ipForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>

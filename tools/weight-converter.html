@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online weight converter. Convert between kilograms, pounds, ounces, grams, and more weight units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-weight-hanging me-3"></i>Weight Converter</h1>
+            <p class="lead">Convert between kilograms, pounds, ounces, grams, and more weight units</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Weight Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select id="fromUnit" class="form-select">
+                                        <option value="kilogram">Kilogram (kg)</option>
+                                        <option value="gram">Gram (g)</option>
+                                        <option value="milligram">Milligram (mg)</option>
+                                        <option value="pound">Pound (lb)</option>
+                                        <option value="ounce">Ounce (oz)</option>
+                                        <option value="ton">Metric Ton (t)</option>
+                                        <option value="stone">Stone (st)</option>
+                                        <option value="carat">Carat (ct)</option>
+                                        <option value="grain">Grain (gr)</option>
+                                        <option value="dram">Dram (dr)</option>
+                                        <option value="hundredweight">Hundredweight (cwt)</option>
+                                        <option value="short-ton">Short Ton (US ton)</option>
+                                        <option value="long-ton">Long Ton (UK ton)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select id="toUnit" class="form-select">
+                                        <option value="pound">Pound (lb)</option>
+                                        <option value="kilogram">Kilogram (kg)</option>
+                                        <option value="gram">Gram (g)</option>
+                                        <option value="milligram">Milligram (mg)</option>
+                                        <option value="ounce">Ounce (oz)</option>
+                                        <option value="ton">Metric Ton (t)</option>
+                                        <option value="stone">Stone (st)</option>
+                                        <option value="carat">Carat (ct)</option>
+                                        <option value="grain">Grain (gr)</option>
+                                        <option value="dram">Dram (dr)</option>
+                                        <option value="hundredweight">Hundredweight (cwt)</option>
+                                        <option value="short-ton">Short Ton (US ton)</option>
+                                        <option value="long-ton">Long Ton (UK ton)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromValue" class="form-label">Enter Value:</label>
+                                    <input type="number" id="fromValue" class="form-control" placeholder="1" step="0.000001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toValue" class="form-label">Result:</label>
+                                    <input type="text" id="toValue" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="convertBtn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Convert
+                                </button>
+                                <button id="swapBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Swap Units
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Units Conversion -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Units Conversion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-weight-hanging fa-3x mb-3"></i>
+                                    <p>Enter a value to see all unit conversions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Weights -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common Weights</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Everyday Objects:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Object</th>
+                                                    <th>Weight</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Paper Clip</td>
+                                                    <td>1.4 g</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>US Quarter</td>
+                                                    <td>5.67 g</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Smartphone</td>
+                                                    <td>150-200 g</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Apple</td>
+                                                    <td>150-200 g</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Human Brain</td>
+                                                    <td>1.4 kg</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Gallon of Water</td>
+                                                    <td>3.78 kg</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Animals & Objects:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item</th>
+                                                    <th>Weight</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Elephant</td>
+                                                    <td>4,000-7,000 kg</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Car</td>
+                                                    <td>1,500-2,000 kg</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Blue Whale</td>
+                                                    <td>150,000 kg</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Eiffel Tower</td>
+                                                    <td>10,100,000 kg</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Earth</td>
+                                                    <td>5.97 × 10²⁴ kg</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Conversions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('human')">
+                                    Human Weight
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('food')">
+                                    Food Items
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('cargo')">
+                                    Cargo Weight
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadQuickConversion('precious')">
+                                    Precious Metals
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Factors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Conversion Factors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>In Grams</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 pound</td>
+                                            <td>453.592 g</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 ounce</td>
+                                            <td>28.3495 g</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 kilogram</td>
+                                            <td>1,000 g</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 stone</td>
+                                            <td>6,350.29 g</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 carat</td>
+                                            <td>0.2 g</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weight Facts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Weight Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 kg = 2.20462 pounds</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 pound = 16 ounces</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 stone = 14 pounds</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 metric ton = 1,000 kg</small>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <small>1 carat = 200 milligrams</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                   
+                </div>
+            </div>
+
+            <!-- Weight Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Weight Units</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Metric System:</h6>
+                                    <ul>
+                                        <li><strong>Milligram (mg):</strong> 1/1000 of a gram</li>
+                                        <li><strong>Gram (g):</strong> Base unit of weight</li>
+                                        <li><strong>Kilogram (kg):</strong> 1000 grams</li>
+                                        <li><strong>Metric Ton (t):</strong> 1000 kilograms</li>
+                                    </ul>
+                                    
+                                    <h6>Imperial System:</h6>
+                                    <ul>
+                                        <li><strong>Grain (gr):</strong> Smallest unit</li>
+                                        <li><strong>Dram (dr):</strong> 27.344 grains</li>
+                                        <li><strong>Ounce (oz):</strong> 16 drams</li>
+                                        <li><strong>Pound (lb):</strong> 16 ounces</li>
+                                        <li><strong>Stone (st):</strong> 14 pounds</li>
+                                        <li><strong>Hundredweight (cwt):</strong> 100 pounds</li>
+                                        <li><strong>Ton:</strong> 2000 pounds (US) or 2240 pounds (UK)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Specialized Units:</h6>
+                                    <ul>
+                                        <li><strong>Carat:</strong> Used for gemstones and pearls</li>
+                                        <li><strong>Troy Ounce:</strong> Used for precious metals</li>
+                                        <li><strong>Atomic Mass Unit:</strong> Used in chemistry</li>
+                                        <li><strong>Solar Mass:</strong> Used in astronomy</li>
+                                    </ul>
+                                    
+                                    <h6>Usage by Country:</h6>
+                                    <ul>
+                                        <li><strong>Metric:</strong> Most countries worldwide</li>
+                                        <li><strong>Imperial:</strong> United States, Myanmar, Liberia</li>
+                                        <li><strong>Mixed:</strong> United Kingdom, Canada</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Weight Converter specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromValue = document.getElementById('fromValue');
+            const toValue = document.getElementById('toValue');
+            const convertBtn = document.getElementById('convertBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // Conversion factors (all in grams)
+            const conversionFactors = {
+                'kilogram': 1000,
+                'gram': 1,
+                'milligram': 0.001,
+                'pound': 453.592,
+                'ounce': 28.3495,
+                'ton': 1000000,
+                'stone': 6350.29,
+                'carat': 0.2,
+                'grain': 0.0647989,
+                'dram': 1.77185,
+                'hundredweight': 45359.2,
+                'short-ton': 907185,
+                'long-ton': 1016047
+            };
+
+            // Unit symbols
+            const unitSymbols = {
+                'kilogram': 'kg',
+                'gram': 'g',
+                'milligram': 'mg',
+                'pound': 'lb',
+                'ounce': 'oz',
+                'ton': 't',
+                'stone': 'st',
+                'carat': 'ct',
+                'grain': 'gr',
+                'dram': 'dr',
+                'hundredweight': 'cwt',
+                'short-ton': 'US ton',
+                'long-ton': 'UK ton'
+            };
+
+            // Convert button
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapUnits);
+            clearBtn.addEventListener('click', clearForm);
+
+            // Auto-convert on input change
+            fromValue.addEventListener('input', debounce(convert, 300));
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+
+            function convert() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+
+                if (isNaN(value)) {
+                    toValue.value = '';
+                    updateAllConversions();
+                    return;
+                }
+
+                // Convert to grams first, then to target unit
+                const grams = value * conversionFactors[from];
+                const result = grams / conversionFactors[to];
+
+                // Format result based on magnitude
+                toValue.value = formatResult(result);
+                updateAllConversions();
+            }
+
+            function formatResult(value) {
+                if (value === 0) return '0';
+                
+                if (value < 0.000001 || value > 999999) {
+                    return value.toExponential(6);
+                } else if (value < 0.01) {
+                    return value.toFixed(6);
+                } else if (value < 1) {
+                    return value.toFixed(4);
+                } else if (value < 100) {
+                    return value.toFixed(3);
+                } else if (value < 10000) {
+                    return value.toFixed(2);
+                } else {
+                    return value.toFixed(1);
+                }
+            }
+
+            function updateAllConversions() {
+                const value = parseFloat(fromValue.value);
+                const from = fromUnit.value;
+
+                if (isNaN(value)) {
+                    document.getElementById('allConversions').innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-weight-hanging fa-3x mb-3"></i>
+                            <p>Enter a value to see all unit conversions</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const grams = value * conversionFactors[from];
+                let conversionsHTML = '<div class="row">';
+
+                Object.keys(conversionFactors).forEach(unit => {
+                    const result = grams / conversionFactors[unit];
+                    const symbol = unitSymbols[unit];
+                    const formattedResult = formatResult(result);
+                    
+                    conversionsHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="conversion-item p-2 border rounded">
+                                <div class="unit-name">${unit.replace('-', ' ').toUpperCase()}</div>
+                                <div class="unit-value">${formattedResult} ${symbol}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                conversionsHTML += '</div>';
+                document.getElementById('allConversions').innerHTML = conversionsHTML;
+            }
+
+            function swapUnits() {
+                const tempUnit = fromUnit.value;
+                const tempValue = fromValue.value;
+                
+                fromUnit.value = toUnit.value;
+                toUnit.value = tempUnit;
+                fromValue.value = toValue.value;
+                
+                convert();
+            }
+
+            function clearForm() {
+                fromValue.value = '';
+                toValue.value = '';
+                updateAllConversions();
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Quick conversion functions
+            window.loadQuickConversion = function(type) {
+                const conversions = {
+                    human: { value: 70, unit: 'kilogram', description: 'Average Human Weight' },
+                    food: { value: 500, unit: 'gram', description: 'Food Package Weight' },
+                    cargo: { value: 1000, unit: 'kilogram', description: 'Cargo Weight' },
+                    precious: { value: 1, unit: 'ounce', description: 'Precious Metal Weight' }
+                };
+
+                const conversion = conversions[type];
+                fromValue.value = conversion.value;
+                fromUnit.value = conversion.unit;
+                convert();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .conversion-item {
+                    background: #f8f9fa;
+                    transition: transform 0.2s;
+                }
+                .conversion-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .unit-name {
+                    font-size: 12px;
+                    color: #6c757d;
+                    font-weight: bold;
+                }
+                .unit-value {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

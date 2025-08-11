@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Name - Multi-Tools Hub</title>
+    <meta name="description" content="Tool description here">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-icon me-3"></i>Tool Name</h1>
+            <p class="lead">Tool description and instructions</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- Top Ad (Leaderboard) -->
+            <div id="ad-leaderboard" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Main Tool Content -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Tool Functionality</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Tool UI goes here -->
+                            <div class="mb-3">
+                                <label for="inputField" class="form-label">Input Field</label>
+                                <input type="text" class="form-control" id="inputField" placeholder="Enter text here">
+                            </div>
+                            <button id="processBtn" class="btn btn-primary">
+                                <i class="fas fa-cog me-2"></i>Process
+                            </button>
+                            <button id="clearBtn" class="btn btn-outline-secondary">
+                                <i class="fas fa-trash me-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="resultsSection" class="card d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="resultsContent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+
+                    <!-- Additional Tool Info -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About This Tool</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Information about what this tool does and how to use it.</p>
+                            <!-- Additional information or tips -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Ad (Leaderboard) -->
+            <div id="ad-bottom" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+
+            <!-- Tool Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="faqAccordion">
+                                <!-- FAQ items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tool functionality here
+            
+            // Example event listeners
+            document.getElementById('processBtn').addEventListener('click', function() {
+                // Process input and show results
+                const input = document.getElementById('inputField').value;
+                if (input) {
+                    document.getElementById('resultsContent').textContent = `Processed: ${input}`;
+                    document.getElementById('resultsSection').classList.remove('d-none');
+                }
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                // Clear inputs and results
+                document.getElementById('inputField').value = '';
+                document.getElementById('resultsContent').textContent = '';
+                document.getElementById('resultsSection').classList.add('d-none');
+            });
+        });
+    </script>
+</body>
+</html>

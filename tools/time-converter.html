@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online time converter. Convert between seconds, minutes, hours, days, weeks, months, years, and more time units.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-clock"></i> Time Converter</h1>
+                    <p class="lead">Convert between different time units and calculate time differences and durations.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exchange-alt"></i> Unit Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit:</label>
+                                    <select class="form-select" id="fromUnit">
+                                        <option value="second">Second</option>
+                                        <option value="minute">Minute</option>
+                                        <option value="hour">Hour</option>
+                                        <option value="day">Day</option>
+                                        <option value="week">Week</option>
+                                        <option value="month">Month (30 days)</option>
+                                        <option value="year">Year (365 days)</option>
+                                        <option value="decade">Decade</option>
+                                        <option value="century">Century</option>
+                                        <option value="millennium">Millennium</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toUnit" class="form-label">To Unit:</label>
+                                    <select class="form-select" id="toUnit">
+                                        <option value="minute">Minute</option>
+                                        <option value="second">Second</option>
+                                        <option value="hour">Hour</option>
+                                        <option value="day">Day</option>
+                                        <option value="week">Week</option>
+                                        <option value="month">Month (30 days)</option>
+                                        <option value="year">Year (365 days)</option>
+                                        <option value="decade">Decade</option>
+                                        <option value="century">Century</option>
+                                        <option value="millennium">Millennium</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="inputValue" class="form-label">Value:</label>
+                                    <input type="number" class="form-control" id="inputValue" placeholder="Enter value" step="0.01">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resultValue" class="form-label">Result:</label>
+                                    <input type="text" class="form-control" id="resultValue" readonly>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="convertTime()">
+                                    <i class="fas fa-calculator"></i> Convert
+                                </button>
+                                <button class="btn btn-secondary" onclick="swapUnits()">
+                                    <i class="fas fa-exchange-alt"></i> Swap
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearConverter()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-alt"></i> Time Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="startDate" class="form-label">Start Date & Time:</label>
+                                    <input type="datetime-local" class="form-control" id="startDate">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="endDate" class="form-label">End Date & Time:</label>
+                                    <input type="datetime-local" class="form-control" id="endDate">
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="calculateTimeDifference()">
+                                <i class="fas fa-calculator"></i> Calculate Difference
+                            </button>
+                            
+                            <div id="timeResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Time Difference:</h6>
+                                    <div id="timeDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plus"></i> Add/Subtract Time</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="baseDate" class="form-label">Base Date & Time:</label>
+                                    <input type="datetime-local" class="form-control" id="baseDate">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="timeAmount" class="form-label">Amount:</label>
+                                    <input type="number" class="form-control" id="timeAmount" placeholder="Amount" step="0.01">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="timeUnit" class="form-label">Unit:</label>
+                                    <select class="form-select" id="timeUnit">
+                                        <option value="seconds">Seconds</option>
+                                        <option value="minutes">Minutes</option>
+                                        <option value="hours">Hours</option>
+                                        <option value="days">Days</option>
+                                        <option value="weeks">Weeks</option>
+                                        <option value="months">Months</option>
+                                        <option value="years">Years</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="addTime()">
+                                    <i class="fas fa-plus"></i> Add Time
+                                </button>
+                                <button class="btn btn-warning" onclick="subtractTime()">
+                                    <i class="fas fa-minus"></i> Subtract Time
+                                </button>
+                            </div>
+                            
+                            <div id="addSubtractResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-info-circle"></i> Result:</h6>
+                                    <div id="addSubtractDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> All Conversions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allConversions" class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="conversionsTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Facts</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>1 minute:</strong> 60 seconds</li>
+                            <li><strong>1 hour:</strong> 60 minutes</li>
+                            <li><strong>1 day:</strong> 24 hours</li>
+                            <li><strong>1 week:</strong> 7 days</li>
+                            <li><strong>1 month:</strong> ~30.44 days</li>
+                            <li><strong>1 year:</strong> 365.25 days</li>
+                            <li><strong>1 decade:</strong> 10 years</li>
+                            <li><strong>1 century:</strong> 100 years</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-clock"></i> Common Durations</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Movie:</small><br>
+                            <span class="badge bg-success">2-3 hours</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Work Day:</small><br>
+                            <span class="badge bg-info">8 hours</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Sleep:</small><br>
+                            <span class="badge bg-warning">7-9 hours</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Flight (NYC-London):</small><br>
+                            <span class="badge bg-primary">7-8 hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Time conversion factors (to seconds as base)
+        const timeFactors = {
+            'second': 1, // Base unit
+            'minute': 60, // 1 minute = 60 seconds
+            'hour': 3600, // 1 hour = 3600 seconds
+            'day': 86400, // 1 day = 86400 seconds
+            'week': 604800, // 1 week = 604800 seconds
+            'month': 2592000, // 1 month = 30 days = 2592000 seconds
+            'year': 31557600, // 1 year = 365.25 days = 31557600 seconds
+            'decade': 315576000, // 1 decade = 10 years
+            'century': 3155760000, // 1 century = 100 years
+            'millennium': 31557600000 // 1 millennium = 1000 years
+        };
+
+        function convertTime() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            
+            if (isNaN(inputValue)) {
+                MultiTools.showNotification('Please enter a valid number', 'error');
+                return;
+            }
+
+            // Convert to base unit (seconds)
+            const baseValue = inputValue * timeFactors[fromUnit];
+            
+            // Convert from base unit to target unit
+            const result = baseValue / timeFactors[toUnit];
+
+            document.getElementById('resultValue').value = result.toFixed(6);
+            updateAllConversions(inputValue, fromUnit);
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = document.getElementById('inputValue').value;
+            const resultValue = document.getElementById('resultValue').value;
+
+            document.getElementById('fromUnit').value = toUnit;
+            document.getElementById('toUnit').value = fromUnit;
+            document.getElementById('inputValue').value = resultValue;
+            document.getElementById('resultValue').value = inputValue;
+        }
+
+        function clearConverter() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('resultValue').value = '';
+            document.getElementById('conversionsTable').innerHTML = '';
+            document.getElementById('timeResults').style.display = 'none';
+            document.getElementById('addSubtractResults').style.display = 'none';
+        }
+
+        function updateAllConversions(value, fromUnit) {
+            const table = document.getElementById('conversionsTable');
+            table.innerHTML = '';
+
+            Object.keys(timeFactors).forEach(unit => {
+                if (unit !== fromUnit) {
+                    const baseValue = value * timeFactors[fromUnit];
+                    const convertedValue = baseValue / timeFactors[unit];
+
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${getUnitName(unit)}</strong></td>
+                        <td>${convertedValue.toFixed(6)}</td>
+                    `;
+                }
+            });
+        }
+
+        function getUnitName(unit) {
+            const names = {
+                'second': 'Second',
+                'minute': 'Minute',
+                'hour': 'Hour',
+                'day': 'Day',
+                'week': 'Week',
+                'month': 'Month (30 days)',
+                'year': 'Year (365 days)',
+                'decade': 'Decade',
+                'century': 'Century',
+                'millennium': 'Millennium'
+            };
+            return names[unit] || unit;
+        }
+
+        function calculateTimeDifference() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                MultiTools.showNotification('Please select valid dates', 'error');
+                return;
+            }
+
+            const difference = Math.abs(endDate - startDate);
+            const seconds = Math.floor(difference / 1000);
+            
+            const years = Math.floor(seconds / timeFactors.year);
+            const months = Math.floor((seconds % timeFactors.year) / timeFactors.month);
+            const weeks = Math.floor((seconds % timeFactors.month) / timeFactors.week);
+            const days = Math.floor((seconds % timeFactors.week) / timeFactors.day);
+            const hours = Math.floor((seconds % timeFactors.day) / timeFactors.hour);
+            const minutes = Math.floor((seconds % timeFactors.hour) / timeFactors.minute);
+            const remainingSeconds = seconds % timeFactors.minute;
+
+            const resultsDiv = document.getElementById('timeResults');
+            const detailsDiv = document.getElementById('timeDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Start:</strong> ${startDate.toLocaleString()}<br>
+                        <strong>End:</strong> ${endDate.toLocaleString()}<br>
+                        <strong>Total Seconds:</strong> ${seconds.toLocaleString()}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Breakdown:</strong><br>
+                        ${years > 0 ? years + ' years, ' : ''}
+                        ${months > 0 ? months + ' months, ' : ''}
+                        ${weeks > 0 ? weeks + ' weeks, ' : ''}
+                        ${days > 0 ? days + ' days, ' : ''}
+                        ${hours > 0 ? hours + ' hours, ' : ''}
+                        ${minutes > 0 ? minutes + ' minutes, ' : ''}
+                        ${remainingSeconds} seconds
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function addTime() {
+            performTimeOperation('add');
+        }
+
+        function subtractTime() {
+            performTimeOperation('subtract');
+        }
+
+        function performTimeOperation(operation) {
+            const baseDate = new Date(document.getElementById('baseDate').value);
+            const timeAmount = parseFloat(document.getElementById('timeAmount').value);
+            const timeUnit = document.getElementById('timeUnit').value;
+            
+            if (isNaN(baseDate.getTime()) || isNaN(timeAmount)) {
+                MultiTools.showNotification('Please enter valid date and amount', 'error');
+                return;
+            }
+
+            const multiplier = operation === 'add' ? 1 : -1;
+            const milliseconds = timeAmount * timeFactors[timeUnit] * 1000 * multiplier;
+            const resultDate = new Date(baseDate.getTime() + milliseconds);
+
+            const resultsDiv = document.getElementById('addSubtractResults');
+            const detailsDiv = document.getElementById('addSubtractDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Base Date:</strong> ${baseDate.toLocaleString()}<br>
+                        <strong>Operation:</strong> ${operation === 'add' ? 'Add' : 'Subtract'} ${timeAmount} ${timeUnit}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Result:</strong> <span class="text-success fw-bold">${resultDate.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Auto-convert on input change
+        document.getElementById('inputValue').addEventListener('input', function() {
+            if (this.value && !isNaN(this.value)) {
+                convertTime();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date/time as default
+            const now = new Date();
+            const nowString = now.toISOString().slice(0, 16);
+            document.getElementById('startDate').value = nowString;
+            document.getElementById('endDate').value = nowString;
+            document.getElementById('baseDate').value = nowString;
+            
+            // Set default values for demo
+            document.getElementById('inputValue').value = '60';
+            convertTime();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Bio Link - Multi-Tools Hub</title>
+    <meta name="description" content="Create a beautiful Instagram bio link page for your profile.">
+    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .bio-preview {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid #e6e6e6;
+        }
+        .bio-header {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid white;
+            margin: 0 auto 15px;
+            object-fit: cover;
+        }
+        .bio-link {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #262626;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid #e6e6e6;
+        }
+        .bio-link:hover {
+            background: #efefef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            gap: 15px;
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #262626;
+            font-size: 18px;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: 1px solid #e6e6e6;
+        }
+        .social-icon:hover {
+            background: #efefef;
+            transform: translateY(-2px);
+        }
+        .link-preview {
+            position: relative;
+            transition: all 0.3s;
+        }
+        .link-preview:hover {
+            transform: scale(1.02);
+        }
+        #previewContainer {
+            position: sticky;
+            top: 20px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #833AB4;
+            box-shadow: 0 0 0 0.25rem rgba(131, 58, 180, 0.25);
+        }
+        .btn-primary {
+            background: #833AB4;
+            border-color: #833AB4;
+        }
+        .btn-primary:hover {
+            background: #6a2d94;
+            border-color: #6a2d94;
+        }
+        .link-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e6e6e6;
+        }
+        .drag-handle {
+            cursor: move;
+            color: #6c757d;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Placeholder -->
+    <div id="header-placeholder"></div>
+
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-lg-7">
+                <h1 class="text-center mb-3">
+                    <i class="fab fa-instagram me-2" style="color: #E1306C;"></i>Instagram Bio Link
+                </h1>
+                <p class="text-center text-muted mb-4">Create a beautiful link page for your Instagram bio</p>
+                
+                <!-- Top Ad Banner -->
+                <div class="text-center mb-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form id="bioLinkForm">
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-user me-2"></i>Profile Information</h5>
+                                <div class="mb-3">
+                                    <label for="profileName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="profileName" placeholder="John Doe" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profileUsername" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">@</span>
+                                        <input type="text" class="form-control" id="profileUsername" placeholder="username" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profileBio" class="form-label">Bio</label>
+                                    <textarea class="form-control" id="profileBio" rows="2" placeholder="A short bio about you" maxlength="150"></textarea>
+                                    <div class="form-text text-end"><span id="charCount">0</span>/150</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profileImage" class="form-label">Profile Image URL</label>
+                                    <input type="url" class="form-control" id="profileImage" placeholder="https://example.com/your-image.jpg">
+                                    <div class="form-text">Leave empty to use default avatar</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0"><i class="fas fa-link me-2"></i>Links</h5>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addLink">
+                                        <i class="fas fa-plus me-1"></i>Add Link
+                                    </button>
+                                </div>
+                                
+                                <div id="linksContainer">
+                                    <!-- Links will be added here dynamically -->
+                                </div>
+                                
+                                <template id="linkTemplate">
+                                    <div class="link-item" draggable="true">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-grip-vertical drag-handle"></i>
+                                            <h6 class="mb-0 flex-grow-1">New Link</h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-link">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small text-muted">Title</label>
+                                            <input type="text" class="form-control form-control-sm link-title" placeholder="Link title" required>
+                                        </div>
+                                        <div>
+                                            <label class="form-label small text-muted">URL</label>
+                                            <input type="url" class="form-control form-control-sm link-url" placeholder="https://example.com" required>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h5 class="mb-3"><i class="fas fa-share-alt me-2"></i>Social Media Links</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                            <input type="url" class="form-control" id="instagramUrl" placeholder="Instagram URL">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                            <input type="url" class="form-control" id="twitterUrl" placeholder="Twitter URL">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-facebook"></i></span>
+                                            <input type="url" class="form-control" id="facebookUrl" placeholder="Facebook URL">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-youtube"></i></span>
+                                            <input type="url" class="form-control" id="youtubeUrl" placeholder="YouTube URL">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-tiktok"></i></span>
+                                            <input type="url" class="form-control" id="tiktokUrl" placeholder="TikTok URL">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                                            <input type="url" class="form-control" id="linkedinUrl" placeholder="LinkedIn URL">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-magic me-2"></i>Generate Bio Link
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="copyLink" style="display: none;">
+                                    <i class="fas fa-copy me-2"></i>Copy Link
+                                </button>
+                            </div>
+                            <!-- Middle Content Ad -->
+                            <div class="text-center my-4">
+                                <div class="ad-banner border rounded p-2 bg-light">
+                                    <ins class="adsbygoogle"
+                                         style="display:block"
+                                         data-ad-client="ca-pub-1226609223843598"
+                                         data-ad-slot="1798180633"
+                                         data-ad-format="auto"
+                                         data-full-width-responsive="true">
+                                    </ins>
+                                    <script>
+                                         (adsbygoogle = window.adsbygoogle || []).push({});
+                                    </script>
+                                </div>
+                                <small class="text-muted d-block mt-1">Advertisement</small>
+                            </div>
+                            <div class="alert alert-info">
+                                <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>How to Use</h5>
+                                <ol class="mb-0">
+                                    <li>Fill in your profile information</li>
+                                    <li>Add and customize your links</li>
+                                    <li>Add your social media profiles (optional)</li>
+                        </div>
+                        <small class="text-muted d-block mt-1">Advertisement</small>
+                    </div>
+                    
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <form id="bioLinkForm">
+                                <div class="mb-4">
+                                    <h5 class="mb-3"><i class="fas fa-user me-2"></i>Profile Information</h5>
+                                    <div class="mb-3">
+                                        <label for="profileName" class="form-label">Your Name</label>
+                                        <input type="text" class="form-control" id="profileName" placeholder="John Doe" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileUsername" class="form-label">Username</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@</span>
+                                            <input type="text" class="form-control" id="profileUsername" placeholder="username" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileBio" class="form-label">Bio</label>
+                                        <textarea class="form-control" id="profileBio" rows="2" placeholder="A short bio about you" maxlength="150"></textarea>
+                                        <div class="form-text text-end"><span id="charCount">0</span>/150</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileImage" class="form-label">Profile Image URL</label>
+                                        <input type="url" class="form-control" id="profileImage" placeholder="https://example.com/your-image.jpg">
+                                        <div class="form-text">Leave empty to use default avatar</div>
+                                    </div>
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+            </div>
+            
+            <div class="col-lg-5">
+                <div id="previewContainer" class="mb-4">
+                    <h5 class="text-center mb-3">Live Preview</h5>
+                    <div class="bio-preview">
+                        <div class="bio-header">
+                            <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" class="profile-img" id="previewProfileImage">
+                            <h4 id="previewName" class="mb-1">Your Name</h4>
+                            <div class="text-white-50 mb-2" id="previewUsername">@username</div>
+                            <p class="mb-0" id="previewBio">A short bio about you will appear here</p>
+                        </div>
+                        <div class="py-3" id="previewLinks">
+                            <!-- Links will be added here dynamically -->
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 mb-0 text-muted">Add links to see preview</p>
+                            </div>
+                        </div>
+                        <div class="social-links">
+                            <!-- Social icons will be added here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-link me-2"></i>Your Bio Link</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="generatedLink" value="https://yourwebsite.com/username" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="copyLink">
+                                <i class="far fa-copy me-1"></i>Copy
+                            </button>
+                        </div>
+                        <div class="alert alert-success d-none" id="copySuccess">
+                            <i class="fas fa-check-circle me-2"></i>Link copied to clipboard!
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>Note: To make this link work, you'll need to host this page on a web server.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Drag and Drop Sortable -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="../js/header-footer.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Sortable for links
+            const linksContainer = document.getElementById('linksContainer');
+            new Sortable(linksContainer, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'bg-light'
+            });
+            
+            // Add new link
+            document.getElementById('addLink').addEventListener('click', function() {
+                const template = document.getElementById('linkTemplate');
+                const linkItem = template.content.cloneNode(true);
+                linksContainer.appendChild(linkItem);
+                
+                // Add remove functionality to new link
+                const removeBtn = linksContainer.lastElementChild.querySelector('.remove-link');
+                removeBtn.addEventListener('click', function() {
+                    this.closest('.link-item').remove();
+                });
+            });
+            
+            // Character counter for bio
+            const bioInput = document.getElementById('profileBio');
+            const charCount = document.getElementById('charCount');
+            
+            bioInput.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+            
+            // Form submission
+            document.getElementById('bioLinkForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updatePreview();
+            });
+            
+            // Copy link to clipboard
+            document.getElementById('copyLink').addEventListener('click', function() {
+                const linkInput = document.getElementById('generatedLink');
+                linkInput.select();
+                document.execCommand('copy');
+                
+                const copySuccess = document.getElementById('copySuccess');
+                copySuccess.classList.remove('d-none');
+                setTimeout(() => copySuccess.classList.add('d-none'), 2000);
+            });
+            
+            // Update preview function
+            function updatePreview() {
+                // Update profile info
+                document.getElementById('previewName').textContent = 
+                    document.getElementById('profileName').value || 'Your Name';
+                    
+                const username = document.getElementById('profileUsername').value || 'username';
+                document.getElementById('previewUsername').textContent = '@' + username;
+                
+                // Update bio
+                const bio = document.getElementById('profileBio').value || 'A short bio about you will appear here';
+                document.getElementById('previewBio').textContent = bio;
+                
+                // Update profile image
+                const profileImage = document.getElementById('profileImage').value || 
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('profileName').value || 'User')}&background=random`;
+                document.getElementById('previewProfileImage').src = profileImage;
+                
+                // Update links
+                const linksContainer = document.getElementById('previewLinks');
+                linksContainer.innerHTML = '';
+                
+                const linkItems = document.querySelectorAll('#linksContainer .link-item');
+                if (linkItems.length === 0) {
+                    linksContainer.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-link fa-2x text-muted mb-2"></i>
+                            <p class="mb-0 text-muted">No links added yet</p>
+                        </div>
+                    `;
+                } else {
+                    linkItems.forEach(item => {
+                        const title = item.querySelector('.link-title').value || 'Untitled Link';
+                        const url = item.querySelector('.link-url').value || '#';
+                        
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.className = 'bio-link';
+                        link.textContent = title;
+                        link.target = '_blank';
+                        
+                        linksContainer.appendChild(link);
+                    });
+                }
+                
+                // Update social links
+                const socialLinks = [
+                    { id: 'instagram', icon: 'instagram', color: '#E1306C' },
+                    { id: 'twitter', icon: 'twitter', color: '#1DA1F2' },
+                    { id: 'facebook', icon: 'facebook', color: '#4267B2' },
+                    { id: 'youtube', icon: 'youtube', color: '#FF0000' },
+                    { id: 'tiktok', icon: 'tiktok', color: '#000000' },
+                    { id: 'linkedin', icon: 'linkedin', color: '#0077B5' }
+                ];
+                
+                const socialContainer = document.querySelector('.social-links');
+                socialContainer.innerHTML = '';
+                
+                socialLinks.forEach(social => {
+                    const url = document.getElementById(`${social.id}Url`).value;
+                    if (url) {
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.className = 'social-icon';
+                        link.target = '_blank';
+                        link.style.color = social.color;
+                        link.innerHTML = `<i class="fab fa-${social.icon}"></i>`;
+                        socialContainer.appendChild(link);
+                    }
+                });
+                
+                // Update generated link
+                document.getElementById('generatedLink').value = 
+                    `${window.location.origin}/bio/${username.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+            }
+            
+            // Initialize with one empty link
+            document.getElementById('addLink').click();
+            
+            // Load header and footer
+            loadHeader();
+            loadFooter();
+        });
+    </script>
+</body>
+</html>

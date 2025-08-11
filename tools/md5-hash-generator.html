@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD5 Hash Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online MD5 hash generator. Generate MD5 hashes from text, files, and verify hash integrity.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- This must be in your <head> section -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-shield-alt me-3"></i>MD5 Hash Generator</h1>
+            <p class="lead">Generate MD5 hashes from text and files with integrity verification</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Generate MD5 Hash</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="inputText" class="form-label">Enter text to hash:</label>
+                                <textarea id="inputText" class="form-control" rows="6" placeholder="Enter your text here..."></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="hashCase" class="form-label">Hash Format:</label>
+                                    <select id="hashCase" class="form-select">
+                                        <option value="lowercase">Lowercase</option>
+                                        <option value="uppercase">Uppercase</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="hashFormat" class="form-label">Output Format:</label>
+                                    <select id="hashFormat" class="form-select">
+                                        <option value="hex">Hexadecimal</option>
+                                        <option value="base64">Base64</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mb-3">
+                                <button id="generateBtn" class="btn btn-primary">
+                                    <i class="fas fa-magic me-2"></i>Generate MD5
+                                </button>
+                                <button id="clearBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear
+                                </button>
+                                <button id="copyBtn" class="btn btn-outline-primary">
+                                    <i class="fas fa-copy me-2"></i>Copy Hash
+                                </button>
+                            </div>
+
+                            <!-- MD5 Result -->
+                            <div id="md5Result" class="mt-4 d-none">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle me-2"></i>MD5 Hash Generated</h6>
+                                    <div class="result-box">
+                                        <code id="md5Hash" class="hash-result"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Hash Generator -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-file me-2"></i>File Hash Generator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="fileInput" class="form-label">Select file to hash:</label>
+                                <input type="file" id="fileInput" class="form-control">
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="generateFileBtn" class="btn btn-primary">
+                                    <i class="fas fa-file-upload me-2"></i>Generate File Hash
+                                </button>
+                                <button id="clearFileBtn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-trash me-2"></i>Clear File
+                                </button>
+                            </div>
+
+                            <!-- File Hash Result -->
+                            <div id="fileHashResult" class="mt-4 d-none">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-file-check me-2"></i>File MD5 Hash</h6>
+                                    <div class="result-box">
+                                        <code id="fileHash" class="hash-result"></code>
+                                    </div>
+                                    <small class="text-muted" id="fileInfo"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hash Verification -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-check-double me-2"></i>Hash Verification</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="originalText" class="form-label">Original Text:</label>
+                                    <textarea id="originalText" class="form-control" rows="3" placeholder="Enter original text..."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="hashToVerify" class="form-label">Hash to Verify:</label>
+                                    <input type="text" id="hashToVerify" class="form-control" placeholder="Enter MD5 hash...">
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button id="verifyBtn" class="btn btn-success">
+                                    <i class="fas fa-search me-2"></i>Verify Hash
+                                </button>
+                            </div>
+
+                            <!-- Verification Result -->
+                            <div id="verificationResult" class="mt-3 d-none">
+                                <div class="alert" id="verificationAlert">
+                                    <h6 id="verificationTitle"></h6>
+                                    <p id="verificationMessage"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Hash Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>MD5 Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="hash-info">
+                                <div class="info-item mb-3">
+                                    <strong>Hash Length:</strong> 128 bits (32 characters)
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>Algorithm:</strong> MD5 (Message Digest Algorithm 5)
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>Security Status:</strong> 
+                                    <span class="badge bg-warning">Cryptographically Broken</span>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <strong>Common Uses:</strong>
+                                    <ul class="list-unstyled mt-2">
+                                        <li>• File integrity checks</li>
+                                        <li>• Data fingerprinting</li>
+                                        <li>• Legacy systems</li>
+                                        <li>• Non-security applications</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hash Examples -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Common MD5 Examples</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Input</th>
+                                            <th>MD5 Hash</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>hello</td>
+                                            <td><code>5d41402abc4b2a76b9719d911017c592</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>password</td>
+                                            <td><code>5f4dcc3b5aa765d61d8327deb882cf99</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>123456</td>
+                                            <td><code>e10adc3949ba59abbe56e057f20f883e</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>admin</td>
+                                            <td><code>21232f297a57a5a743894a0e4a801fc3</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('empty')">
+                                    Empty String
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('hello')">
+                                    "hello"
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('password')">
+                                    "password"
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadExample('long')">
+                                    Long Text
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                </div>
+                </div>
+            </div>
+
+            <!-- MD5 Security Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>MD5 Security Notice</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-warning me-2"></i>Important Security Information</h6>
+                                <p><strong>MD5 is cryptographically broken and should NOT be used for security purposes.</strong></p>
+                                <ul>
+                                    <li>MD5 has been proven vulnerable to collision attacks</li>
+                                    <li>It's possible to create different inputs that produce the same MD5 hash</li>
+                                    <li>MD5 should only be used for non-security applications like file integrity checks</li>
+                                    <li>For security purposes, use SHA-256, SHA-3, or bcrypt instead</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>When to Use MD5:</h6>
+                                    <ul>
+                                        <li>File integrity verification</li>
+                                        <li>Data fingerprinting</li>
+                                        <li>Legacy system compatibility</li>
+                                        <li>Non-security applications</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>When NOT to Use MD5:</h6>
+                                    <ul>
+                                        <li>Password hashing</li>
+                                        <li>Digital signatures</li>
+                                        <li>SSL/TLS certificates</li>
+                                        <li>Any security-critical application</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- Ad Section -->
+                    <div class="text-center mb-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // MD5 Hash Generator specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const hashCase = document.getElementById('hashCase');
+            const hashFormat = document.getElementById('hashFormat');
+            const generateBtn = document.getElementById('generateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const fileInput = document.getElementById('fileInput');
+            const generateFileBtn = document.getElementById('generateFileBtn');
+            const clearFileBtn = document.getElementById('clearFileBtn');
+            const originalText = document.getElementById('originalText');
+            const hashToVerify = document.getElementById('hashToVerify');
+            const verifyBtn = document.getElementById('verifyBtn');
+
+            // Generate MD5 hash
+            generateBtn.addEventListener('click', generateMD5);
+            clearBtn.addEventListener('click', clearForm);
+            copyBtn.addEventListener('click', copyHash);
+            generateFileBtn.addEventListener('click', generateFileHash);
+            clearFileBtn.addEventListener('click', clearFile);
+            verifyBtn.addEventListener('click', verifyHash);
+
+            // Auto-generate on input change
+            inputText.addEventListener('input', debounce(generateMD5, 500));
+
+            function generateMD5() {
+                const text = inputText.value;
+                if (!text.trim()) {
+                    hideResult();
+                    return;
+                }
+
+                try {
+                    let hash;
+                    if (hashFormat.value === 'hex') {
+                        hash = CryptoJS.MD5(text).toString();
+                    } else {
+                        hash = CryptoJS.MD5(text).toString(CryptoJS.enc.Base64);
+                    }
+
+                    if (hashCase.value === 'uppercase') {
+                        hash = hash.toUpperCase();
+                    }
+
+                    displayResult(hash);
+                } catch (error) {
+                    MultiTools.showNotification('Error generating hash: ' + error.message, 'error');
+                }
+            }
+
+            function generateFileHash() {
+                const file = fileInput.files[0];
+                if (!file) {
+                    MultiTools.showNotification('Please select a file first', 'warning');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const arrayBuffer = e.target.result;
+                        const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+                        let hash = CryptoJS.MD5(wordArray).toString();
+                        
+                        if (hashCase.value === 'uppercase') {
+                            hash = hash.toUpperCase();
+                        }
+
+                        displayFileResult(hash, file);
+                    } catch (error) {
+                        MultiTools.showNotification('Error generating file hash: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            function verifyHash() {
+                const text = originalText.value;
+                const hash = hashToVerify.value.trim();
+
+                if (!text || !hash) {
+                    MultiTools.showNotification('Please enter both text and hash', 'warning');
+                    return;
+                }
+
+                try {
+                    const generatedHash = CryptoJS.MD5(text).toString();
+                    const isMatch = generatedHash.toLowerCase() === hash.toLowerCase();
+
+                    displayVerificationResult(isMatch, generatedHash, hash);
+                } catch (error) {
+                    MultiTools.showNotification('Error verifying hash: ' + error.message, 'error');
+                }
+            }
+
+            function displayResult(hash) {
+                document.getElementById('md5Hash').textContent = hash;
+                document.getElementById('md5Result').classList.remove('d-none');
+            }
+
+            function displayFileResult(hash, file) {
+                document.getElementById('fileHash').textContent = hash;
+                document.getElementById('fileInfo').textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
+                document.getElementById('fileHashResult').classList.remove('d-none');
+            }
+
+            function displayVerificationResult(isMatch, generatedHash, providedHash) {
+                const resultDiv = document.getElementById('verificationResult');
+                const alertDiv = document.getElementById('verificationAlert');
+                const titleDiv = document.getElementById('verificationTitle');
+                const messageDiv = document.getElementById('verificationMessage');
+
+                if (isMatch) {
+                    alertDiv.className = 'alert alert-success';
+                    titleDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Hash Verification Successful';
+                    messageDiv.innerHTML = `
+                        The provided hash matches the generated hash.<br>
+                        <strong>Generated Hash:</strong> ${generatedHash}<br>
+                        <strong>Provided Hash:</strong> ${providedHash}
+                    `;
+                } else {
+                    alertDiv.className = 'alert alert-danger';
+                    titleDiv.innerHTML = '<i class="fas fa-times-circle me-2"></i>Hash Verification Failed';
+                    messageDiv.innerHTML = `
+                        The provided hash does not match the generated hash.<br>
+                        <strong>Generated Hash:</strong> ${generatedHash}<br>
+                        <strong>Provided Hash:</strong> ${providedHash}
+                    `;
+                }
+
+                resultDiv.classList.remove('d-none');
+            }
+
+            function clearForm() {
+                inputText.value = '';
+                hideResult();
+            }
+
+            function clearFile() {
+                fileInput.value = '';
+                document.getElementById('fileHashResult').classList.add('d-none');
+            }
+
+            function copyHash() {
+                const hashElement = document.getElementById('md5Hash');
+                if (hashElement && hashElement.textContent) {
+                    navigator.clipboard.writeText(hashElement.textContent).then(() => {
+                        MultiTools.showNotification('Hash copied to clipboard!', 'success');
+                    }).catch(() => {
+                        MultiTools.showNotification('Failed to copy hash', 'error');
+                    });
+                } else {
+                    MultiTools.showNotification('No hash to copy', 'warning');
+                }
+            }
+
+            function hideResult() {
+                document.getElementById('md5Result').classList.add('d-none');
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Example functions
+            window.loadExample = function(type) {
+                const examples = {
+                    empty: '',
+                    hello: 'hello',
+                    password: 'password',
+                    long: 'This is a longer text example to demonstrate MD5 hashing with multiple words and characters. It includes punctuation, numbers 123, and special characters!@#'
+                };
+
+                inputText.value = examples[type];
+                generateMD5();
+            };
+
+            // Add CSS for better styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .hash-result {
+                    font-family: 'Courier New', monospace;
+                    font-size: 14px;
+                    word-break: break-all;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 5px;
+                    display: block;
+                }
+                .info-item {
+                    border-left: 3px solid var(--primary-color);
+                    padding-left: 10px;
+                }
+                .result-box {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 5px;
+                    padding: 10px;
+                    margin-top: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html> 

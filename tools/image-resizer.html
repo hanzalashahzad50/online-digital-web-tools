@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - Multi-Tools Hub</title>
+    <meta name="description" content="Free online image resizer. Resize your images to any dimensions while maintaining aspect ratio.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .preview-container {
+            max-width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            margin: 0 auto;
+            display: none;
+        }
+        .dimension-inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .dimension-inputs .form-group {
+            flex: 1;
+        }
+        .ratio-lock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 30px;
+            cursor: pointer;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .drop-zone.dragover {
+            background-color: #e9ecef;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-expand-arrows-alt me-3"></i>Image Resizer</h1>
+            <p class="lead">Resize your images to any dimensions while maintaining aspect ratio</p>
+        </div>
+        
+        <!-- Top Ad (Leaderboard) -->
+        <div id="ad-leaderboard" class="mt-4 mb-4">
+            <!-- Ad will be injected here by ads.js -->
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Upload Area -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Image</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dropZone" class="drop-zone">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                                <h5>Drag & Drop your image here</h5>
+                                <p class="text-muted">or</p>
+                                <button id="browseBtn" class="btn btn-primary">
+                                    <i class="fas fa-folder-open me-2"></i>Browse Files
+                                </button>
+                                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                                <p class="small text-muted mt-2">Supports: JPG, JPEG, PNG, GIF, WEBP</p>
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div id="previewContainer" class="preview-container" style="display: none;">
+                                <img id="imagePreview" class="img-fluid rounded" alt="Preview">
+                                <div class="mt-2">
+                                    <span id="fileName" class="d-block fw-bold"></span>
+                                    <span id="fileSize" class="text-muted small"></span>
+                                    <span id="imageDimensions" class="text-muted small d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resize Options -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-crop-alt me-2"></i>Resize Options</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="dimension-inputs">
+                                        <div class="form-group">
+                                            <label for="widthInput" class="form-label">Width (px)</label>
+                                            <input type="number" class="form-control" id="widthInput" min="1" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="heightInput" class="form-label">Height (px)</label>
+                                            <input type="number" class="form-control" id="heightInput" min="1" disabled>
+                                        </div>
+                                        <div class="ratio-lock" id="ratioLock" title="Maintain aspect ratio">
+                                            <i class="fas fa-lock text-muted" id="lockIcon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="maintainAspect" checked>
+                                        <label class="form-check-label" for="maintainAspect">Maintain aspect ratio</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="highQuality" checked>
+                                        <label class="form-check-label" for="highQuality">High quality resizing</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="ratio-options mb-3">
+                                        <label class="form-label">Common Sizes:</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-width="800" data-height="600">800×600</button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-width="1024" data-height="768">1024×768</button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-width="1920" data-height="1080">1920×1080</button>
+                                        </div>
+                                    </div>
+                                    <div class="ratio-options">
+                                        <label class="form-label">Social Media:</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-width="1200" data-height="630">Facebook</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-width="1080" data-height="1080">Instagram</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-width="1200" data-height="675">Twitter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <button id="resizeBtn" class="btn btn-primary" disabled>
+                            <i class="fas fa-crop-alt me-2"></i>Resize Image
+                        </button>
+                        <button id="downloadBtn" class="btn btn-success" disabled>
+                            <i class="fas fa-download me-2"></i>Download Resized Image
+                        </button>
+                        <button id="resetBtn" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+
+                    <!-- Resized Preview -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-image me-2"></i>Resized Preview</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div id="resizedPreviewContainer" class="mb-3" style="display: none;">
+                                <img id="resizedPreview" class="img-fluid rounded" alt="Resized Preview">
+                                <div class="mt-2">
+                                    <span id="resizedDimensions" class="text-muted small"></span>
+                                    <span id="resizedSize" class="text-muted small d-block"></span>
+                                </div>
+                            </div>
+                            <div id="noResizePreview" class="text-muted py-4">
+                                <i class="fas fa-image fa-3x mb-3"></i>
+                                <p class="mb-0">Your resized image will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Image Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Format
+                                    <span id="infoFormat" class="badge bg-secondary">-</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Original Dimensions
+                                    <span id="infoDimensions" class="badge bg-secondary">-</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    File Size
+                                    <span id="infoSize" class="badge bg-secondary">-</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    New Dimensions
+                                    <span id="infoNewDimensions" class="badge bg-primary">-</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    New File Size
+                                    <span id="infoNewSize" class="badge bg-primary">-</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Resize Images</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Step-by-Step Guide:</h6>
+                                    <ol>
+                                        <li>Upload an image by dragging and dropping or clicking "Browse Files"</li>
+                                        <li>Set your desired dimensions using the width and height inputs</li>
+                                        <li>Use the lock icon to maintain or ignore the aspect ratio</li>
+                                        <li>Click "Resize Image" to apply the changes</li>
+                                        <li>Download the resized image</li>
+                                    </ol>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Tips:</h6>
+                                    <ul>
+                                        <li>Use the common sizes for quick resizing</li>
+                                        <li>Maintain aspect ratio to prevent image distortion</li>
+                                        <li>Enable high-quality resizing for better results</li>
+                                        <li>For social media, use the pre-defined buttons for optimal dimensions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Ad (Leaderboard) -->
+    <div id="ad-bottom" class="container mt-4 mb-4">
+        <!-- Ad will be injected here by ads.js -->
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const previewContainer = document.getElementById('previewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const imageDimensions = document.getElementById('imageDimensions');
+            const widthInput = document.getElementById('widthInput');
+            const heightInput = document.getElementById('heightInput');
+            const ratioLock = document.getElementById('ratioLock');
+            const lockIcon = document.getElementById('lockIcon');
+            const maintainAspect = document.getElementById('maintainAspect');
+            const highQuality = document.getElementById('highQuality');
+            const resizeBtn = document.getElementById('resizeBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const resizedPreviewContainer = document.getElementById('resizedPreviewContainer');
+            const resizedPreview = document.getElementById('resizedPreview');
+            const resizedDimensions = document.getElementById('resizedDimensions');
+            const resizedSize = document.getElementById('resizedSize');
+            const noResizePreview = document.getElementById('noResizePreview');
+            const infoFormat = document.getElementById('infoFormat');
+            const infoDimensions = document.getElementById('infoDimensions');
+            const infoSize = document.getElementById('infoSize');
+            const infoNewDimensions = document.getElementById('infoNewDimensions');
+            const infoNewSize = document.getElementById('infoNewSize');
+            const commonSizes = document.querySelectorAll('.ratio-options .btn');
+
+            // State
+            let originalImage = null;
+            let originalWidth = 0;
+            let originalHeight = 0;
+            let aspectRatio = 1;
+            let isLocked = true;
+            let resizedImageBlob = null;
+
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+            dropZone.addEventListener('drop', handleDrop);
+            widthInput.addEventListener('input', handleDimensionChange);
+            heightInput.addEventListener('input', handleDimensionChange);
+            ratioLock.addEventListener('click', toggleAspectRatioLock);
+            maintainAspect.addEventListener('change', updateAspectRatioLock);
+            resizeBtn.addEventListener('click', resizeImage);
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetForm);
+
+            // Add event listeners for common size buttons
+            commonSizes.forEach(button => {
+                button.addEventListener('click', () => {
+                    const width = parseInt(button.dataset.width);
+                    const height = parseInt(button.dataset.height);
+                    setDimensions(width, height);
+                });
+            });
+
+            // Functions
+            function handleFileSelect(e) {
+                const file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+                if (!file || !file.type.match('image.*')) {
+                    MultiTools.showNotification('Please select a valid image file', 'error');
+                    return;
+                }
+                processImageFile(file);
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            }
+
+            function handleDragLeave(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.match('image.*')) {
+                        processImageFile(file);
+                    } else {
+                        MultiTools.showNotification('Please select a valid image file', 'error');
+                    }
+                }
+            }
+
+            function processImageFile(file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        originalWidth = img.width;
+                        originalHeight = img.height;
+                        aspectRatio = originalWidth / originalHeight;
+                        
+                        // Update UI
+                        imagePreview.src = e.target.result;
+                        fileName.textContent = file.name;
+                        fileSize.textContent = formatFileSize(file.size);
+                        imageDimensions.textContent = `${originalWidth} × ${originalHeight} px`;
+                        
+                        // Set initial dimensions
+                        setDimensions(originalWidth, originalHeight);
+                        
+                        // Show preview and enable controls
+                        previewContainer.style.display = 'block';
+                        widthInput.disabled = false;
+                        heightInput.disabled = false;
+                        resizeBtn.disabled = false;
+                        
+                        // Update info panel
+                        infoFormat.textContent = file.type.split('/')[1].toUpperCase();
+                        infoDimensions.textContent = `${originalWidth}×${originalHeight}`;
+                        infoSize.textContent = formatFileSize(file.size);
+                    };
+                    img.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+
+            function setDimensions(width, height) {
+                widthInput.value = width;
+                heightInput.value = height;
+                updateAspectRatio();
+            }
+
+            function handleDimensionChange(e) {
+                if (e.target === widthInput && isLocked) {
+                    const newWidth = parseInt(e.target.value) || 0;
+                    const newHeight = Math.round(newWidth / aspectRatio);
+                    heightInput.value = newHeight;
+                } else if (e.target === heightInput && isLocked) {
+                    const newHeight = parseInt(e.target.value) || 0;
+                    const newWidth = Math.round(newHeight * aspectRatio);
+                    widthInput.value = newWidth;
+                }
+                updateAspectRatio();
+            }
+
+            function updateAspectRatio() {
+                const width = parseInt(widthInput.value) || 0;
+                const height = parseInt(heightInput.value) || 0;
+                
+                if (width > 0 && height > 0) {
+                    aspectRatio = width / height;
+                }
+                
+                // Update info panel
+                infoNewDimensions.textContent = `${width}×${height}`;
+            }
+
+            function toggleAspectRatioLock() {
+                isLocked = !isLocked;
+                lockIcon.className = isLocked ? 'fas fa-lock' : 'fas fa-unlock';
+                lockIcon.title = isLocked ? 'Maintain aspect ratio' : 'Unlocked aspect ratio';
+                
+                if (isLocked) {
+                    updateAspectRatio();
+                }
+            }
+
+            function updateAspectRatioLock() {
+                isLocked = maintainAspect.checked;
+                ratioLock.style.display = isLocked ? 'flex' : 'none';
+                
+                if (isLocked) {
+                    updateAspectRatio();
+                }
+            }
+
+            function resizeImage() {
+                if (!originalImage) return;
+                
+                const width = parseInt(widthInput.value) || originalWidth;
+                const height = parseInt(heightInput.value) || originalHeight;
+                const useHighQuality = highQuality.checked;
+                
+                // Create canvas for resizing
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Set image smoothing
+                ctx.imageSmoothingEnabled = useHighQuality;
+                ctx.imageSmoothingQuality = useHighQuality ? 'high' : 'low';
+                
+                // Draw image to canvas
+                ctx.drawImage(originalImage, 0, 0, width, height);
+                
+                // Convert canvas to blob
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        MultiTools.showNotification('Failed to resize image', 'error');
+                        return;
+                    }
+                    
+                    resizedImageBlob = blob;
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Update resized preview
+                    resizedPreview.src = url;
+                    resizedDimensions.textContent = `${width} × ${height} px`;
+                    resizedSize.textContent = formatFileSize(blob.size);
+                    
+                    // Show resized preview and enable download
+                    resizedPreviewContainer.style.display = 'block';
+                    noResizePreview.style.display = 'none';
+                    downloadBtn.disabled = false;
+                    
+                    // Update info panel
+                    infoNewSize.textContent = formatFileSize(blob.size);
+                    
+                    MultiTools.showNotification('Image resized successfully!', 'success');
+                }, 'image/jpeg', 0.92); // 0.92 is the default quality for JPEG
+            }
+
+            function downloadImage() {
+                if (!resizedImageBlob) return;
+                
+                const url = URL.createObjectURL(resizedImageBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `resized_${fileName.textContent}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function resetForm() {
+                // Reset file input
+                fileInput.value = '';
+                
+                // Reset preview
+                imagePreview.src = '';
+                previewContainer.style.display = 'none';
+                
+                // Reset dimensions
+                widthInput.value = '';
+                heightInput.value = '';
+                widthInput.disabled = true;
+                heightInput.disabled = true;
+                
+                // Reset resized preview
+                resizedPreview.src = '';
+                resizedPreviewContainer.style.display = 'none';
+                noResizePreview.style.display = 'block';
+                
+                // Reset buttons
+                resizeBtn.disabled = true;
+                downloadBtn.disabled = true;
+                
+                // Reset info panel
+                infoFormat.textContent = '-';
+                infoDimensions.textContent = '-';
+                infoSize.textContent = '-';
+                infoNewDimensions.textContent = '-';
+                infoNewSize.textContent = '-';
+                
+                // Reset state
+                originalImage = null;
+                originalWidth = 0;
+                originalHeight = 0;
+                aspectRatio = 1;
+                resizedImageBlob = null;
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Initialize
+            updateAspectRatioLock();
+        });
+    </script>
+</body>
+</html>

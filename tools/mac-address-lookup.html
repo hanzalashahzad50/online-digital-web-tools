@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAC Address Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Look up MAC address details including vendor and address type with our free MAC address lookup tool.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .result-card { border-left: 4px solid #0d6efd; margin-bottom: 15px; }
+        .copy-btn { cursor: pointer; opacity: 0.7; }
+        .copy-btn:hover { opacity: 1; }
+        .mac-address { font-family: monospace; font-size: 1.1em; }
+        .vendor-logo { max-height: 30px; max-width: 120px; margin-right: 10px; }
+        .vendor-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .mac-format { font-family: monospace; background: #f8f9fa; padding: 2px 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-network-wired me-3"></i>MAC Address Lookup</h1>
+            <p class="lead">Find vendor and details for any MAC address</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="macLookupForm">
+                                <div class="row g-3">
+                                    <div class="col-md-9">
+                                        <label for="macAddress" class="form-label">MAC Address</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="macAddress" 
+                                                   placeholder="00:1A:2B:3C:4D:5E" required>
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fas fa-search me-1"></i> Lookup
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            Formats: <span class="mac-format">00:1A:2B:3C:4D:5E</span>, 
+                                            <span class="mac-format">00-1A-2B-3C-4D-5E</span>, 
+                                            <span class="mac-format">001A.2B3C.4D5E</span>, or 
+                                            <span class="mac-format">001A2B3C4D5E</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="searchType" class="form-label">Search Type</label>
+                                        <select class="form-select" id="searchType">
+                                            <option value="exact">Exact Match</option>
+                                            <option value="vendor">Vendor Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">MAC Address Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="vendor-header mb-4">
+                                    <div>
+                                        <h4 id="vendorName" class="mb-0">-</h4>
+                                        <div class="text-muted small" id="vendorAddress"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card result-card mb-3">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Address Information</h6>
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <th>MAC Address:</th>
+                                                        <td>
+                                                            <span class="mac-address" id="formattedMac">-</span>
+                                                            <i class="fas fa-copy copy-btn ms-2" onclick="copyToClipboard('formattedMac')"></i>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>OUI:</th>
+                                                        <td>
+                                                            <span id="oui">-</span>
+                                                            <i class="fas fa-copy copy-btn ms-2" onclick="copyToClipboard('oui')"></i>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Vendor:</th>
+                                                        <td id="vendor">-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Address Type:</th>
+                                                        <td id="addressType">-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Is Private:</th>
+                                                        <td id="isPrivate">-</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card result-card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Convert Format</h6>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" id="convertedMac" readonly>
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('convertedMac')">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="btn-group w-100">
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="convertMac('colon')">00:1A:2B:3C:4D:5E</button>
+                                                    <button class="btn btn-sm btn-outline-secondary" onclick="convertMac('hyphen')">00-1A-2B-3C-4D-5E</button>
+                                                    <button class="btn btn-sm btn-outline-info" onclick="convertMac('dot')">001A.2B3C.4D5E</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About MAC Addresses</h5>
+                            <p>A MAC (Media Access Control) address is a unique identifier assigned to a network interface controller (NIC) for communications at the data link layer of a network segment.</p>
+                            
+                            <h6 class="mt-3">Common OUIs:</h6>
+                            <ul class="small">
+                                <li><strong>Apple</strong>: 00:03:93, 00:16:CB</li>
+                                <li><strong>Samsung</strong>: 00:12:47, 00:15:99</li>
+                                <li><strong>Dell</strong>: 00:14:22, 00:1B:24</li>
+                                <li><strong>Microsoft</strong>: 00:03:FF, 00:15:5D</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
+                            <ul class="small mb-0">
+                                <li class="mb-2">MAC addresses are case-insensitive</li>
+                                <li class="mb-2">First 6 characters identify the manufacturer</li>
+                                <li>MAC addresses can be spoofed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Form submission
+            document.getElementById('macLookupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const macAddress = document.getElementById('macAddress').value.trim();
+                const searchType = document.getElementById('searchType').value;
+                
+                if (validateMacAddress(macAddress)) {
+                    lookupMacAddress(macAddress, searchType);
+                } else {
+                    showNotification('Please enter a valid MAC address', 'error');
+                }
+            });
+
+            // Validate MAC address
+            function validateMacAddress(mac) {
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$|^([0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4})$/;
+                return macRegex.test(mac) || /^[0-9A-Fa-f]{12}$/.test(mac);
+            }
+
+            // Format MAC address
+            function formatMacAddress(mac, format = 'colon') {
+                const cleanMac = mac.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+                if (cleanMac.length !== 12) return mac;
+                
+                switch (format) {
+                    case 'colon': return cleanMac.match(/.{2}/g).join(':');
+                    case 'hyphen': return cleanMac.match(/.{2}/g).join('-');
+                    case 'dot': return cleanMac.match(/.{4}|.{1,4}$/g).join('.');
+                    default: return cleanMac;
+                }
+            }
+
+            // Lookup MAC address information
+            function lookupMacAddress(mac, searchType) {
+                const cleanMac = formatMacAddress(mac);
+                const oui = cleanMac.substring(0, 8);
+                
+                // Mock data for demo
+                const mockData = {
+                    mac: cleanMac,
+                    oui: oui,
+                    vendor: getMockVendor(oui),
+                    isPrivate: Math.random() > 0.8,
+                    addressType: ['Unicast', 'Multicast'][Math.floor(Math.random() * 2)]
+                };
+                
+                displayMacInfo(mockData, searchType);
+            }
+
+            // Get mock vendor based on OUI
+            function getMockVendor(oui) {
+                const vendors = {
+                    '000393': 'Apple, Inc.',
+                    '0016CB': 'Apple, Inc.',
+                    '001247': 'Samsung Electronics Co.,Ltd',
+                    '001599': 'Samsung Electronics Co.,Ltd',
+                    '001422': 'Dell Inc.',
+                    '001B24': 'Dell Inc.',
+                    '0003FF': 'Microsoft Corporation',
+                    '00155D': 'Microsoft Corporation'
+                };
+                
+                return vendors[oui.replace(/:/g, '')] || 'Unknown Vendor';
+            }
+
+            // Display MAC address information
+            function displayMacInfo(data, searchType) {
+                document.getElementById('formattedMac').textContent = formatMacAddress(data.mac, 'colon');
+                document.getElementById('oui').textContent = data.oui;
+                document.getElementById('vendor').textContent = data.vendor;
+                document.getElementById('vendorName').textContent = data.vendor;
+                document.getElementById('addressType').textContent = data.addressType;
+                document.getElementById('isPrivate').textContent = data.isPrivate ? 'Yes' : 'No';
+                document.getElementById('convertedMac').value = formatMacAddress(data.mac, 'colon');
+                
+                document.getElementById('resultsContainer').classList.remove('d-none');
+                document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+
+            // Global function for MAC format conversion
+            window.convertMac = function(format) {
+                const mac = document.getElementById('formattedMac').textContent;
+                if (mac === '-') return;
+                
+                const converted = formatMacAddress(mac, format);
+                document.getElementById('convertedMac').value = converted;
+                copyToClipboard('convertedMac');
+                showNotification('Copied to clipboard!', 'success');
+            };
+
+            // Global function to copy to clipboard
+            window.copyToClipboard = function(elementId) {
+                const el = document.getElementById(elementId);
+                const text = el.textContent || el.value;
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Copied to clipboard!', 'success');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            };
+        });
+    </script>
+</body>
+</html>

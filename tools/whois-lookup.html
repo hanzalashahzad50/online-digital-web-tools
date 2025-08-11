@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whois Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Look up domain registration and ownership information with Whois.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .info-card { border-left: 4px solid #0d6efd; margin-bottom: 15px; }
+        .info-label { font-weight: 600; color: #495057; }
+        .info-value { word-break: break-all; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-search me-3"></i>Whois Lookup</h1>
+            <p class="lead">Find domain registration and ownership information</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="whoisForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="domainInput" placeholder="example.com" required>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search me-2"></i>Lookup
+                                    </button>
+                                </div>
+                                <div class="form-text mt-2">
+                                    Enter a domain name to look up its registration details
+                                </div>
+                            </form>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Whois Information for <span id="resultDomain"></span></h5>
+                            </div>
+                            <div class="card-body" id="whoisInfo">
+                                <!-- Whois info will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Raw Whois Data</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <pre class="bg-light p-3 mb-0" id="rawWhois">
+                                    <!-- Raw whois data will be inserted here -->
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About Whois</h5>
+                            <p>Whois is a query and response protocol used for querying databases that store registered users or assignees of an Internet resource.</p>
+                            
+                            <h6 class="mt-4">Common Whois Data:</h6>
+                            <ul class="mb-0">
+                                <li>Domain registration date</li>
+                                <li>Expiration date</li>
+                                <li>Registrar information</li>
+                                <li>Name servers</li>
+                                <li>Registrant contact info</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                            <ol class="mb-0">
+                                <li>Enter a domain name</li>
+                                <li>Click "Lookup" to view results</li>
+                                <li>View detailed registration information</li>
+                                <li>Check the raw Whois data if needed</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Sample Whois data for demo
+            const sampleWhois = {
+                domain: 'example.com',
+                registered: true,
+                created: '1995-08-14T04:00:00Z',
+                updated: '2022-08-13T07:01:38Z',
+                expires: '2023-08-13T04:00:00Z',
+                registrar: 'RESERVED-Internet Assigned Numbers Authority',
+                status: 'clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)',
+                nameServers: ['a.iana-servers.net', 'b.iana-servers.net'],
+                raw: `Domain Name: EXAMPLE.COM
+Registry Domain ID: 2336799_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.iana.org
+Registrar URL: http://res-dom.iana.org
+Updated Date: 2022-08-13T07:01:38Z
+Creation Date: 1995-08-14T04:00:00Z
+Registry Expiry Date: 2023-08-13T04:00:00Z
+Registrar: RESERVED-Internet Assigned Numbers Authority
+Registrar IANA ID: 376
+Registrar Abuse Contact Email: abuse@iana.org
+Registrar Abuse Contact Phone: +1-310-301-5820
+Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited
+Name Server: A.IANA-SERVERS.NET
+Name Server: B.IANA-SERVERS.NET
+DNSSEC: signedDelegation
+DNSSEC DS Data: 55958 8 2 1B0A7E90AA6B1CAD40B3FF104CE11D429CAE38D8A1D90B5FC079AEEB78779CC4
+URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of whois database: 2023-08-14T10:00:00Z <<<`
+            };
+
+            // DOM Elements
+            const elements = {
+                whoisForm: document.getElementById('whoisForm'),
+                domainInput: document.getElementById('domainInput'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                resultDomain: document.getElementById('resultDomain'),
+                whoisInfo: document.getElementById('whoisInfo'),
+                rawWhois: document.getElementById('rawWhois')
+            };
+
+            // Event Listeners
+            elements.whoisForm.addEventListener('submit', lookupWhois);
+
+            // Lookup Whois function
+            async function lookupWhois(e) {
+                e.preventDefault();
+                const domain = elements.domainInput.value.trim();
+                
+                if (!domain) {
+                    showNotification('Please enter a domain', 'warning');
+                    return;
+                }
+                
+                // Show loading
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.add('d-none');
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // For demo, use sample data with the entered domain
+                const whoisData = {...sampleWhois};
+                whoisData.domain = domain;
+                whoisData.raw = whoisData.raw.replace(/example\.com/gi, domain);
+                
+                // Display results
+                displayResults(whoisData);
+                
+                // Hide loading
+                elements.progressBar.classList.add('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+            }
+            
+            // Display results
+            function displayResults(whoisData) {
+                elements.resultDomain.textContent = whoisData.domain;
+                elements.rawWhois.textContent = whoisData.raw;
+                
+                const createdDate = new Date(whoisData.created).toLocaleDateString();
+                const updatedDate = new Date(whoisData.updated).toLocaleDateString();
+                const expiresDate = new Date(whoisData.expires).toLocaleDateString();
+                
+                elements.whoisInfo.innerHTML = `
+                    <div class="info-card p-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="info-label">Domain Status</div>
+                                <div class="info-value">${whoisData.registered ? 'Registered' : 'Available'}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="info-label">Created On</div>
+                                <div class="info-value">${createdDate}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="info-label">Expires On</div>
+                                <div class="info-value">${expiresDate}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card p-3 mb-3">
+                        <h6>Registrar Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-label">Registrar</div>
+                                <div class="info-value">${whoisData.registrar}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">${whoisData.status}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card p-3">
+                        <h6>Name Servers</h6>
+                        <ul class="mb-0">
+                            ${whoisData.nameServers.map(ns => `<li>${ns}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

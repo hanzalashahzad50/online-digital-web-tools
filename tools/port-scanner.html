@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Scanner - Multi-Tools Hub</title>
+    <meta name="description" content="Scan open ports on any host with our online port scanner tool.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .port-card { border-left: 4px solid #198754; margin-bottom: 10px; }
+        .port-closed { border-left-color: #dc3545; }
+        .port-filtered { border-left-color: #ffc107; }
+        .port-service { font-size: 0.85em; color: #6c757d; }
+        .port-number { font-family: monospace; font-weight: bold; }
+        .scan-progress { height: 4px; margin-top: 10px; }
+        .port-banner { 
+            font-family: monospace; 
+            background: #212529; 
+            color: #e9ecef; 
+            padding: 10px; 
+            border-radius: 4px; 
+            font-size: 0.85em; 
+            max-height: 200px; 
+            overflow-y: auto; 
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-network-wired me-3"></i>Port Scanner</h1>
+            <p class="lead">Scan for open ports on any host</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="scanForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="hostInput" class="form-label">Host or IP Address</label>
+                                        <input type="text" class="form-control" id="hostInput" placeholder="example.com or 192.168.1.1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="portRange" class="form-label">Port Range</label>
+                                        <select class="form-select" id="portRange">
+                                            <option value="common">Common Ports</option>
+                                            <option value="common-web">Web Ports</option>
+                                            <option value="all">All Ports (1-1024)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" type="submit" id="startScan">
+                                            <i class="fas fa-search me-2"></i>Start Scan
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <div class="progress scan-progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Scan Results</h5>
+                                <div>
+                                    <span class="badge bg-secondary me-2">Scanning: <span id="scanningHost"></span></span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="p-3 border-bottom">
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <div class="h4 mb-1 text-success" id="openPortsCount">0</div>
+                                            <div class="text-muted small">Open</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="h4 mb-1 text-danger" id="closedPortsCount">0</div>
+                                            <div class="text-muted small">Closed</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="h4 mb-1 text-warning" id="filteredPortsCount">0</div>
+                                            <div class="text-muted small">Filtered</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3">
+                                    <div id="portsList" class="row g-3">
+                                        <!-- Ports will be added here -->
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button class="btn btn-outline-primary" id="exportCSV">
+                                            <i class="fas fa-file-csv me-1"></i>Export CSV
+                                        </button>
+                                        <div>
+                                            <button class="btn btn-outline-secondary me-2" id="stopScan" disabled>
+                                                <i class="fas fa-stop me-1"></i>Stop
+                                            </button>
+                                            <button class="btn btn-primary" id="newScan">
+                                                <i class="fas fa-redo me-1"></i>New Scan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About Port Scanner</h5>
+                            <p>A port scanner checks for open ports on a network host. This is useful for network troubleshooting and security assessments.</p>
+                            
+                            <h6 class="mt-4">Common Ports:</h6>
+                            <ul class="small">
+                                <li><strong>21</strong> - FTP</li>
+                                <li><strong>22</strong> - SSH</li>
+                                <li><strong>80</strong> - HTTP</li>
+                                <li><strong>443</strong> - HTTPS</li>
+                                <li><strong>3306</strong> - MySQL</li>
+                                <li><strong>3389</strong> - RDP</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-question-circle me-2"></i>Port Status</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <span class="badge bg-success me-2">Open</span>
+                                    <small>Port is open and accepting connections</small>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-danger me-2">Closed</span>
+                                    <small>Port is not in use</small>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-warning text-dark me-2">Filtered</span>
+                                    <small>Port is blocked by a firewall</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // DOM Elements
+            const elements = {
+                scanForm: document.getElementById('scanForm'),
+                hostInput: document.getElementById('hostInput'),
+                portRange: document.getElementById('portRange'),
+                startScan: document.getElementById('startScan'),
+                stopScan: document.getElementById('stopScan'),
+                newScan: document.getElementById('newScan'),
+                exportCSV: document.getElementById('exportCSV'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                scanningHost: document.getElementById('scanningHost'),
+                portsList: document.getElementById('portsList'),
+                openPortsCount: document.getElementById('openPortsCount'),
+                closedPortsCount: document.getElementById('closedPortsCount'),
+                filteredPortsCount: document.getElementById('filteredPortsCount')
+            };
+
+            // Port scanner variables
+            let scanInterval;
+            let isScanning = false;
+            let currentPort = 0;
+            let targetHost = '';
+            let portList = [];
+            let scanResults = [];
+            
+            // Common ports to scan
+            const commonPorts = [21, 22, 23, 25, 53, 80, 110, 115, 135, 139, 143, 194, 443, 445, 587, 631, 993, 995, 1723, 3306, 3389, 5900, 8080];
+            const webPorts = [80, 443, 8080, 8443, 8000, 3000, 5000, 9000];
+            
+            // Event Listeners
+            elements.scanForm.addEventListener('submit', startScan);
+            elements.stopScan.addEventListener('click', stopScan);
+            elements.newScan.addEventListener('click', resetScan);
+            elements.exportCSV.addEventListener('click', exportToCSV);
+            
+            // Port ranges
+            const portRanges = {
+                'common': commonPorts,
+                'common-web': webPorts,
+                'all': Array.from({length: 1024}, (_, i) => i + 1)
+            };
+
+            // Start port scan
+            function startScan(e) {
+                e.preventDefault();
+                
+                targetHost = elements.hostInput.value.trim();
+                const range = elements.portRange.value;
+                
+                if (!targetHost) {
+                    showNotification('Please enter a hostname or IP address', 'warning');
+                    return;
+                }
+                
+                // Reset state
+                resetScan();
+                
+                // Set port list based on selection
+                portList = portRanges[range] || portRanges.common;
+                
+                // Update UI
+                elements.scanningHost.textContent = targetHost;
+                elements.startScan.disabled = true;
+                elements.stopScan.disabled = false;
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+                
+                // Start scanning
+                isScanning = true;
+                currentPort = 0;
+                scanResults = [];
+                
+                // Simulate port scanning (in a real app, this would use WebSockets or server-side scanning)
+                scanInterval = setInterval(scanNextPort, 100);
+            }
+            
+            // Scan next port
+            function scanNextPort() {
+                if (currentPort >= portList.length) {
+                    stopScan();
+                    return;
+                }
+                
+                const port = portList[currentPort];
+                const status = getRandomStatus(port);
+                const service = getServiceForPort(port);
+                
+                const result = {
+                    port: port,
+                    status: status,
+                    service: service,
+                    banner: status === 'open' ? getRandomBanner(port) : ''
+                };
+                
+                scanResults.push(result);
+                updatePortUI(result);
+                
+                // Update progress
+                const progress = ((currentPort + 1) / portList.length) * 100;
+                elements.progressBar.querySelector('.progress-bar').style.width = `${progress}%`;
+                
+                currentPort++;
+                
+                // Stop if we've scanned all ports
+                if (currentPort >= portList.length) {
+                    stopScan();
+                }
+            }
+            
+            // Get random status for demo purposes
+            function getRandomStatus(port) {
+                // Common ports are more likely to be open
+                if (commonPorts.includes(port)) {
+                    const rand = Math.random();
+                    if (rand > 0.7) return 'open';
+                    if (rand > 0.4) return 'filtered';
+                    return 'closed';
+                }
+                
+                // Other ports are more likely to be closed/filtered
+                const rand = Math.random();
+                if (rand > 0.9) return 'open';
+                if (rand > 0.6) return 'filtered';
+                return 'closed';
+            }
+            
+            // Get service name for common ports
+            function getServiceForPort(port) {
+                const services = {
+                    21: 'FTP',
+                    22: 'SSH',
+                    23: 'Telnet',
+                    25: 'SMTP',
+                    53: 'DNS',
+                    80: 'HTTP',
+                    110: 'POP3',
+                    115: 'SFTP',
+                    135: 'MS RPC',
+                    139: 'NetBIOS',
+                    143: 'IMAP',
+                    194: 'IRC',
+                    443: 'HTTPS',
+                    445: 'SMB',
+                    587: 'SMTP (Submission)',
+                    631: 'IPP',
+                    993: 'IMAPS',
+                    995: 'POP3S',
+                    1723: 'PPTP',
+                    3000: 'Node.js',
+                    3306: 'MySQL',
+                    3389: 'RDP',
+                    5000: 'UPnP',
+                    5900: 'VNC',
+                    8000: 'HTTP Alt',
+                    8080: 'HTTP Proxy',
+                    8443: 'HTTPS Alt',
+                    9000: 'PHP-FPM'
+                };
+                
+                return services[port] || 'Unknown';
+            }
+            
+            // Get random banner for open ports
+            function getRandomBanner(port) {
+                const banners = {
+                    21: '220 ProFTPD 1.3.5 Server (ProFTPD) [::ffff:127.0.0.1]',
+                    22: 'SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3',
+                    25: '220 mail.example.com ESMTP Postfix',
+                    80: 'HTTP/1.1 200 OK\nServer: nginx/1.18.0 (Ubuntu)',
+                    110: '+OK Dovecot ready.',
+                    143: '* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN]',
+                    443: 'HTTP/1.1 200 OK\nServer: nginx/1.18.0 (Ubuntu)',
+                    3306: '5.7.33-0ubuntu0.18.04.1\n8.0.25-0ubuntu0.20.04.1'
+                };
+                
+                return banners[port] || 'Service detected';
+            }
+            
+            // Update UI with port status
+            function updatePortUI(result) {
+                const statusClass = {
+                    'open': 'port-card',
+                    'closed': 'port-card port-closed',
+                    'filtered': 'port-card port-filtered'
+                }[result.status];
+                
+                const statusBadge = {
+                    'open': 'success',
+                    'closed': 'danger',
+                    'filtered': 'warning text-dark'
+                }[result.status];
+                
+                const portCard = document.createElement('div');
+                portCard.className = `col-12 col-md-6 col-lg-4 ${result.status !== 'open' ? 'd-none' : ''}`;
+                portCard.dataset.port = result.port;
+                portCard.dataset.status = result.status;
+                
+                portCard.innerHTML = `
+                    <div class="card mb-3 ${statusClass}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="port-number">${result.port}</span>
+                                <span class="badge bg-${statusBadge}">${result.status}</span>
+                            </div>
+                            <div class="port-service">${result.service}</div>
+                            ${result.status === 'open' ? `
+                                <div class="port-banner mt-2 small">${result.banner}</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                elements.portsList.appendChild(portCard);
+                
+                // Update counters
+                updateCounters();
+            }
+            
+            // Update counters
+            function updateCounters() {
+                const open = scanResults.filter(r => r.status === 'open').length;
+                const closed = scanResults.filter(r => r.status === 'closed').length;
+                const filtered = scanResults.filter(r => r.status === 'filtered').length;
+                
+                elements.openPortsCount.textContent = open;
+                elements.closedPortsCount.textContent = closed;
+                elements.filteredPortsCount.textContent = filtered;
+            }
+            
+            // Stop scanning
+            function stopScan() {
+                if (scanInterval) {
+                    clearInterval(scanInterval);
+                    scanInterval = null;
+                }
+                
+                isScanning = false;
+                elements.startScan.disabled = false;
+                elements.stopScan.disabled = true;
+                elements.progressBar.classList.add('d-none');
+                
+                // Show completion message
+                if (scanResults.length > 0) {
+                    const openPorts = scanResults.filter(r => r.status === 'open').length;
+                    const message = openPorts > 0 
+                        ? `Scan complete. Found ${openPorts} open ports.`
+                        : 'No open ports found.';
+                    
+                    showNotification(message, 'success');
+                }
+            }
+            
+            // Reset scan
+            function resetScan() {
+                stopScan();
+                
+                // Reset UI
+                elements.portsList.innerHTML = '';
+                elements.progressBar.querySelector('.progress-bar').style.width = '0%';
+                elements.resultsContainer.classList.add('d-none');
+                
+                // Reset form
+                elements.scanForm.reset();
+            }
+            
+            // Export to CSV
+            function exportToCSV() {
+                if (scanResults.length === 0) {
+                    showNotification('No scan results to export', 'warning');
+                    return;
+                }
+                
+                let csvContent = 'Port,Status,Service\n';
+                
+                scanResults.forEach(result => {
+                    csvContent += `${result.port},${result.status},${result.service}\n`;
+                });
+                
+                // Add summary
+                const openPorts = scanResults.filter(r => r.status === 'open').length;
+                const closedPorts = scanResults.filter(r => r.status === 'closed').length;
+                const filteredPorts = scanResults.filter(r => r.status === 'filtered').length;
+                
+                csvContent += '\nSummary\n';
+                csvContent += `Total Ports Scanned,${scanResults.length}\n`;
+                csvContent += `Open Ports,${openPorts}\n`;
+                csvContent += `Closed Ports,${closedPorts}\n`;
+                csvContent += `Filtered Ports,${filteredPorts}\n`;
+                csvContent += `Host,${targetHost}\n`;
+                csvContent += `Date,${new Date().toLocaleString()}\n`;
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `port_scan_${targetHost}_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

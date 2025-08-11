@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlink Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Analyze backlinks for any website to improve your SEO strategy.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .progress { height: 1.5rem; }
+        .domain-score { font-size: 1.5rem; font-weight: bold; }
+        .badge-dofollow { background-color: #198754; }
+        .badge-nofollow { background-color: #6c757d; }
+        .url-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .domain-cell { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .score-bar { height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden; }
+        .score-fill { height: 100%; background-color: #198754; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-link me-3"></i>Backlink Checker</h1>
+            <p class="lead">Analyze backlinks to improve your website's SEO performance</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-search me-2"></i>Check Backlinks</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">https://</span>
+                                        <input type="text" class="form-control" id="domainInput" placeholder="example.com">
+                                        <button class="btn btn-primary" type="button" id="checkBacklinks">
+                                            <i class="fas fa-search me-2"></i>Check
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="reportType">
+                                        <option value="summary">Summary Report</option>
+                                        <option value="detailed">Detailed Report</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-text mb-3">
+                                Enter a domain (e.g., example.com) to analyze its backlink profile
+                            </div>
+                            
+                            <div class="progress d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Backlink Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center mb-4">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="h2 mb-1" id="totalBacklinks">0</div>
+                                        <div class="text-muted">Total Backlinks</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="h2 mb-1" id="totalDomains">0</div>
+                                        <div class="text-muted">Referring Domains</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="h2 mb-1"><span id="domainRating">0</span>/100</div>
+                                        <div class="text-muted">Domain Rating</div>
+                                        <div class="score-bar mt-2">
+                                            <div class="score-fill" id="domainRatingBar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-link me-2"></i>Backlinks</h5>
+                                <button class="btn btn-sm btn-outline-secondary" id="exportResults">
+                                    <i class="fas fa-download me-1"></i>Export
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Source URL</th>
+                                                <th>Anchor Text</th>
+                                                <th>Type</th>
+                                                <th>Domain Rating</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="backlinksTableBody">
+                                            <!-- Backlinks will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-center p-3">
+                                    <button class="btn btn-outline-primary" id="loadMore">
+                                        <i class="fas fa-plus-circle me-2"></i>Load More
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Backlinks</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Backlinks are links from other websites that point to your site. They are important for SEO because:</p>
+                            <ul>
+                                <li>They help search engines discover your content</li>
+                                <li>They can improve your site's authority</li>
+                                <li>They can drive referral traffic</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Tip:</strong> Focus on quality over quantity when building backlinks.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Top Referring Domains</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" id="topDomainsList">
+                                <!-- Top domains will be inserted here -->
+                                <div class="list-group-item text-center text-muted py-4">
+                                    <i class="fas fa-link fa-2x mb-2"></i>
+                                    <p class="mb-0">Top referring domains will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Sample data for demo
+            const sampleBacklinks = [
+                { 
+                    url: 'https://example.com/blog/post1', 
+                    anchor: 'SEO Tools', 
+                    type: 'dofollow',
+                    domain: 'example.com',
+                    dr: 85
+                },
+                { 
+                    url: 'https://blog.website.com/article', 
+                    anchor: 'Check this website', 
+                    type: 'nofollow',
+                    domain: 'website.com',
+                    dr: 62
+                },
+                { 
+                    url: 'https://anothersite.org/resources', 
+                    anchor: 'Resource Center', 
+                    type: 'dofollow',
+                    domain: 'anothersite.org',
+                    dr: 73
+                },
+                { 
+                    url: 'https://techblog.net/web-dev', 
+                    anchor: 'Web Development Guide', 
+                    type: 'dofollow',
+                    domain: 'techblog.net',
+                    dr: 68
+                },
+                { 
+                    url: 'https://tutorials.edu/learn-seo', 
+                    anchor: 'Learn SEO', 
+                    type: 'nofollow',
+                    domain: 'tutorials.edu',
+                    dr: 79
+                }
+            ];
+
+            // DOM Elements
+            const elements = {
+                domainInput: document.getElementById('domainInput'),
+                checkBacklinks: document.getElementById('checkBacklinks'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                totalBacklinks: document.getElementById('totalBacklinks'),
+                totalDomains: document.getElementById('totalDomains'),
+                domainRating: document.getElementById('domainRating'),
+                domainRatingBar: document.getElementById('domainRatingBar'),
+                backlinksTableBody: document.getElementById('backlinksTableBody'),
+                topDomainsList: document.getElementById('topDomainsList'),
+                exportResults: document.getElementById('exportResults'),
+                loadMore: document.getElementById('loadMore')
+            };
+
+            // State
+            let currentPage = 1;
+            const itemsPerPage = 5;
+            let allBacklinks = [];
+
+            // Event Listeners
+            elements.checkBacklinks.addEventListener('click', checkBacklinks);
+            elements.exportResults.addEventListener('click', exportResults);
+            elements.loadMore.addEventListener('click', loadMoreResults);
+
+            // Check backlinks
+            async function checkBacklinks() {
+                const domain = elements.domainInput.value.trim();
+                
+                if (!domain) {
+                    showNotification('Please enter a domain to check', 'warning');
+                    return;
+                }
+                
+                // Reset state
+                currentPage = 1;
+                allBacklinks = [];
+                elements.backlinksTableBody.innerHTML = '';
+                elements.topDomainsList.innerHTML = '';
+                
+                // Show loading
+                elements.progressBar.classList.remove('d-none');
+                elements.checkBacklinks.disabled = true;
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // For demo, use sample data
+                allBacklinks = [...sampleBacklinks];
+                
+                // Update UI
+                updateResults();
+                
+                // Hide loading
+                elements.progressBar.classList.add('d-none');
+                elements.checkBacklinks.disabled = false;
+                elements.resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                elements.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Update results
+            function updateResults() {
+                // Update summary
+                const uniqueDomains = [...new Set(allBacklinks.map(link => link.domain))];
+                const avgDr = Math.round(allBacklinks.reduce((sum, link) => sum + link.dr, 0) / allBacklinks.length) || 0;
+                
+                elements.totalBacklinks.textContent = allBacklinks.length.toLocaleString();
+                elements.totalDomains.textContent = uniqueDomains.length.toLocaleString();
+                elements.domainRating.textContent = Math.min(Math.floor(avgDr * 0.8), 100);
+                elements.domainRatingBar.style.width = `${Math.min(Math.floor(avgDr * 0.8), 100)}%`;
+                
+                // Update backlinks table
+                renderBacklinks();
+                
+                // Update top domains
+                updateTopDomains(uniqueDomains);
+            }
+            
+            // Render backlinks
+            function renderBacklinks() {
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const pageBacklinks = allBacklinks.slice(0, end);
+                
+                elements.backlinksTableBody.innerHTML = pageBacklinks.map(link => `
+                    <tr>
+                        <td class="url-cell">
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                ${link.url}
+                            </a>
+                        </td>
+                        <td>${link.anchor || '(No anchor text)'}</td>
+                        <td>
+                            <span class="badge ${link.type === 'dofollow' ? 'bg-success' : 'bg-secondary'}">
+                                ${link.type}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">${link.dr}</div>
+                                <div class="score-bar" style="width: 100px;">
+                                    <div class="score-fill" style="width: ${link.dr}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // Show/hide load more button
+                elements.loadMore.style.display = end < allBacklinks.length ? 'block' : 'none';
+            }
+            
+            // Update top domains
+            function updateTopDomains(domains) {
+                elements.topDomainsList.innerHTML = domains.slice(0, 5).map(domain => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="https://${domain}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                ${domain}
+                            </a>
+                            <span class="badge bg-primary rounded-pill">
+                                ${Math.floor(Math.random() * 10) + 1}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Load more results
+            function loadMoreResults() {
+                currentPage++;
+                renderBacklinks();
+            }
+            
+            // Export results
+            function exportResults() {
+                if (allBacklinks.length === 0) {
+                    showNotification('No results to export', 'warning');
+                    return;
+                }
+                
+                const csv = Papa.unparse({
+                    fields: ['URL', 'Anchor Text', 'Type', 'Domain Rating'],
+                    data: allBacklinks.map(link => [
+                        link.url,
+                        link.anchor || '(No anchor text)',
+                        link.type,
+                        link.dr
+                    ])
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `backlinks-${new Date().toISOString().slice(0, 10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('Backlinks exported to CSV', 'success');
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

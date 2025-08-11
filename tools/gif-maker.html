@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Maker - Multi-Tools Hub</title>
+    <meta name="description" content="Create animated GIFs from your images online. Add multiple images, set frame delay, and download your custom GIF.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #f1f8ff;
+        }
+        .drop-zone.dragover {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+            transform: scale(1.01);
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1rem 0;
+            min-height: 120px;
+            align-items: center;
+            justify-content: center;
+        }
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            cursor: move;
+            transition: transform 0.2s, border-color 0.2s;
+            background-color: #fff;
+        }
+        .thumbnail:hover {
+            transform: scale(1.05);
+            border-color: #0d6efd;
+            z-index: 1;
+        }
+        .thumbnail.active {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+        }
+        .gif-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: none;
+            margin: 0 auto;
+        }
+        .frame-item {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .frame-item:hover {
+            transform: translateY(-2px);
+        }
+        .frame-item .remove-frame {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .frame-item:hover .remove-frame {
+            opacity: 1;
+        }
+        .frame-number {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 10px;
+            padding: 0 4px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+        }
+        #gifPreviewContainer {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+            transition: all 0.3s ease;
+        }
+        #gifPreviewContainer.has-preview {
+            padding: 1rem;
+            background-color: #fff;
+            border-style: solid;
+        }
+        .progress {
+            height: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .sortable-ghost {
+            opacity: 0.5;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .sortable-chosen {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-film me-3"></i>GIF Maker</h1>
+            <p class="lead">Create animated GIFs from your images</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- Top Ad (Leaderboard) -->
+            <div id="ad-leaderboard" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Upload Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Images</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dropZone" class="drop-zone mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h5>Drag & Drop your images here</h5>
+                                <p class="text-muted">or click to browse files</p>
+                                <input type="file" id="fileInput" class="d-none" accept="image/*" multiple>
+                                <button id="browseBtn" class="btn btn-outline-primary mt-2">
+                                    <i class="fas fa-folder-open me-2"></i>Select Images
+                                </button>
+                            </div>
+                            
+                            <div id="fileList" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Frames (<span id="frameCount">0</span>)</h6>
+                                    <div class="btn-group btn-group-sm">
+                                        <button id="moveLeftBtn" class="btn btn-outline-secondary btn-icon" title="Move Left" disabled>
+                                            <i class="fas fa-arrow-left"></i>
+                                        </button>
+                                        <button id="moveRightBtn" class="btn btn-outline-secondary btn-icon" title="Move Right" disabled>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        <button id="deleteFrameBtn" class="btn btn-outline-danger btn-icon" title="Delete Frame" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="framesContainer" class="preview-container">
+                                    <div class="text-muted">No images added yet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GIF Settings -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i>GIF Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="frameDelay" class="form-label">Frame Delay (ms)</label>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <input type="range" class="form-range flex-grow-1" id="frameDelay" min="20" max="2000" value="100" step="10">
+                                        <span id="frameDelayValue" class="text-muted">100</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="gifWidth" class="form-label">GIF Width (px)</label>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <input type="range" class="form-range flex-grow-1" id="gifWidth" min="100" max="1200" value="400" step="10">
+                                        <span id="gifWidthValue" class="text-muted">400</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="loopCount" class="form-label">Loop Count</label>
+                                    <select class="form-select" id="loopCount">
+                                        <option value="0">Infinite</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="gifQuality" class="form-label">Quality</label>
+                                    <select class="form-select" id="gifQuality">
+                                        <option value="high">High (better quality, larger file)</option>
+                                        <option value="medium" selected>Medium (balanced)</option>
+                                        <option value="low">Low (smaller file, lower quality)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="dithering" checked>
+                                <label class="form-check-label" for="dithering">Enable Dithering (smoother gradients)</label>
+                            </div>
+                            
+                            <div class="d-flex flex-wrap gap-2">
+                                <button id="createGifBtn" class="btn btn-primary" disabled>
+                                    <i class="fas fa-magic me-2"></i>Create GIF
+                                </button>
+                                <button id="downloadGifBtn" class="btn btn-success" disabled>
+                                    <i class="fas fa-download me-2"></i>Download GIF
+                                </button>
+                                <button id="resetBtn" class="btn btn-outline-secondary ms-auto">
+                                    <i class="fas fa-redo me-2"></i>Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mb-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="far fa-eye me-2"></i>Preview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="gifPreviewContainer" class="text-center">
+                                <div class="text-muted">
+                                    <i class="fas fa-image fa-3x mb-2 d-block"></i>
+                                    <span>Your GIF will appear here</span>
+                                </div>
+                            </div>
+                            <div id="gifInfo" class="mt-3 small text-muted text-center">
+                                <div>GIF Size: <span id="gifSize">-</span></div>
+                                <div>Dimensions: <span id="gifDimensions">-</span></div>
+                                <div>Frames: <span id="gifFrames">0</span></div>
+                                <div>Duration: <span id="gifDuration">0s</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How to Use -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item">Upload images using the button or drag & drop</li>
+                                <li class="list-group-item">Drag to reorder frames as needed</li>
+                                <li class="list-group-item">Adjust GIF settings (speed, size, quality)</li>
+                                <li class="list-group-item">Click "Create GIF" to generate preview</li>
+                                <li class="list-group-item">Download your GIF when satisfied</li>
+                            </ol>
+                            
+                            <div class="alert alert-warning mt-3 mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Note:</strong> Creating GIFs with many frames or high resolution may take some time.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Ad (Leaderboard) -->
+            <div id="ad-bottom" class="mt-4 mb-4">
+                <!-- Ad will be injected here by ads.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized@1.0.1/dist/gif.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="../js/ads.js"></script>
+    <script src="../js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const createGifBtn = document.getElementById('createGifBtn');
+            const downloadGifBtn = document.getElementById('downloadGifBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const framesContainer = document.getElementById('framesContainer');
+            const frameCount = document.getElementById('frameCount');
+            const gifPreviewContainer = document.getElementById('gifPreviewContainer');
+            const gifPreview = document.createElement('img');
+            gifPreview.className = 'gif-preview';
+            gifPreview.alt = 'GIF Preview';
+            gifPreviewContainer.appendChild(gifPreview);
+            
+            // GIF info elements
+            const gifSize = document.getElementById('gifSize');
+            const gifDimensions = document.getElementById('gifDimensions');
+            const gifFrames = document.getElementById('gifFrames');
+            const gifDuration = document.getElementById('gifDuration');
+            
+            // Settings elements
+            const frameDelay = document.getElementById('frameDelay');
+            const frameDelayValue = document.getElementById('frameDelayValue');
+            const gifWidth = document.getElementById('gifWidth');
+            const gifWidthValue = document.getElementById('gifWidthValue');
+            const loopCount = document.getElementById('loopCount');
+            const gifQuality = document.getElementById('gifQuality');
+            const dithering = document.getElementById('dithering');
+            
+            // Frame control buttons
+            const moveLeftBtn = document.getElementById('moveLeftBtn');
+            const moveRightBtn = document.getElementById('moveRightBtn');
+            const deleteFrameBtn = document.getElementById('deleteFrameBtn');
+            
+            // State
+            let frames = [];
+            let selectedFrameIndex = -1;
+            let gifBlob = null;
+            
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+            
+            // Initialize Sortable for drag and drop reordering
+            const sortable = new Sortable(framesContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                onEnd: function(evt) {
+                    // Update frames array to match new order
+                    const newFrames = [];
+                    const frameElements = framesContainer.querySelectorAll('.frame-item');
+                    frameElements.forEach((el, index) => {
+                        const frameIndex = parseInt(el.dataset.index);
+                        newFrames[index] = frames[frameIndex];
+                        el.dataset.index = index;
+                    });
+                    frames = newFrames;
+                    updateFrameNumbers();
+                    updateUI();
+                }
+            });
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            createGifBtn.addEventListener('click', createGif);
+            downloadGifBtn.addEventListener('click', downloadGif);
+            resetBtn.addEventListener('click', resetTool);
+            
+            // Settings change listeners
+            frameDelay.addEventListener('input', updateFrameDelay);
+            gifWidth.addEventListener('input', updateGifWidth);
+            
+            // Frame control button listeners
+            moveLeftBtn.addEventListener('click', moveFrameLeft);
+            moveRightBtn.addEventListener('click', moveFrameRight);
+            deleteFrameBtn.addEventListener('click', deleteSelectedFrame);
+            
+            // Drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                const newFiles = Array.from(e.target.files);
+                if (newFiles.length > 0) {
+                    handleFiles(newFiles);
+                }
+            }
+            
+            function handleFiles(selectedFiles) {
+                let validFiles = [];
+                
+                Array.from(selectedFiles).forEach(file => {
+                    // Check if file is an image
+                    if (file.type.match('image.*')) {
+                        // Check if file is already in the list
+                        const isDuplicate = frames.some(f => f.name === file.name && f.size === file.size);
+                        
+                        if (!isDuplicate) {
+                            validFiles.push(file);
+                        }
+                    }
+                });
+                
+                if (validFiles.length === 0) {
+                    showNotification('No valid image files found. Please select image files only.', 'error');
+                    return;
+                }
+                
+                // Add new files to the frames array
+                let loadedCount = 0;
+                validFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            frames.push({
+                                file: file,
+                                url: e.target.result,
+                                width: img.width,
+                                height: img.height,
+                                element: null
+                            });
+                            
+                            loadedCount++;
+                            
+                            // If all files are loaded, update the UI
+                            if (loadedCount === validFiles.length) {
+                                updateFrameList();
+                                updateUI();
+                                showNotification(`Added ${validFiles.length} image(s)`, 'success');
+                            }
+                        };
+                        img.onerror = function() {
+                            loadedCount++;
+                            if (loadedCount === validFiles.length) {
+                                updateFrameList();
+                                updateUI();
+                            }
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                // Reset file input to allow selecting the same file again if needed
+                fileInput.value = '';
+            }
+            
+            function updateFrameList() {
+                // Clear the container
+                framesContainer.innerHTML = '';
+                
+                if (frames.length === 0) {
+                    framesContainer.innerHTML = '<div class="text-muted">No images added yet</div>';
+                    frameCount.textContent = '0';
+                    return;
+                }
+                
+                // Create frame elements
+                frames.forEach((frame, index) => {
+                    const frameItem = document.createElement('div');
+                    frameItem.className = 'frame-item' + (selectedFrameIndex === index ? ' active' : '');
+                    frameItem.dataset.index = index;
+                    
+                    const img = document.createElement('img');
+                    img.src = frame.url;
+                    img.className = 'thumbnail';
+                    img.draggable = false;
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'remove-frame';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.title = 'Remove frame';
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFrame(index);
+                    });
+                    
+                    const frameNumber = document.createElement('div');
+                    frameNumber.className = 'frame-number';
+                    frameNumber.textContent = index + 1;
+                    
+                    frameItem.appendChild(img);
+                    frameItem.appendChild(removeBtn);
+                    frameItem.appendChild(frameNumber);
+                    
+                    // Add click event to select frame
+                    frameItem.addEventListener('click', () => selectFrame(index));
+                    
+                    // Store reference to DOM element
+                    frame.element = frameItem;
+                    
+                    framesContainer.appendChild(frameItem);
+                });
+                
+                frameCount.textContent = frames.length;
+                updateFrameControls();
+            }
+            
+            function selectFrame(index) {
+                if (index < 0 || index >= frames.length) return;
+                
+                // Update selected frame
+                const prevSelected = selectedFrameIndex >= 0 ? frames[selectedFrameIndex].element : null;
+                if (prevSelected) {
+                    prevSelected.classList.remove('active');
+                }
+                
+                selectedFrameIndex = index;
+                frames[selectedFrameIndex].element.classList.add('active');
+                
+                // Update frame control buttons
+                updateFrameControls();
+            }
+            
+            function removeFrame(index) {
+                if (index < 0 || index >= frames.length) return;
+                
+                frames.splice(index, 1);
+                
+                // Update selected index if needed
+                if (selectedFrameIndex >= frames.length) {
+                    selectedFrameIndex = frames.length - 1;
+                } else if (selectedFrameIndex > index) {
+                    selectedFrameIndex--;
+                }
+                
+                updateFrameList();
+                updateUI();
+                
+                // If no frames left, clear preview
+                if (frames.length === 0) {
+                    gifPreview.style.display = 'none';
+                    gifPreview.src = '';
+                    gifBlob = null;
+                    downloadGifBtn.disabled = true;
+                }
+                
+                showNotification('Frame removed', 'info');
+            }
+            
+            function moveFrame(fromIndex, toIndex) {
+                if (fromIndex < 0 || fromIndex >= frames.length || toIndex < 0 || toIndex >= frames.length) {
+                    return;
+                }
+                
+                // Move the frame in the array
+                const [movedFrame] = frames.splice(fromIndex, 1);
+                frames.splice(toIndex, 0, movedFrame);
+                
+                // Update selected index if needed
+                if (selectedFrameIndex === fromIndex) {
+                    selectedFrameIndex = toIndex;
+                } else if (fromIndex < toIndex && selectedFrameIndex > fromIndex && selectedFrameIndex <= toIndex) {
+                    selectedFrameIndex--;
+                } else if (fromIndex > toIndex && selectedFrameIndex >= toIndex && selectedFrameIndex < fromIndex) {
+                    selectedFrameIndex++;
+                }
+                
+                updateFrameList();
+                selectFrame(selectedFrameIndex);
+            }
+            
+            function moveFrameLeft() {
+                if (selectedFrameIndex <= 0) return;
+                moveFrame(selectedFrameIndex, selectedFrameIndex - 1);
+            }
+            
+            function moveFrameRight() {
+                if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.length - 1) return;
+                moveFrame(selectedFrameIndex, selectedFrameIndex + 1);
+            }
+            
+            function deleteSelectedFrame() {
+                if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.length) return;
+                removeFrame(selectedFrameIndex);
+            }
+            
+            function updateFrameDelay() {
+                frameDelayValue.textContent = frameDelay.value;
+            }
+            
+            function updateGifWidth() {
+                gifWidthValue.textContent = gifWidth.value;
+            }
+            
+            function updateFrameControls() {
+                moveLeftBtn.disabled = selectedFrameIndex <= 0;
+                moveRightBtn.disabled = selectedFrameIndex < 0 || selectedFrameIndex >= frames.length - 1;
+                deleteFrameBtn.disabled = selectedFrameIndex < 0 || selectedFrameIndex >= frames.length;
+            }
+            
+            function updateUI() {
+                // Update frame count
+                frameCount.textContent = frames.length;
+                
+                // Enable/disable buttons
+                createGifBtn.disabled = frames.length === 0;
+                resetBtn.disabled = frames.length === 0 && !gifBlob;
+                
+                // Update frame controls
+                updateFrameControls();
+                
+                // If no frames, clear preview
+                if (frames.length === 0) {
+                    gifPreview.style.display = 'none';
+                    gifPreview.src = '';
+                    gifBlob = null;
+                    downloadGifBtn.disabled = true;
+                    
+                    // Reset GIF info
+                    gifSize.textContent = '-';
+                    gifDimensions.textContent = '-';
+                    gifFrames.textContent = '0';
+                    gifDuration.textContent = '0s';
+                }
+            }
+            
+            async function createGif() {
+                if (frames.length === 0) {
+                    showNotification('Please add at least one image', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                createGifBtn.disabled = true;
+                createGifBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating...';
+                
+                // Clear previous GIF
+                gifPreview.style.display = 'none';
+                gifPreview.src = '';
+                gifBlob = null;
+                
+                // Get settings
+                const delay = parseInt(frameDelay.value);
+                const width = parseInt(gifWidth.value);
+                const quality = gifQuality.value;
+                const useDithering = dithering.checked;
+                
+                // Calculate height while maintaining aspect ratio of first frame
+                const firstFrame = frames[0];
+                const aspectRatio = firstFrame.height / firstFrame.width;
+                const height = Math.round(width * aspectRatio);
+                
+                try {
+                    // Create a new GIF instance
+                    const gif = new GIF({
+                        workers: 2,
+                        quality: quality === 'high' ? 10 : (quality === 'medium' ? 20 : 30),
+                        workerScript: 'https://cdn.jsdelivr.net/npm/gif.js.optimized@1.0.1/dist/gif.worker.js',
+                        width: width,
+                        height: height,
+                        dither: useDithering ? 'FloydSteinberg' : false,
+                        debug: false
+                    });
+                    
+                    // Add frames to GIF
+                    for (let i = 0; i < frames.length; i++) {
+                        const frame = frames[i];
+                        const img = await loadImage(frame.url);
+                        
+                        // Create a canvas to draw the frame
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Fill with white background
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, width, height);
+                        
+                        // Calculate dimensions to maintain aspect ratio
+                        const scale = Math.min(width / img.width, height / img.height);
+                        const scaledWidth = img.width * scale;
+                        const scaledHeight = img.height * scale;
+                        const x = (width - scaledWidth) / 2;
+                        const y = (height - scaledHeight) / 2;
+                        
+                        // Draw the image centered
+                        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+                        
+                        // Add frame to GIF
+                        gif.addFrame(canvas, { delay: delay, copy: true });
+                        
+                        // Update progress
+                        const progress = Math.round(((i + 1) / frames.length) * 100);
+                        showNotification(`Processing frame ${i + 1} of ${frames.length} (${progress}%)`, 'info');
+                    }
+                    
+                    // Render the GIF
+                    gif.on('finished', function(blob) {
+                        gifBlob = blob;
+                        const url = URL.createObjectURL(blob);
+                        
+                        // Update preview
+                        gifPreview.src = url;
+                        gifPreview.style.display = 'block';
+                        gifPreviewContainer.classList.add('has-preview');
+                        
+                        // Update GIF info
+                        gifSize.textContent = formatFileSize(blob.size);
+                        gifDimensions.textContent = `${width} × ${Math.round(height)} px`;
+                        gifFrames.textContent = frames.length;
+                        gifDuration.textContent = `${(frames.length * delay / 1000).toFixed(1)}s`;
+                        
+                        // Enable download button
+                        downloadGifBtn.disabled = false;
+                        
+                        // Reset button state
+                        createGifBtn.disabled = false;
+                        createGifBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Create GIF';
+                        
+                        showNotification('GIF created successfully!', 'success');
+                    });
+                    
+                    gif.on('progress', function(p) {
+                        // Show progress if needed
+                        console.log(`GIF progress: ${Math.round(p * 100)}%`);
+                    });
+                    
+                    gif.render();
+                    
+                } catch (error) {
+                    console.error('Error creating GIF:', error);
+                    showNotification('Error creating GIF: ' + error.message, 'error');
+                    
+                    // Reset button state
+                    createGifBtn.disabled = false;
+                    createGifBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Create GIF';
+                }
+            }
+            
+            function loadImage(url) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+            
+            function downloadGif() {
+                if (!gifBlob) {
+                    showNotification('No GIF to download', 'error');
+                    return;
+                }
+                
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `gif-maker-${timestamp}.gif`;
+                
+                saveAs(gifBlob, filename);
+                showNotification('GIF download started', 'success');
+            }
+            
+            function resetTool() {
+                // Clear frames
+                frames = [];
+                selectedFrameIndex = -1;
+                gifBlob = null;
+                
+                // Reset UI
+                updateFrameList();
+                updateUI();
+                
+                // Reset form
+                frameDelay.value = 100;
+                frameDelayValue.textContent = '100';
+                gifWidth.value = 400;
+                gifWidthValue.textContent = '400';
+                loopCount.value = '0';
+                gifQuality.value = 'medium';
+                dithering.checked = true;
+                
+                // Clear preview
+                gifPreview.style.display = 'none';
+                gifPreview.src = '';
+                gifPreviewContainer.classList.remove('has-preview');
+                
+                showNotification('Tool has been reset', 'info');
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    // Fallback notification
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+            
+            // Initialize
+            updateUI();
+            updateFrameDelay();
+            updateGifWidth();
+        });
+    </script>
+</body>
+</html>

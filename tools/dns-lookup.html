@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Perform DNS lookups to find DNS records for any domain.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .record-card { border-left: 4px solid #0d6efd; margin-bottom: 10px; padding: 10px; }
+        .record-type { font-weight: bold; color: #0d6efd; }
+        .record-ttl { color: #6c757d; font-size: 0.9em; }
+        .record-data { word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-search me-3"></i>DNS Lookup</h1>
+            <p class="lead">Find DNS records for any domain</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="dnsForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="domainInput" placeholder="example.com" required>
+                                    <select class="form-select" id="recordType" style="max-width: 150px;">
+                                        <option value="A">A (IPv4)</option>
+                                        <option value="AAAA">AAAA (IPv6)</option>
+                                        <option value="CNAME">CNAME</option>
+                                        <option value="MX">MX</option>
+                                        <option value="TXT">TXT</option>
+                                        <option value="NS">NS</option>
+                                    </select>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search me-2"></i>Lookup
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">DNS Records for <span id="resultDomain"></span></h5>
+                            </div>
+                            <div class="card-body" id="recordsContainer">
+                                <!-- Records will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About DNS</h5>
+                            <p>DNS (Domain Name System) translates domain names to IP addresses.</p>
+                            <ul class="mb-0">
+                                <li><strong>A:</strong> IPv4 address</li>
+                                <li><strong>AAAA:</strong> IPv6 address</li>
+                                <li><strong>CNAME:</strong> Alias of a domain</li>
+                                <li><strong>MX:</strong> Mail server</li>
+                                <li><strong>TXT:</strong> Text records</li>
+                                <li><strong>NS:</strong> Name server</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Sample DNS records for demo
+            const sampleRecords = {
+                'A': [
+                    { name: 'example.com', ttl: 300, data: '93.184.216.34' },
+                    { name: 'www.example.com', ttl: 300, data: '93.184.216.34' }
+                ],
+                'AAAA': [
+                    { name: 'example.com', ttl: 300, data: '2606:2800:220:1:248:1893:25c8:1946' }
+                ],
+                'CNAME': [
+                    { name: 'mail.example.com', ttl: 3600, data: 'mail.provider.com' }
+                ],
+                'MX': [
+                    { name: 'example.com', ttl: 3600, priority: 10, data: 'mail.example.com' }
+                ],
+                'TXT': [
+                    { name: 'example.com', ttl: 3600, data: 'v=spf1 include:_spf.google.com ~all' }
+                ],
+                'NS': [
+                    { name: 'example.com', ttl: 172800, data: 'ns1.example-dns.com' }
+                ]
+            };
+
+            // DOM Elements
+            const elements = {
+                dnsForm: document.getElementById('dnsForm'),
+                domainInput: document.getElementById('domainInput'),
+                recordType: document.getElementById('recordType'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                resultDomain: document.getElementById('resultDomain'),
+                recordsContainer: document.getElementById('recordsContainer')
+            };
+
+            // Event Listeners
+            elements.dnsForm.addEventListener('submit', lookupDNS);
+
+            // Lookup DNS function
+            async function lookupDNS(e) {
+                e.preventDefault();
+                const domain = elements.domainInput.value.trim();
+                const recordType = elements.recordType.value;
+                
+                if (!domain) {
+                    showNotification('Please enter a domain', 'warning');
+                    return;
+                }
+                
+                // Show loading
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.add('d-none');
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // For demo, use sample data
+                displayResults(domain, recordType);
+                
+                // Hide loading
+                elements.progressBar.classList.add('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+            }
+            
+            // Display results
+            function displayResults(domain, recordType) {
+                elements.resultDomain.textContent = domain;
+                
+                const records = sampleRecords[recordType] || [];
+                
+                if (records.length === 0) {
+                    elements.recordsContainer.innerHTML = `
+                        <div class="alert alert-info">
+                            No ${recordType} records found for ${domain}
+                        </div>
+                    `;
+                    return;
+                }
+                
+                elements.recordsContainer.innerHTML = records.map(record => `
+                    <div class="record-card mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="record-type">${recordType}</span>
+                            <small class="record-ttl">TTL: ${record.ttl}</small>
+                        </div>
+                        <div class="record-data mt-1">
+                            ${record.priority ? `Priority: ${record.priority}<br>` : ''}
+                            ${record.data}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

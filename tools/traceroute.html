@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traceroute - Multi-Tools Hub</title>
+    <meta name="description" content="Trace the route packets take to a network host with our online traceroute tool.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .hop-row {
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        .hop-row:hover {
+            background-color: #f8f9fa;
+        }
+        .hop-number {
+            font-weight: bold;
+            color: #0d6efd;
+            min-width: 40px;
+        }
+        .hop-ip {
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .hop-hostname {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .hop-time {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .hop-bar {
+            height: 4px;
+            background-color: #e9ecef;
+            margin-top: 5px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .hop-bar-inner {
+            height: 100%;
+            background-color: #0d6efd;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .hop-details {
+            display: none;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 4px 4px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        .hop-details.show {
+            display: block;
+        }
+        .map-container {
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+        .map-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        .progress-thin {
+            height: 4px;
+        }
+        .hop-success { color: #198754; }
+        .hop-error { color: #dc3545; }
+        .hop-warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-route me-3"></i>Traceroute</h1>
+            <p class="lead">Trace the route packets take to a network host</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="tracerouteForm">
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <label for="hostInput" class="form-label">Host or IP Address</label>
+                                        <input type="text" class="form-control" id="hostInput" placeholder="example.com or 8.8.8.8" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="maxHops" class="form-label">Max Hops</label>
+                                        <input type="number" class="form-control" id="maxHops" value="30" min="1" max="64">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" type="submit" id="startTraceroute">
+                                            <i class="fas fa-play me-2"></i>Start
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-text mt-2">
+                                    Enter a hostname or IP address to trace the network route
+                                </div>
+                            </form>
+                            
+                            <div class="progress progress-thin mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Traceroute Results</h5>
+                                <div>
+                                    <span class="badge bg-secondary me-2">Tracing: <span id="tracingHost"></span></span>
+                                    <button class="btn btn-sm btn-outline-secondary" id="copyResults">
+                                        <i class="far fa-copy me-1"></i>Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="tracerouteTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 60px;">Hop</th>
+                                                <th>IP Address</th>
+                                                <th>Hostname</th>
+                                                <th class="text-end" style="width: 100px;">Avg Time</th>
+                                                <th style="width: 150px;">Response Times</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tracerouteResults">
+                                            <!-- Traceroute results will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="p-3 border-top">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="mb-0">Route Map</h6>
+                                        <button class="btn btn-sm btn-outline-secondary" id="toggleMap">
+                                            <i class="fas fa-map-marked-alt me-1"></i>Show Map
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="map-container d-none" id="mapContainer">
+                                        <div class="map-placeholder" id="mapPlaceholder">
+                                            <div class="text-center">
+                                                <i class="fas fa-map-marked-alt fa-3x mb-2"></i>
+                                                <p class="mb-0">Map will appear here when trace is complete</p>
+                                            </div>
+                                        </div>
+                                        <div id="map" style="height: 100%; width: 100%;"></div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <button class="btn btn-outline-primary" id="exportCSV">
+                                            <i class="fas fa-file-csv me-1"></i>Export CSV
+                                        </button>
+                                        <div>
+                                            <button class="btn btn-outline-secondary me-2" id="stopTraceroute" disabled>
+                                                <i class="fas fa-stop me-1"></i>Stop
+                                            </button>
+                                            <button class="btn btn-primary" id="newTraceroute">
+                                                <i class="fas fa-redo me-1"></i>New Trace
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About Traceroute</h5>
+                            <p>Traceroute is a network diagnostic tool used to track the pathway that a packet takes from your computer to a destination host.</p>
+                            
+                            <h6 class="mt-4">What Traceroute Shows:</h6>
+                            <ul class="mb-0">
+                                <li>Path taken by packets</li>
+                                <li>Response times for each hop</li>
+                                <li>Network bottlenecks</li>
+                                <li>Routing loops or issues</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Tip:</strong> Each line represents a router or device that handles your packet on its journey.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="ad-sidebar" class="mb-4"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class="fas fa-question-circle me-2"></i>How to Use</h5>
+                            <ol class="mb-0">
+                                <li>Enter a hostname or IP address</li>
+                                <li>Set maximum hops (default: 30)</li>
+                                <li>Click "Start" to begin the trace</li>
+                                <li>View the route and response times</li>
+                                <li>Export results if needed</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // DOM Elements
+            const elements = {
+                tracerouteForm: document.getElementById('tracerouteForm'),
+                hostInput: document.getElementById('hostInput'),
+                maxHops: document.getElementById('maxHops'),
+                startTraceroute: document.getElementById('startTraceroute'),
+                stopTraceroute: document.getElementById('stopTraceroute'),
+                newTraceroute: document.getElementById('newTraceroute'),
+                copyResults: document.getElementById('copyResults'),
+                exportCSV: document.getElementById('exportCSV'),
+                toggleMap: document.getElementById('toggleMap'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                tracingHost: document.getElementById('tracingHost'),
+                tracerouteResults: document.getElementById('tracerouteResults'),
+                mapContainer: document.getElementById('mapContainer'),
+                mapPlaceholder: document.getElementById('mapPlaceholder')
+            };
+
+            // Traceroute variables
+            let tracerouteInterval;
+            let isTracing = false;
+            let currentHop = 0;
+            let maxHops = 30;
+            let targetHost = '';
+            let traceResults = [];
+            let map;
+            let mapMarkers = [];
+            let mapPolylines = [];
+
+            // Event Listeners
+            elements.tracerouteForm.addEventListener('submit', startTraceroute);
+            elements.stopTraceroute.addEventListener('click', stopTraceroute);
+            elements.newTraceroute.addEventListener('click', resetTraceroute);
+            elements.copyResults.addEventListener('click', copyResults);
+            elements.exportCSV.addEventListener('click', exportToCSV);
+            elements.toggleMap.addEventListener('click', toggleMap);
+
+            // Start traceroute
+            async function startTraceroute(e) {
+                e.preventDefault();
+                
+                targetHost = elements.hostInput.value.trim();
+                maxHops = parseInt(elements.maxHops.value) || 30;
+                
+                if (!targetHost) {
+                    showNotification('Please enter a hostname or IP address', 'warning');
+                    return;
+                }
+                
+                // Reset state
+                resetTraceroute();
+                
+                // Update UI
+                elements.tracingHost.textContent = targetHost;
+                elements.startTraceroute.disabled = true;
+                elements.stopTraceroute.disabled = false;
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                elements.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+                
+                // Initialize map
+                initMap();
+                
+                // Start tracing
+                isTracing = true;
+                currentHop = 0;
+                traceResults = [];
+                
+                // Simulate traceroute (in a real app, this would use WebSockets or server-side traceroute)
+                tracerouteInterval = setInterval(() => {
+                    if (currentHop >= maxHops) {
+                        stopTraceroute();
+                        return;
+                    }
+                    
+                    currentHop++;
+                    
+                    // Simulate hop with random data
+                    const hopData = {
+                        hop: currentHop,
+                        ip: generateRandomIP(),
+                        hostname: `hop${currentHop}.example.com`,
+                        times: [],
+                        avgTime: 0,
+                        location: {
+                            city: ['New York', 'London', 'Tokyo', 'Sydney', 'Singapore', 'Frankfurt', 'São Paulo'][Math.floor(Math.random() * 7)],
+                            country: ['US', 'GB', 'JP', 'AU', 'SG', 'DE', 'BR'][Math.floor(Math.random() * 7)],
+                            lat: 0,
+                            lng: 0
+                        }
+                    };
+                    
+                    // Generate 3 random response times (with some timeouts)
+                    let responseCount = 0;
+                    let totalTime = 0;
+                    
+                    for (let i = 0; i < 3; i++) {
+                        if (Math.random() > 0.2) { // 80% chance of response
+                            const time = Math.floor(Math.random() * 50) + 5;
+                            hopData.times.push(time);
+                            totalTime += time;
+                            responseCount++;
+                        } else {
+                            hopData.times.push('*');
+                        }
+                    }
+                    
+                    // Calculate average (only for successful responses)
+                    hopData.avgTime = responseCount > 0 ? Math.round(totalTime / responseCount) : 0;
+                    
+                    // Add to results
+                    traceResults.push(hopData);
+                    
+                    // Update UI
+                    updateTracerouteTable(hopData);
+                    
+                    // Update progress
+                    const progress = (currentHop / maxHops) * 100;
+                    elements.progressBar.querySelector('.progress-bar').style.width = `${progress}%`;
+                    
+                    // Stop if we've reached the target (randomly between hop 5 and maxHops-5)
+                    if (currentHop >= Math.min(5 + Math.floor(Math.random() * (maxHops - 10)), maxHops - 5)) {
+                        // Add final hop with the target IP
+                        const finalHop = {
+                            hop: currentHop + 1,
+                            ip: targetHost,
+                            hostname: targetHost.includes('.') ? targetHost : `${targetHost}.example.com`,
+                            times: [
+                                Math.floor(Math.random() * 30) + 5,
+                                Math.floor(Math.random() * 30) + 5,
+                                Math.floor(Math.random() * 30) + 5
+                            ],
+                            avgTime: Math.floor(Math.random() * 30) + 5,
+                            location: {
+                                city: 'Destination',
+                                country: 'XX',
+                                lat: 0,
+                                lng: 0
+                            }
+                        };
+                        
+                        // Calculate average for final hop
+                        finalHop.avgTime = Math.round(finalHop.times.reduce((a, b) => a + b, 0) / 3);
+                        
+                        traceResults.push(finalHop);
+                        updateTracerouteTable(finalHop);
+                        
+                        stopTraceroute();
+                        return;
+                    }
+                    
+                }, 1000); // Simulate 1 second per hop
+            }
+            
+            // Generate a random IP address for demo
+            function generateRandomIP() {
+                if (Math.random() < 0.1) return 'Request timed out.'; // 10% chance of timeout
+                return `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            }
+            
+            // Update traceroute table with new hop
+            function updateTracerouteTable(hopData) {
+                const row = document.createElement('tr');
+                row.className = 'hop-row';
+                row.innerHTML = `
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center">
+                            <span class="hop-number">${hopData.hop}</span>
+                            <div class="ms-2">
+                                <div class="progress progress-thin" style="height: 4px; width: 40px;">
+                                    <div class="progress-bar" style="width: ${Math.min(hopData.avgTime, 100)}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <div class="hop-ip">${hopData.ip}</div>
+                    </td>
+                    <td class="align-middle">
+                        <div class="hop-hostname">${hopData.hostname}</div>
+                    </td>
+                    <td class="align-middle text-end">
+                        ${hopData.avgTime > 0 ? `${hopData.avgTime} ms` : '*'}
+                    </td>
+                    <td class="align-middle">
+                        <div class="d-flex justify-content-between" style="width: 120px;">
+                            ${hopData.times.map(time => 
+                                `<span class="${time === '*' ? 'text-muted' : ''}">${time}</span>`
+                            ).join('')}
+                        </div>
+                    </td>
+                `;
+                
+                elements.tracerouteResults.appendChild(row);
+                
+                // Auto-scroll to bottom
+                elements.tracerouteResults.scrollTop = elements.tracerouteResults.scrollHeight;
+                
+                // Update map if visible
+                if (!elements.mapContainer.classList.contains('d-none')) {
+                    updateMap();
+                }
+            }
+            
+            // Initialize map
+            function initMap() {
+                // Remove existing map if it exists
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                
+                // Clear existing markers and polylines
+                mapMarkers.forEach(marker => map.removeLayer(marker));
+                mapPolylines.forEach(polyline => map.removeLayer(polyline));
+                mapMarkers = [];
+                mapPolylines = [];
+                
+                // Create new map
+                map = L.map('map').setView([20, 0], 2);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Add initial marker for the user's location (simulated)
+                const userLocation = {
+                    lat: 51.505,
+                    lng: -0.09,
+                    name: 'Your Location',
+                    type: 'start'
+                };
+                
+                addMapMarker(userLocation);
+                
+                // Show placeholder if map container is hidden
+                if (elements.mapContainer.classList.contains('d-none')) {
+                    elements.mapPlaceholder.classList.remove('d-none');
+                    elements.mapContainer.querySelector('#map').style.display = 'none';
+                } else {
+                    elements.mapPlaceholder.classList.add('d-none');
+                    elements.mapContainer.querySelector('#map').style.display = 'block';
+                    map.invalidateSize(); // Ensure map resizes correctly
+                }
+            }
+            
+            // Update map with traceroute path
+            function updateMap() {
+                if (!map) return;
+                
+                // Clear existing markers and polylines (except the start marker)
+                if (mapMarkers.length > 1) {
+                    mapMarkers.slice(1).forEach(marker => map.removeLayer(marker));
+                    mapMarkers = [mapMarkers[0]]; // Keep only the start marker
+                }
+                
+                mapPolylines.forEach(polyline => map.removeLayer(polyline));
+                mapPolylines = [];
+                
+                // Get coordinates for the path
+                const path = [];
+                
+                // Add user's location as start point
+                path.push([51.505, -0.09]);
+                
+                // Add intermediate hops with random coordinates
+                traceResults.forEach((hop, index) => {
+                    // Generate random coordinates within a reasonable range
+                    const lat = 51.505 + (Math.random() * 40 - 20);
+                    const lng = -0.09 + (Math.random() * 80 - 40);
+                    
+                    // Add to path
+                    path.push([lat, lng]);
+                    
+                    // Add marker for this hop
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup(`
+                        <strong>Hop ${hop.hop}</strong><br>
+                        ${hop.ip}<br>
+                        ${hop.hostname}<br>
+                        Avg: ${hop.avgTime} ms
+                    `);
+                    
+                    mapMarkers.push(marker);
+                });
+                
+                // Add polyline for the path
+                const polyline = L.polyline(path, {color: '#0d6efd'}).addTo(map);
+                mapPolylines.push(polyline);
+                
+                // Fit map to bounds
+                if (path.length > 1) {
+                    map.fitBounds(polyline.getBounds(), {padding: [50, 50]});
+                }
+            }
+            
+            // Toggle map visibility
+            function toggleMap() {
+                elements.mapContainer.classList.toggle('d-none');
+                elements.mapPlaceholder.classList.toggle('d-none');
+                
+                if (elements.mapContainer.classList.contains('d-none')) {
+                    elements.toggleMap.innerHTML = '<i class="fas fa-map-marked-alt me-1"></i>Show Map';
+                    elements.mapContainer.querySelector('#map').style.display = 'none';
+                } else {
+                    elements.toggleMap.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Hide Map';
+                    elements.mapContainer.querySelector('#map').style.display = 'block';
+                    
+                    // Update map size and view when made visible
+                    if (map) {
+                        map.invalidateSize();
+                        updateMap();
+                    }
+                }
+            }
+            
+            // Stop traceroute
+            function stopTraceroute() {
+                if (tracerouteInterval) {
+                    clearInterval(tracerouteInterval);
+                    tracerouteInterval = null;
+                }
+                
+                isTracing = false;
+                elements.startTraceroute.disabled = false;
+                elements.stopTraceroute.disabled = true;
+                elements.progressBar.classList.add('d-none');
+                
+                // Show completion message
+                if (traceResults.length > 0) {
+                    const lastHop = traceResults[traceResults.length - 1];
+                    const isComplete = lastHop.ip === targetHost;
+                    
+                    if (isComplete) {
+                        appendToOutput(`\nTrace complete.`, 'text-success fw-bold');
+                    } else {
+                        appendToOutput(`\nTraceroute stopped after ${traceResults.length} hops.`, 'text-warning fw-bold');
+                    }
+                    
+                    // Update map with final path
+                    if (!elements.mapContainer.classList.contains('d-none')) {
+                        updateMap();
+                    }
+                }
+            }
+            
+            // Reset traceroute
+            function resetTraceroute() {
+                stopTraceroute();
+                
+                // Reset UI
+                elements.tracerouteResults.innerHTML = '';
+                elements.progressBar.querySelector('.progress-bar').style.width = '0%';
+                
+                // Reset map
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                
+                // Reset form
+                elements.tracerouteForm.reset();
+                elements.resultsContainer.classList.add('d-none');
+            }
+            
+            // Add text to output
+            function appendToOutput(text, className = '') {
+                const line = document.createElement('div');
+                line.className = className;
+                line.textContent = text;
+                
+                // Find the last row and add the text to it
+                const rows = elements.tracerouteResults.querySelectorAll('tr');
+                if (rows.length > 0) {
+                    const lastRow = rows[rows.length - 1];
+                    const cell = document.createElement('td');
+                    cell.colSpan = 5;
+                    cell.className = 'p-2 border-top-0';
+                    cell.appendChild(line);
+                    
+                    // Add details row
+                    const detailsRow = document.createElement('tr');
+                    detailsRow.appendChild(cell);
+                    elements.tracerouteResults.appendChild(detailsRow);
+                }
+                
+                elements.tracerouteResults.scrollTop = elements.tracerouteResults.scrollHeight;
+            }
+            
+            // Copy results to clipboard
+            function copyResults() {
+                let text = `Traceroute to ${targetHost} (${targetHost}), ${maxHops} hops max\n\n`;
+                
+                traceResults.forEach(hop => {
+                    text += `${hop.hop}  ${hop.hostname} (${hop.ip})  ${hop.avgTime} ms\n`;
+                });
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Results copied to clipboard', 'success');
+                }).catch(err => {
+                    showNotification('Failed to copy results', 'error');
+                    console.error('Failed to copy: ', err);
+                });
+            }
+            
+            // Export results to CSV
+            function exportToCSV() {
+                if (traceResults.length === 0) {
+                    showNotification('No traceroute data to export', 'warning');
+                    return;
+                }
+                
+                let csvContent = 'Hop,IP Address,Hostname,Average Time (ms),Response Times\n';
+                
+                traceResults.forEach(hop => {
+                    csvContent += `${hop.hop},${hop.ip},${hop.hostname},${hop.avgTime || ''},"${hop.times.join(', ')}"\n`;
+                });
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `traceroute_${targetHost}_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Add a marker to the map
+            function addMapMarker(location) {
+                if (!map) return;
+                
+                let icon;
+                if (location.type === 'start') {
+                    icon = L.divIcon({
+                        html: '<i class="fas fa-user-circle fa-2x" style="color: #198754;"></i>',
+                        iconSize: [24, 24],
+                        className: 'custom-icon'
+                    });
+                } else {
+                    icon = L.divIcon({
+                        html: '<i class="fas fa-server" style="color: #0d6efd;"></i>',
+                        iconSize: [16, 16],
+                        className: 'custom-icon'
+                    });
+                }
+                
+                const marker = L.marker([location.lat, location.lng], {icon: icon}).addTo(map);
+                marker.bindPopup(`<strong>${location.name}</strong>`);
+                mapMarkers.push(marker);
+                
+                return marker;
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

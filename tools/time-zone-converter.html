@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Zone Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Free online time zone converter. Convert times between different time zones around the world.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-clock"></i> Time Zone Converter</h1>
+                    <p class="lead">Convert times between different time zones around the world with ease.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exchange-alt"></i> Time Zone Converter</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromTimeZone" class="form-label">From Time Zone:</label>
+                                    <select class="form-select" id="fromTimeZone">
+                                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                        <option value="America/New_York">Eastern Time (ET)</option>
+                                        <option value="America/Chicago">Central Time (CT)</option>
+                                        <option value="America/Denver">Mountain Time (MT)</option>
+                                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                        <option value="Europe/London">London (GMT/BST)</option>
+                                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                                        <option value="Europe/Berlin">Berlin (CET/CEST)</option>
+                                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                                        <option value="Asia/Dubai">Dubai (GST)</option>
+                                        <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="toTimeZone" class="form-label">To Time Zone:</label>
+                                    <select class="form-select" id="toTimeZone">
+                                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                        <option value="America/New_York">Eastern Time (ET)</option>
+                                        <option value="America/Chicago">Central Time (CT)</option>
+                                        <option value="America/Denver">Mountain Time (MT)</option>
+                                        <option value="Europe/London">London (GMT/BST)</option>
+                                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                                        <option value="Europe/Berlin">Berlin (CET/CEST)</option>
+                                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                                        <option value="Asia/Dubai">Dubai (GST)</option>
+                                        <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fromDateTime" class="form-label">Date & Time:</label>
+                                    <input type="datetime-local" class="form-control" id="fromDateTime">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resultDateTime" class="form-label">Converted Time:</label>
+                                    <input type="text" class="form-control" id="resultDateTime" readonly>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="convertTimeZone()">
+                                    <i class="fas fa-calculator"></i> Convert
+                                </button>
+                                <button class="btn btn-secondary" onclick="swapTimeZones()">
+                                    <i class="fas fa-exchange-alt"></i> Swap
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearConverter()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-globe"></i> World Clock</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>New York</h6>
+                                            <div id="nyTime" class="h5 text-primary"></div>
+                                            <small class="text-muted">Eastern Time</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>London</h6>
+                                            <div id="londonTime" class="h5 text-success"></div>
+                                            <small class="text-muted">GMT/BST</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>Tokyo</h6>
+                                            <div id="tokyoTime" class="h5 text-warning"></div>
+                                            <small class="text-muted">JST</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>Paris</h6>
+                                            <div id="parisTime" class="h5 text-info"></div>
+                                            <small class="text-muted">CET/CEST</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>Dubai</h6>
+                                            <div id="dubaiTime" class="h5 text-danger"></div>
+                                            <small class="text-muted">GST</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h6>Sydney</h6>
+                                            <div id="sydneyTime" class="h5 text-secondary"></div>
+                                            <small class="text-muted">AEST/AEDT</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plane"></i> Meeting Planner</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="meetingTime" class="form-label">Meeting Time (Your Time Zone):</label>
+                                    <input type="datetime-local" class="form-control" id="meetingTime">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="yourTimeZone" class="form-label">Your Time Zone:</label>
+                                    <select class="form-select" id="yourTimeZone">
+                                        <option value="America/New_York">Eastern Time (ET)</option>
+                                        <option value="America/Chicago">Central Time (CT)</option>
+                                        <option value="America/Denver">Mountain Time (MT)</option>
+                                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                        <option value="Europe/London">London (GMT/BST)</option>
+                                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                                        <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="planMeeting()">
+                                <i class="fas fa-calendar-alt"></i> Plan Meeting
+                            </button>
+                            
+                            <div id="meetingResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Meeting Times:</h6>
+                                    <div id="meetingDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-table"></i> Popular Time Zones</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>City/Region</th>
+                                            <th>Time Zone</th>
+                                            <th>UTC Offset</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>New York</td>
+                                            <td>Eastern Time</td>
+                                            <td>UTC-5 (EST) / UTC-4 (EDT)</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('America/New_York')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>London</td>
+                                            <td>GMT/BST</td>
+                                            <td>UTC+0 (GMT) / UTC+1 (BST)</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('Europe/London')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tokyo</td>
+                                            <td>Japan Standard Time</td>
+                                            <td>UTC+9</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('Asia/Tokyo')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Paris</td>
+                                            <td>CET/CEST</td>
+                                            <td>UTC+1 (CET) / UTC+2 (CEST)</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('Europe/Paris')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sydney</td>
+                                            <td>AEST/AEDT</td>
+                                            <td>UTC+10 (AEST) / UTC+11 (AEDT)</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('Australia/Sydney')">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dubai</td>
+                                            <td>Gulf Standard Time</td>
+                                            <td>UTC+4</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadTimeZone('Asia/Dubai')">Load</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="ad-placeholder mb-4">
+                    <div class="ad-content">
+                        <i class="fas fa-ad"></i>
+                        <p>Advertisement Space</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Tips</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>UTC:</strong> Universal time reference</li>
+                            <li><strong>DST:</strong> Daylight Saving Time</li>
+                            <li><strong>GMT:</strong> Greenwich Mean Time</li>
+                            <li><strong>EST/EDT:</strong> Eastern Standard/Daylight Time</li>
+                            <li><strong>PST/PDT:</strong> Pacific Standard/Daylight Time</li>
+                            <li><strong>JST:</strong> Japan Standard Time</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-percentage"></i> Common Offsets</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">UTC-8 (PST):</small><br>
+                            <span class="badge bg-info">Pacific Time</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">UTC-5 (EST):</small><br>
+                            <span class="badge bg-success">Eastern Time</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">UTC+0 (GMT):</small><br>
+                            <span class="badge bg-warning">Greenwich Time</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">UTC+1 (CET):</small><br>
+                            <span class="badge bg-primary">Central Europe</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">UTC+9 (JST):</small><br>
+                            <span class="badge bg-danger">Japan Time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-calculator"></i> Quick Tools</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Flight Time Calculator:</small><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showFlightCalculator()">
+                                Calculate Flight Time
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Business Hours:</small><br>
+                            <button class="btn btn-sm btn-outline-success" onclick="showBusinessHours()">
+                                Check Business Hours
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Countdown Timer:</small><br>
+                            <button class="btn btn-sm btn-outline-warning" onclick="showCountdownTimer()">
+                                Set Countdown
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function convertTimeZone() {
+            const fromTimeZone = document.getElementById('fromTimeZone').value;
+            const toTimeZone = document.getElementById('toTimeZone').value;
+            const fromDateTime = document.getElementById('fromDateTime').value;
+            
+            if (!fromDateTime) {
+                MultiTools.showNotification('Please select a date and time', 'error');
+                return;
+            }
+
+            try {
+                const date = new Date(fromDateTime);
+                const fromTime = new Date(date.toLocaleString("en-US", {timeZone: fromTimeZone}));
+                const toTime = new Date(date.toLocaleString("en-US", {timeZone: toTimeZone}));
+                
+                const timeDiff = toTime.getTime() - fromTime.getTime();
+                const resultDate = new Date(date.getTime() + timeDiff);
+                
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: toTimeZone
+                };
+                
+                const result = resultDate.toLocaleString('en-US', options);
+                document.getElementById('resultDateTime').value = result;
+                
+            } catch (error) {
+                MultiTools.showNotification('Error converting time zone', 'error');
+            }
+        }
+
+        function swapTimeZones() {
+            const fromTimeZone = document.getElementById('fromTimeZone').value;
+            const toTimeZone = document.getElementById('toTimeZone').value;
+            const fromDateTime = document.getElementById('fromDateTime').value;
+            const resultDateTime = document.getElementById('resultDateTime').value;
+
+            document.getElementById('fromTimeZone').value = toTimeZone;
+            document.getElementById('toTimeZone').value = fromTimeZone;
+            document.getElementById('fromDateTime').value = resultDateTime;
+            document.getElementById('resultDateTime').value = fromDateTime;
+        }
+
+        function clearConverter() {
+            document.getElementById('fromDateTime').value = '';
+            document.getElementById('resultDateTime').value = '';
+            document.getElementById('meetingResults').style.display = 'none';
+        }
+
+        function updateWorldClock() {
+            const now = new Date();
+            const timeZones = [
+                { id: 'nyTime', zone: 'America/New_York', name: 'New York' },
+                { id: 'londonTime', zone: 'Europe/London', name: 'London' },
+                { id: 'tokyoTime', zone: 'Asia/Tokyo', name: 'Tokyo' },
+                { id: 'parisTime', zone: 'Europe/Paris', name: 'Paris' },
+                { id: 'dubaiTime', zone: 'Asia/Dubai', name: 'Dubai' },
+                { id: 'sydneyTime', zone: 'Australia/Sydney', name: 'Sydney' }
+            ];
+
+            timeZones.forEach(tz => {
+                try {
+                    const time = now.toLocaleString('en-US', {
+                        timeZone: tz.zone,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    document.getElementById(tz.id).textContent = time;
+                } catch (error) {
+                    document.getElementById(tz.id).textContent = 'Error';
+                }
+            });
+        }
+
+        function planMeeting() {
+            const meetingTime = document.getElementById('meetingTime').value;
+            const yourTimeZone = document.getElementById('yourTimeZone').value;
+            
+            if (!meetingTime) {
+                MultiTools.showNotification('Please select a meeting time', 'error');
+                return;
+            }
+
+            const date = new Date(meetingTime);
+            const timeZones = [
+                { name: 'New York', zone: 'America/New_York' },
+                { name: 'London', zone: 'Europe/London' },
+                { name: 'Tokyo', zone: 'Asia/Tokyo' },
+                { name: 'Paris', zone: 'Europe/Paris' },
+                { name: 'Dubai', zone: 'Asia/Dubai' },
+                { name: 'Sydney', zone: 'Australia/Sydney' }
+            ];
+
+            const resultsDiv = document.getElementById('meetingResults');
+            const detailsDiv = document.getElementById('meetingDetails');
+            
+            let details = '<div class="row">';
+            timeZones.forEach(tz => {
+                try {
+                    const time = date.toLocaleString('en-US', {
+                        timeZone: tz.zone,
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    details += `
+                        <div class="col-md-6 mb-2">
+                            <strong>${tz.name}:</strong><br>
+                            <span class="text-primary">${time}</span>
+                        </div>
+                    `;
+                } catch (error) {
+                    details += `
+                        <div class="col-md-6 mb-2">
+                            <strong>${tz.name}:</strong><br>
+                            <span class="text-danger">Error</span>
+                        </div>
+                    `;
+                }
+            });
+            details += '</div>';
+            
+            detailsDiv.innerHTML = details;
+            resultsDiv.style.display = 'block';
+        }
+
+        function loadTimeZone(timeZone) {
+            document.getElementById('fromTimeZone').value = timeZone;
+            document.getElementById('fromDateTime').value = new Date().toISOString().slice(0, 16);
+            convertTimeZone();
+        }
+
+        function showFlightCalculator() {
+            const departure = prompt('Enter departure time (HH:MM):');
+            const duration = prompt('Enter flight duration (hours):');
+            
+            if (departure && duration) {
+                const [hours, minutes] = departure.split(':').map(Number);
+                const departureDate = new Date();
+                departureDate.setHours(hours, minutes, 0, 0);
+                
+                const arrivalDate = new Date(departureDate.getTime() + parseFloat(duration) * 60 * 60 * 1000);
+                
+                alert(`Flight Time Calculation:\n\n` +
+                      `Departure: ${departure}\n` +
+                      `Duration: ${duration} hours\n` +
+                      `Arrival: ${arrivalDate.toLocaleTimeString()}`);
+            }
+        }
+
+        function showBusinessHours() {
+            const timeZone = prompt('Enter time zone (e.g., America/New_York):');
+            if (timeZone) {
+                const now = new Date();
+                const localTime = now.toLocaleString('en-US', { timeZone: timeZone });
+                
+                alert(`Business Hours Check:\n\n` +
+                      `Time Zone: ${timeZone}\n` +
+                      `Current Time: ${localTime}\n\n` +
+                      `Typical Business Hours: 9:00 AM - 5:00 PM`);
+            }
+        }
+
+        function showCountdownTimer() {
+            const targetTime = prompt('Enter target time (YYYY-MM-DD HH:MM):');
+            if (targetTime) {
+                const target = new Date(targetTime);
+                const now = new Date();
+                const diff = target - now;
+                
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    alert(`Countdown Timer:\n\n` +
+                          `Target: ${targetTime}\n` +
+                          `Time Remaining: ${days} days, ${hours} hours, ${minutes} minutes`);
+                } else {
+                    alert(`Countdown Timer:\n\n` +
+                          `Target: ${targetTime}\n` +
+                          `Time has passed!`);
+                }
+            }
+        }
+
+        // Auto-convert on input change
+        document.getElementById('fromDateTime').addEventListener('change', function() {
+            if (this.value && document.getElementById('fromTimeZone').value && document.getElementById('toTimeZone').value) {
+                convertTimeZone();
+            }
+        });
+
+        // Update world clock every second
+        setInterval(updateWorldClock, 1000);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWorldClock();
+            document.getElementById('fromDateTime').value = new Date().toISOString().slice(0, 16);
+            convertTimeZone();
+        });
+    </script>
+</body>
+</html> 

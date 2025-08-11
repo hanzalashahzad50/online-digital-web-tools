@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Free online discount calculator. Calculate discounts, markups, savings, and final prices for sales and promotions.">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226609223843598" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+</head>
+<style>
+    .ad-banner{
+        width: 1080px;
+        margin: auto;
+    }
+</style>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container tool-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="tool-content">
+                    <h1><i class="fas fa-tags"></i> Discount Calculator</h1>
+                    <p class="lead">Calculate discounts, markups, savings, and final prices for sales, promotions, and business scenarios.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-percentage"></i> Discount Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="originalPrice" class="form-label">Original Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="originalPrice" placeholder="Enter original price" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="discountPercent" class="form-label">Discount Percentage:</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="discountPercent" placeholder="Enter discount %" step="0.1">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="discountAmount" class="form-label">Discount Amount:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="discountAmount" placeholder="Enter discount amount" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="finalPrice" class="form-label">Final Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="finalPrice" placeholder="Enter final price" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="calculateDiscount()">
+                                    <i class="fas fa-calculator"></i> Calculate
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearCalculator()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie"></i> Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="discountResults" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="alert alert-info">
+                                            <h6><i class="fas fa-info-circle"></i> Discount Amount:</h6>
+                                            <h4 class="text-info" id="calculatedDiscount">$0</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-success">
+                                            <h6><i class="fas fa-info-circle"></i> Final Price:</h6>
+                                            <h4 class="text-success" id="calculatedFinal">$0</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="alert alert-warning">
+                                            <h6><i class="fas fa-info-circle"></i> Savings Percentage:</h6>
+                                            <h4 class="text-warning" id="savingsPercent">0%</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-secondary">
+                                            <h6><i class="fas fa-info-circle"></i> Total Savings:</h6>
+                                            <h4 class="text-secondary" id="totalSavings">$0</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Markup Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="costPrice" class="form-label">Cost Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="costPrice" placeholder="Cost price" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="markupPercent" class="form-label">Markup Percentage:</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="markupPercent" placeholder="Markup %" step="0.1">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="sellingPrice" class="form-label">Selling Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="sellingPrice" placeholder="Selling price" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="calculateMarkup()">
+                                <i class="fas fa-calculator"></i> Calculate Markup
+                            </button>
+                            
+                            <div id="markupResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Markup Results:</h6>
+                                    <div id="markupDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-shopping-cart"></i> Multiple Items Calculator</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="itemCount" class="form-label">Number of Items:</label>
+                                    <input type="number" class="form-control" id="itemCount" placeholder="Number of items" min="1" value="1">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bulkDiscount" class="form-label">Bulk Discount (%):</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="bulkDiscount" placeholder="Bulk discount %" step="0.1">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-warning" onclick="calculateBulkDiscount()">
+                                <i class="fas fa-calculator"></i> Calculate Bulk Discount
+                            </button>
+                            
+                            <div id="bulkResults" class="mt-3" style="display: none;">
+                                <div class="alert alert-warning">
+                                    <h6><i class="fas fa-info-circle"></i> Bulk Purchase Results:</h6>
+                                    <div id="bulkDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-table"></i> Common Discount Scenarios</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Scenario</th>
+                                            <th>Original Price</th>
+                                            <th>Discount</th>
+                                            <th>Final Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Black Friday Sale</td>
+                                            <td>$100</td>
+                                            <td>30%</td>
+                                            <td>$70</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadScenario(100, 30)">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Student Discount</td>
+                                            <td>$50</td>
+                                            <td>15%</td>
+                                            <td>$42.50</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadScenario(50, 15)">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Clearance Sale</td>
+                                            <td>$200</td>
+                                            <td>50%</td>
+                                            <td>$100</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadScenario(200, 50)">Load</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Loyalty Discount</td>
+                                            <td>$75</td>
+                                            <td>10%</td>
+                                            <td>$67.50</td>
+                                            <td><button class="btn btn-sm btn-outline-primary" onclick="loadScenario(75, 10)">Load</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+               
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-lightbulb"></i> Quick Tips</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>Percentage off:</strong> Original price × (1 - discount %)</li>
+                            <li><strong>Markup:</strong> Cost price × (1 + markup %)</li>
+                            <li><strong>Bulk discounts</strong> often start at 10%</li>
+                            <li><strong>Seasonal sales</strong> typically 20-50% off</li>
+                            <li><strong>Clearance items</strong> can be 70%+ off</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-percentage"></i> Common Discounts</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Student Discount:</small><br>
+                            <span class="badge bg-info">10-20%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Senior Discount:</small><br>
+                            <span class="badge bg-success">5-15%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Military Discount:</small><br>
+                            <span class="badge bg-warning">10-25%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Bulk Purchase:</small><br>
+                            <span class="badge bg-primary">5-30%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Clearance Sale:</small><br>
+                            <span class="badge bg-danger">50-80%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-calculator"></i> Quick Calculations</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Tax Calculator:</small><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showTaxCalculator()">
+                                Calculate Tax
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Tip Calculator:</small><br>
+                            <button class="btn btn-sm btn-outline-success" onclick="showTipCalculator()">
+                                Calculate Tip
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <!-- Ad Banner -->
+     <div class="text-center my-4">
+                    <div class="ad-banner border rounded p-2 bg-light">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-1226609223843598"
+                             data-ad-slot="1798180633"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true">
+                        </ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <small class="text-muted d-block mt-1">Advertisement</small>
+                </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .ad-banner {
+            width: 1080px;
+            margin: auto;
+        }
+    </style>
+    <script>
+        function calculateDiscount() {
+            const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+            const discountPercent = parseFloat(document.getElementById('discountPercent').value);
+            const discountAmount = parseFloat(document.getElementById('discountAmount').value);
+            const finalPrice = parseFloat(document.getElementById('finalPrice').value);
+            
+            let calculatedDiscount, calculatedFinal, savingsPercent, totalSavings;
+            
+            // Calculate based on what's provided
+            if (!isNaN(originalPrice) && !isNaN(discountPercent)) {
+                // Calculate from original price and discount percentage
+                calculatedDiscount = originalPrice * (discountPercent / 100);
+                calculatedFinal = originalPrice - calculatedDiscount;
+                savingsPercent = discountPercent;
+                totalSavings = calculatedDiscount;
+            } else if (!isNaN(originalPrice) && !isNaN(discountAmount)) {
+                // Calculate from original price and discount amount
+                calculatedDiscount = discountAmount;
+                calculatedFinal = originalPrice - discountAmount;
+                savingsPercent = (discountAmount / originalPrice) * 100;
+                totalSavings = discountAmount;
+            } else if (!isNaN(originalPrice) && !isNaN(finalPrice)) {
+                // Calculate from original price and final price
+                calculatedDiscount = originalPrice - finalPrice;
+                calculatedFinal = finalPrice;
+                savingsPercent = (calculatedDiscount / originalPrice) * 100;
+                totalSavings = calculatedDiscount;
+            } else if (!isNaN(discountPercent) && !isNaN(discountAmount)) {
+                // Calculate from discount percentage and amount
+                calculatedDiscount = discountAmount;
+                calculatedFinal = (discountAmount / (discountPercent / 100)) - discountAmount;
+                savingsPercent = discountPercent;
+                totalSavings = discountAmount;
+            } else {
+                MultiTools.showNotification('Please enter at least two values', 'error');
+                return;
+            }
+
+            // Display results
+            document.getElementById('calculatedDiscount').textContent = '$' + calculatedDiscount.toFixed(2);
+            document.getElementById('calculatedFinal').textContent = '$' + calculatedFinal.toFixed(2);
+            document.getElementById('savingsPercent').textContent = savingsPercent.toFixed(1) + '%';
+            document.getElementById('totalSavings').textContent = '$' + totalSavings.toFixed(2);
+            
+            document.getElementById('discountResults').style.display = 'block';
+        }
+
+        function calculateMarkup() {
+            const costPrice = parseFloat(document.getElementById('costPrice').value);
+            const markupPercent = parseFloat(document.getElementById('markupPercent').value);
+            const sellingPrice = parseFloat(document.getElementById('sellingPrice').value);
+            
+            let calculatedMarkup, calculatedSelling, calculatedPercent;
+            
+            if (!isNaN(costPrice) && !isNaN(markupPercent)) {
+                calculatedMarkup = costPrice * (markupPercent / 100);
+                calculatedSelling = costPrice + calculatedMarkup;
+                calculatedPercent = markupPercent;
+            } else if (!isNaN(costPrice) && !isNaN(sellingPrice)) {
+                calculatedMarkup = sellingPrice - costPrice;
+                calculatedSelling = sellingPrice;
+                calculatedPercent = (calculatedMarkup / costPrice) * 100;
+            } else {
+                MultiTools.showNotification('Please enter cost price and either markup % or selling price', 'error');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('markupResults');
+            const detailsDiv = document.getElementById('markupDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Markup Amount:</strong> $${calculatedMarkup.toFixed(2)}<br>
+                        <strong>Markup Percentage:</strong> ${calculatedPercent.toFixed(1)}%
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Selling Price:</strong> $${calculatedSelling.toFixed(2)}<br>
+                        <strong>Profit Margin:</strong> ${((calculatedMarkup / calculatedSelling) * 100).toFixed(1)}%
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function calculateBulkDiscount() {
+            const itemCount = parseInt(document.getElementById('itemCount').value);
+            const bulkDiscount = parseFloat(document.getElementById('bulkDiscount').value);
+            const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+            
+            if (isNaN(itemCount) || isNaN(bulkDiscount) || isNaN(originalPrice)) {
+                MultiTools.showNotification('Please enter all values for bulk calculation', 'error');
+                return;
+            }
+
+            const totalOriginal = originalPrice * itemCount;
+            const totalDiscount = totalOriginal * (bulkDiscount / 100);
+            const totalFinal = totalOriginal - totalDiscount;
+            const savingsPerItem = totalDiscount / itemCount;
+
+            const resultsDiv = document.getElementById('bulkResults');
+            const detailsDiv = document.getElementById('bulkDetails');
+            
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Total Original:</strong> $${totalOriginal.toFixed(2)}<br>
+                        <strong>Total Discount:</strong> $${totalDiscount.toFixed(2)}<br>
+                        <strong>Savings per Item:</strong> $${savingsPerItem.toFixed(2)}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Total Final Price:</strong> $${totalFinal.toFixed(2)}<br>
+                        <strong>Final Price per Item:</strong> $${(totalFinal / itemCount).toFixed(2)}<br>
+                        <strong>Bulk Discount:</strong> ${bulkDiscount}%
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function loadScenario(price, discount) {
+            document.getElementById('originalPrice').value = price;
+            document.getElementById('discountPercent').value = discount;
+            calculateDiscount();
+        }
+
+        function clearCalculator() {
+            document.getElementById('originalPrice').value = '';
+            document.getElementById('discountPercent').value = '';
+            document.getElementById('discountAmount').value = '';
+            document.getElementById('finalPrice').value = '';
+            document.getElementById('costPrice').value = '';
+            document.getElementById('markupPercent').value = '';
+            document.getElementById('sellingPrice').value = '';
+            document.getElementById('itemCount').value = '1';
+            document.getElementById('bulkDiscount').value = '';
+            
+            document.getElementById('discountResults').style.display = 'none';
+            document.getElementById('markupResults').style.display = 'none';
+            document.getElementById('bulkResults').style.display = 'none';
+        }
+
+        function showTaxCalculator() {
+            const amount = prompt('Enter amount:');
+            const taxRate = prompt('Enter tax rate (%):');
+            
+            if (amount && taxRate) {
+                const tax = parseFloat(amount) * (parseFloat(taxRate) / 100);
+                const total = parseFloat(amount) + tax;
+                
+                alert(`Tax Calculation:\n\n` +
+                      `Amount: $${parseFloat(amount).toFixed(2)}\n` +
+                      `Tax (${taxRate}%): $${tax.toFixed(2)}\n` +
+                      `Total: $${total.toFixed(2)}`);
+            }
+        }
+
+        function showTipCalculator() {
+            const bill = prompt('Enter bill amount:');
+            const tipPercent = prompt('Enter tip percentage (%):');
+            
+            if (bill && tipPercent) {
+                const tip = parseFloat(bill) * (parseFloat(tipPercent) / 100);
+                const total = parseFloat(bill) + tip;
+                
+                alert(`Tip Calculation:\n\n` +
+                      `Bill: $${parseFloat(bill).toFixed(2)}\n` +
+                      `Tip (${tipPercent}%): $${tip.toFixed(2)}\n` +
+                      `Total: $${total.toFixed(2)}`);
+            }
+        }
+
+        // Auto-calculate on input change
+        document.getElementById('originalPrice').addEventListener('input', function() {
+            if (this.value && (document.getElementById('discountPercent').value || 
+                              document.getElementById('discountAmount').value || 
+                              document.getElementById('finalPrice').value)) {
+                calculateDiscount();
+            }
+        });
+
+        document.getElementById('discountPercent').addEventListener('input', function() {
+            if (this.value && document.getElementById('originalPrice').value) {
+                calculateDiscount();
+            }
+        });
+
+        // Initialize with sample data
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('originalPrice').value = '100';
+            document.getElementById('discountPercent').value = '20';
+            calculateDiscount();
+        });
+    </script>
+</body>
+</html> 

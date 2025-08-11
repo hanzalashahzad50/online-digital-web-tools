@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Check SSL certificate details and security information for any website.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .status-card { border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .status-valid { border-left: 4px solid #198754; }
+        .status-expired { border-left: 4px solid #dc3545; }
+        .cert-detail { padding: 10px; border-bottom: 1px solid #eee; }
+        .days-left { font-size: 1.8rem; font-weight: bold; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-lock me-3"></i>SSL Checker</h1>
+            <p class="lead">Check SSL certificate details and security information</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="sslForm">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">https://</span>
+                                    <input type="text" class="form-control" id="domainInput" placeholder="example.com" required>
+                                    <button class="btn btn-primary" type="submit" id="checkSSL">
+                                        <i class="fas fa-search me-2"></i>Check SSL
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-container d-none" id="resultsContainer">
+                        <div class="card mb-4 status-card status-valid" id="statusCard">
+                            <div class="card-body">
+                                <h5 class="mb-3">SSL Certificate Status</h5>
+                                <div class="days-left" id="daysLeft">-</div>
+                                <div class="mb-2" id="statusText">Checking...</div>
+                                <div class="progress">
+                                    <div class="progress-bar" id="validityBar" role="progressbar" style="width: 100%"></div>
+                                </div>
+                                <small class="text-muted">Expires on <span id="expiryDate">-</span></small>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-certificate me-2"></i>Certificate Details</h5>
+                            </div>
+                            <div class="card-body p-0" id="certDetails">
+                                <!-- Certificate details will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>About SSL</h5>
+                            <p>SSL certificates create an encrypted connection between a web server and a visitor's browser.</p>
+                            <ul class="mb-0">
+                                <li>Encrypts sensitive data</li>
+                                <li>Boosts search rankings</li>
+                                <li>Builds customer trust</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // Sample certificate data for demo
+            const sampleCert = {
+                valid: true,
+                validTo: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
+                issuer: 'Let\'s Encrypt',
+                commonName: 'example.com',
+                protocol: 'TLS 1.3',
+                keySize: 256,
+                daysRemaining: 90,
+                validFor: ['example.com', 'www.example.com']
+            };
+
+            // DOM Elements
+            const elements = {
+                sslForm: document.getElementById('sslForm'),
+                progressBar: document.getElementById('progressBar'),
+                resultsContainer: document.getElementById('resultsContainer'),
+                statusCard: document.getElementById('statusCard'),
+                daysLeft: document.getElementById('daysLeft'),
+                statusText: document.getElementById('statusText'),
+                validityBar: document.getElementById('validityBar'),
+                expiryDate: document.getElementById('expiryDate'),
+                certDetails: document.getElementById('certDetails')
+            };
+
+            // Event Listeners
+            elements.sslForm.addEventListener('submit', checkSSL);
+
+            // Check SSL function
+            async function checkSSL(e) {
+                e.preventDefault();
+                const domain = document.getElementById('domainInput').value.trim();
+                
+                if (!domain) {
+                    showNotification('Please enter a domain', 'warning');
+                    return;
+                }
+                
+                // Show loading
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsContainer.classList.add('d-none');
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // For demo, use sample data with the entered domain
+                const certData = {...sampleCert};
+                certData.commonName = domain;
+                certData.validFor = [domain, `www.${domain}`];
+                
+                // Display results
+                displayResults(certData);
+                
+                // Hide loading
+                elements.progressBar.classList.add('d-none');
+                elements.resultsContainer.classList.remove('d-none');
+            }
+            
+            // Display results
+            function displayResults(cert) {
+                // Update status card
+                const daysLeft = cert.daysRemaining;
+                const expiryDate = cert.validTo.toLocaleDateString();
+                
+                elements.daysLeft.textContent = `${daysLeft} days`;
+                elements.expiryDate.textContent = expiryDate;
+                
+                if (daysLeft <= 0) {
+                    elements.statusCard.className = 'card mb-4 status-card status-expired';
+                    elements.statusText.textContent = 'Certificate Expired';
+                    elements.validityBar.className = 'progress-bar bg-danger';
+                } else if (daysLeft <= 7) {
+                    elements.statusCard.className = 'card mb-4 status-card status-warning';
+                    elements.statusText.textContent = 'Certificate Expiring Soon';
+                    elements.validityBar.className = 'progress-bar bg-warning';
+                } else {
+                    elements.statusCard.className = 'card mb-4 status-card status-valid';
+                    elements.statusText.textContent = 'Valid Certificate';
+                    elements.validityBar.className = 'progress-bar bg-success';
+                }
+                
+                // Update certificate details
+                elements.certDetails.innerHTML = `
+                    <div class="cert-detail">
+                        <div class="cert-label">Common Name</div>
+                        <div class="cert-value">${cert.commonName}</div>
+                    </div>
+                    <div class="cert-detail">
+                        <div class="cert-label">Issuer</div>
+                        <div class="cert-value">${cert.issuer}</div>
+                    </div>
+                    <div class="cert-detail">
+                        <div class="cert-label">Protocol</div>
+                        <div class="cert-value">${cert.protocol}</div>
+                    </div>
+                    <div class="cert-detail">
+                        <div class="cert-label">Key Size</div>
+                        <div class="cert-value">${cert.keySize} bits</div>
+                    </div>
+                    <div class="cert-detail">
+                        <div class="cert-label">Valid For</div>
+                        <div class="cert-value">${cert.validFor.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

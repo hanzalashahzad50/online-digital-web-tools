@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broken Link Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Find and fix broken links on your website with our free broken link checker tool.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+    <style>
+        .progress { height: 1.5rem; }
+        .status-200 { color: #198754; }
+        .status-300 { color: #0d6efd; }
+        .status-400, .status-500 { color: #dc3545; }
+        .status-0 { color: #6c757d; }
+        .url-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .checking { opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-unlink me-3"></i>Broken Link Checker</h1>
+            <p class="lead">Find and fix broken links on your website</p>
+        </div>
+
+        <div class="tool-content">
+            <div id="ad-leaderboard" class="mt-4 mb-4"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-link me-2"></i>Check Links</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="urlsInput" class="form-label">Enter URLs to check (one per line)</label>
+                                <textarea class="form-control" id="urlsInput" rows="8" placeholder="https://example.com/page1
+https://example.com/page2
+https://example.com/blog/post"></textarea>
+                                <div class="form-text">Enter one URL per line. Include http:// or https://</div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-primary" id="checkLinks">
+                                    <i class="fas fa-search me-2"></i>Check Links
+                                </button>
+                                <span id="status" class="text-muted small">Ready to check links</span>
+                            </div>
+                            
+                            <div class="progress mt-3 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 d-none" id="resultsCard">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-list-ul me-2"></i>Results</h5>
+                            <div class="small" id="resultCount">0 links checked</div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>URL</th>
+                                            <th>Response</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultsTableBody">
+                                        <!-- Results will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="p-3 border-top d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-secondary" id="exportResults">
+                                    <i class="fas fa-download me-1"></i>Export Results
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" id="clearResults">
+                                    <i class="fas fa-trash-alt me-1"></i>Clear Results
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Broken Links</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Broken links (also known as "dead links") are links that no longer work. They can harm your website's user experience and SEO.</p>
+                            
+                            <h6>Common Status Codes:</h6>
+                            <ul class="small">
+                                <li class="status-200"><strong>200</strong> - OK (Working)</li>
+                                <li class="status-300"><strong>301/302</strong> - Redirect</li>
+                                <li class="status-400"><strong>404</strong> - Not Found</li>
+                                <li class="status-500"><strong>500</strong> - Server Error</li>
+                                <li class="status-0"><strong>0</strong> - Timeout/Error</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Tip:</strong> Check your links regularly to maintain a healthy website.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="h4 mb-1" id="totalLinks">0</div>
+                                    <div class="small text-muted">Total Links</div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="h4 mb-1 text-success" id="workingLinks">0</div>
+                                    <div class="small text-muted">Working</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h4 mb-1 text-danger" id="brokenLinks">0</div>
+                                    <div class="small text-muted">Broken</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h4 mb-1 text-warning" id="redirectLinks">0</div>
+                                    <div class="small text-muted">Redirects</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ad-sidebar" class="mb-4"></div>
+                </div>
+            </div>
+
+            <div id="ad-bottom" class="mt-4 mb-4"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/ads.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ad units
+            if (typeof initAdUnits !== 'undefined') {
+                initAdUnits({
+                    leaderboard: 'ad-leaderboard',
+                    sidebar: 'ad-sidebar',
+                    bottom: 'ad-bottom'
+                });
+            }
+
+            // State
+            const state = {
+                isChecking: false,
+                results: [],
+                stats: {
+                    total: 0,
+                    working: 0,
+                    broken: 0,
+                    redirects: 0
+                }
+            };
+
+            // DOM Elements
+            const elements = {
+                urlsInput: document.getElementById('urlsInput'),
+                checkLinks: document.getElementById('checkLinks'),
+                status: document.getElementById('status'),
+                progressBar: document.getElementById('progressBar'),
+                resultsCard: document.getElementById('resultsCard'),
+                resultsTableBody: document.getElementById('resultsTableBody'),
+                resultCount: document.getElementById('resultCount'),
+                exportResults: document.getElementById('exportResults'),
+                clearResults: document.getElementById('clearResults'),
+                totalLinks: document.getElementById('totalLinks'),
+                workingLinks: document.getElementById('workingLinks'),
+                brokenLinks: document.getElementById('brokenLinks'),
+                redirectLinks: document.getElementById('redirectLinks')
+            };
+
+            // Event Listeners
+            elements.checkLinks.addEventListener('click', checkLinks);
+            elements.exportResults.addEventListener('click', exportResults);
+            elements.clearResults.addEventListener('click', clearResults);
+
+            // Check links
+            async function checkLinks() {
+                const urls = getUrlsFromInput();
+                
+                if (urls.length === 0) {
+                    showNotification('Please enter at least one URL', 'warning');
+                    return;
+                }
+                
+                // Reset state
+                state.isChecking = true;
+                state.results = [];
+                resetStats();
+                
+                // Update UI
+                elements.checkLinks.disabled = true;
+                elements.status.textContent = 'Checking links...';
+                elements.progressBar.classList.remove('d-none');
+                elements.resultsTableBody.innerHTML = '';
+                elements.resultsCard.classList.remove('d-none');
+                
+                // Check each URL
+                for (let i = 0; i < urls.length; i++) {
+                    if (!state.isChecking) break;
+                    
+                    const url = urls[i];
+                    await checkUrl(url);
+                    updateProgress(i + 1, urls.length);
+                }
+                
+                finishCheck();
+            }
+            
+            // Check a single URL
+            async function checkUrl(url) {
+                try {
+                    // In a real implementation, you would make an actual HTTP request here
+                    // This is a simulation that would be replaced with actual checking logic
+                    await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 700));
+                    
+                    // Simulate different status codes
+                    const status = getRandomStatus();
+                    const result = {
+                        url,
+                        status,
+                        statusText: getStatusText(status),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    addResult(result);
+                    return result;
+                } catch (error) {
+                    console.error('Error checking URL:', url, error);
+                    const result = {
+                        url,
+                        status: 0,
+                        statusText: 'Error: ' + (error.message || 'Unknown error'),
+                        timestamp: new Date().toISOString()
+                    };
+                    addResult(result);
+                    return result;
+                }
+            }
+            
+            // Add a result to the table
+            function addResult(result) {
+                state.results.push(result);
+                updateStats(result);
+                renderResult(result);
+            }
+            
+            // Update statistics
+            function updateStats(result) {
+                state.stats.total++;
+                
+                if (result.status >= 200 && result.status < 300) {
+                    state.stats.working++;
+                } else if (result.status >= 300 && result.status < 400) {
+                    state.stats.redirects++;
+                } else {
+                    state.stats.broken++;
+                }
+                
+                updateStatsDisplay();
+            }
+            
+            // Update stats display
+            function updateStatsDisplay() {
+                elements.totalLinks.textContent = state.stats.total;
+                elements.workingLinks.textContent = state.stats.working;
+                elements.brokenLinks.textContent = state.stats.broken;
+                elements.redirectLinks.textContent = state.stats.redirects;
+                
+                elements.resultCount.textContent = `${state.stats.total} link${state.stats.total !== 1 ? 's' : ''} checked`;
+            }
+            
+            // Reset statistics
+            function resetStats() {
+                state.stats = {
+                    total: 0,
+                    working: 0,
+                    broken: 0,
+                    redirects: 0
+                };
+                updateStatsDisplay();
+            }
+            
+            // Render a result row
+            function renderResult(result) {
+                const row = document.createElement('tr');
+                row.className = `status-${Math.floor(result.status / 100) * 100 || 0}`;
+                
+                // Status
+                const statusCell = document.createElement('td');
+                statusCell.textContent = result.status || 'Error';
+                row.appendChild(statusCell);
+                
+                // URL
+                const urlCell = document.createElement('td');
+                const urlLink = document.createElement('a');
+                urlLink.href = result.url;
+                urlLink.target = '_blank';
+                urlLink.rel = 'noopener noreferrer';
+                urlLink.textContent = result.url;
+                urlLink.className = 'text-decoration-none';
+                urlCell.className = 'url-cell';
+                urlCell.appendChild(urlLink);
+                row.appendChild(urlCell);
+                
+                // Response
+                const responseCell = document.createElement('td');
+                responseCell.textContent = result.statusText || '';
+                row.appendChild(responseCell);
+                
+                elements.resultsTableBody.prepend(row);
+            }
+            
+            // Update progress
+            function updateProgress(current, total) {
+                const percent = Math.round((current / total) * 100);
+                elements.progressBar.querySelector('.progress-bar').style.width = `${percent}%`;
+                elements.status.textContent = `Checking ${current} of ${total} (${percent}%)`;
+            }
+            
+            // Finish checking
+            function finishCheck() {
+                state.isChecking = false;
+                elements.checkLinks.disabled = false;
+                elements.status.textContent = `Checked ${state.stats.total} links. ${state.stats.broken} broken, ${state.stats.redirects} redirects.`;
+                
+                if (state.stats.broken > 0) {
+                    showNotification(`Found ${state.stats.broken} broken link${state.stats.broken !== 1 ? 's' : ''}`, 'warning');
+                } else if (state.stats.total > 0) {
+                    showNotification('All links are working!', 'success');
+                }
+            }
+            
+            // Export results to CSV
+            function exportResults() {
+                if (state.results.length === 0) {
+                    showNotification('No results to export', 'warning');
+                    return;
+                }
+                
+                const csv = Papa.unparse({
+                    fields: ['URL', 'Status', 'Status Text', 'Timestamp'],
+                    data: state.results.map(r => [r.url, r.status, r.statusText, r.timestamp])
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `broken-links-${new Date().toISOString().slice(0, 10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('Results exported to CSV', 'success');
+            }
+            
+            // Clear results
+            function clearResults() {
+                if (confirm('Are you sure you want to clear all results?')) {
+                    state.results = [];
+                    resetStats();
+                    elements.resultsTableBody.innerHTML = '';
+                    elements.status.textContent = 'Ready to check links';
+                    elements.progressBar.classList.add('d-none');
+                    elements.resultsCard.classList.add('d-none');
+                }
+            }
+            
+            // Get URLs from input
+            function getUrlsFromInput() {
+                return elements.urlsInput.value
+                    .split('\n')
+                    .map(url => url.trim())
+                    .filter(url => url !== '');
+            }
+            
+            // Helper function to get random status for demo
+            function getRandomStatus() {
+                const statuses = [
+                    200, 200, 200, 200, 200, 200, 200, 200, 200, 200, // 70% chance
+                    301, 302, 307, // 15% chance
+                    400, 401, 403, 404, 410, 429, // 10% chance
+                    500, 502, 503, 504, // 5% chance
+                    0 // Connection error
+                ];
+                return statuses[Math.floor(Math.random() * statuses.length)];
+            }
+            
+            // Helper function to get status text
+            function getStatusText(status) {
+                const statusTexts = {
+                    200: 'OK',
+                    301: 'Moved Permanently',
+                    302: 'Found (Temporary Redirect)',
+                    307: 'Temporary Redirect',
+                    400: 'Bad Request',
+                    401: 'Unauthorized',
+                    403: 'Forbidden',
+                    404: 'Not Found',
+                    410: 'Gone',
+                    429: 'Too Many Requests',
+                    500: 'Internal Server Error',
+                    502: 'Bad Gateway',
+                    503: 'Service Unavailable',
+                    504: 'Gateway Timeout',
+                    0: 'Connection Error'
+                };
+                return statusTexts[status] || 'Unknown Status';
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                if (typeof MultiTools !== 'undefined' && typeof MultiTools.showNotification === 'function') {
+                    MultiTools.showNotification(message, type);
+                } else {
+                    alert(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

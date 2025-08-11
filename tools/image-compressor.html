@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor - Multi-Tools Hub</title>
+    <meta name="description" content="Compress images online without losing quality. Reduce image file size for web and mobile.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7GlcAeh77bR29ViliFsnRN3qtfdwekxAsSQ&s" type="image/x-icon">
+
+    <style>
+        .drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .file-item {
+            transition: all 0.2s ease;
+        }
+        .file-item:hover {
+            background-color: #f8f9fa;
+        }
+        .progress {
+            height: 10px;
+        }
+        .result-card {
+            transition: transform 0.2s;
+        }
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <script src="../js/ads.js"></script>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <!-- Tool Container -->
+    <div class="container tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-compress-alt me-3"></i>Image Compressor</h1>
+            <p class="lead">Reduce image file size without losing quality</p>
+        </div>
+
+        <!-- Top Ad (Leaderboard) -->
+        <div id="ad-leaderboard" class="mt-4 mb-4">
+            <!-- Ad will be injected here by ads.js -->
+        </div>
+
+        <div class="tool-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-image me-2"></i>Upload Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div id="drop-zone" class="drop-zone p-5 mb-4">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <h5>Drag & Drop your image here</h5>
+                                <p class="text-muted">or</p>
+                                <button id="select-files" class="btn btn-primary">
+                                    <i class="fas fa-folder-open me-2"></i>Select Files
+                                </button>
+                                <input type="file" id="file-input" accept="image/*" multiple class="d-none">
+                                <p class="small text-muted mt-2">Supports JPG, PNG, WEBP (Max 10MB per file)</p>
+                            </div>
+                            
+                            <div id="file-list" class="mb-4 d-none">
+                                <h5 class="mb-3">Selected Files</h5>
+                                <div id="files-container" class="list-group">
+                                    <!-- Files will be listed here -->
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button id="clear-files" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-trash me-1"></i>Clear All
+                                    </button>
+                                    <div>
+                                        <span id="total-files" class="me-3">0 files</span>
+                                        <span id="total-size">0 MB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compression Options -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Compression Options</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="quality-range" class="form-label">Quality: <span id="quality-value">70</span>%</label>
+                                        <input type="range" class="form-range" id="quality-range" min="1" max="100" value="70">
+                                        <div class="d-flex justify-content-between">
+                                            <small>Smaller Size</small>
+                                            <small>Better Quality</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="max-width" class="form-label">Max Width (pixels):</label>
+                                        <input type="number" class="form-control" id="max-width" placeholder="Leave empty for original width">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="max-height" class="form-label">Max Height (pixels):</label>
+                                        <input type="number" class="form-control" id="max-height" placeholder="Leave empty for original height">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="preserve-metadata" checked>
+                                        <label class="form-check-label" for="preserve-metadata">
+                                            Preserve Metadata (EXIF)
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Output Format:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="output-format" id="format-original" value="original" checked>
+                                            <label class="form-check-label" for="format-original">
+                                                Same as original
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="output-format" id="format-jpg" value="jpg">
+                                            <label class="form-check-label" for="format-jpg">
+                                                JPG
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="output-format" id="format-png" value="png">
+                                            <label class="form-check-label" for="format-png">
+                                                PNG
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="output-format" id="format-webp" value="webp">
+                                            <label class="form-check-label" for="format-webp">
+                                                WebP (Best for Web)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-3">
+                                <button id="compress-btn" class="btn btn-primary" disabled>
+                                    <i class="fas fa-compress-arrows-alt me-2"></i>Compress Images
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="results-section" class="card mt-4 d-none">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Compression Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="results-container">
+                                <!-- Results will be shown here -->
+                            </div>
+                            <div class="d-grid gap-2 mt-3">
+                                <button id="download-all" class="btn btn-success">
+                                    <i class="fas fa-download me-2"></i>Download All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Compression Tips -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Compression Tips</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <strong>Quality 70-80%</strong> is usually the sweet spot for web images</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Use <strong>WebP</strong> for best compression with good quality</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Set <strong>max dimensions</strong> to reduce file size further</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> For photos, <strong>JPG</strong> usually gives the best results</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> For graphics with transparency, use <strong>PNG</strong> or <strong>WebP</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Estimated Savings -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Estimated Savings</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Original Size:</span>
+                                    <span id="original-total-size">0 MB</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Compressed Size:</span>
+                                    <span id="compressed-total-size">0 MB</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>You Save:</span>
+                                    <span id="savings-amount">0 MB (0%)</span>
+                                </div>
+                            </div>
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div id="savings-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+                            </div>
+                            <p class="small text-muted mb-0">Estimated values based on current settings</p>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Ad (Square) -->
+                    <div id="ad-sidebar" class="mt-4">
+                        <!-- Ad will be injected here by ads.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How to Compress Images</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center p-3">
+                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-upload fa-2x text-primary"></i>
+                                        </div>
+                                        <h5>1. Upload Images</h5>
+                                        <p class="text-muted">Drag & drop or select image files from your device</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center p-3">
+                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-sliders-h fa-2x text-primary"></i>
+                                        </div>
+                                        <h5>2. Adjust Settings</h5>
+                                        <p class="text-muted">Choose quality, dimensions, and output format</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center p-3">
+                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-download fa-2x text-primary"></i>
+                                        </div>
+                                        <h5>3. Download</h5>
+                                        <p class="text-muted">Download your compressed images individually or all at once</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Ad (Leaderboard) -->
+    <div id="ad-bottom" class="container mt-4 mb-4">
+        <!-- Ad will be injected here by ads.js -->
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const selectFilesBtn = document.getElementById('select-files');
+            const fileList = document.getElementById('file-list');
+            const filesContainer = document.getElementById('files-container');
+            const clearFilesBtn = document.getElementById('clear-files');
+            const totalFilesEl = document.getElementById('total-files');
+            const totalSizeEl = document.getElementById('total-size');
+            const qualityRange = document.getElementById('quality-range');
+            const qualityValue = document.getElementById('quality-value');
+            const compressBtn = document.getElementById('compress-btn');
+            const resultsSection = document.getElementById('results-section');
+            const resultsContainer = document.getElementById('results-container');
+            const downloadAllBtn = document.getElementById('download-all');
+            const originalTotalSizeEl = document.getElementById('original-total-size');
+            const compressedTotalSizeEl = document.getElementById('compressed-total-size');
+            const savingsAmountEl = document.getElementById('savings-amount');
+            const savingsProgress = document.getElementById('savings-progress');
+
+            // State
+            let files = [];
+            let compressedFiles = [];
+
+            // Event Listeners
+            selectFilesBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            clearFilesBtn.addEventListener('click', clearFiles);
+            qualityRange.addEventListener('input', updateQualityValue);
+            compressBtn.addEventListener('click', compressImages);
+            downloadAllBtn.addEventListener('click', downloadAll);
+
+            // Drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight() {
+                dropZone.classList.add('border-primary', 'bg-light');
+            }
+
+            function unhighlight() {
+                dropZone.classList.remove('border-primary', 'bg-light');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const droppedFiles = dt.files;
+                handleFiles(droppedFiles);
+            }
+
+            function handleFileSelect(e) {
+                const selectedFiles = e.target.files;
+                handleFiles(selectedFiles);
+            }
+
+            function handleFiles(fileList) {
+                const validFiles = Array.from(fileList).filter(file => {
+                    return file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024; // 10MB limit
+                });
+
+                if (validFiles.length === 0) {
+                    MultiTools.showNotification('Please select valid image files (max 10MB each)', 'warning');
+                    return;
+                }
+
+                files = [...files, ...validFiles];
+                updateFileList();
+                updateUI();
+            }
+
+            function updateFileList() {
+                filesContainer.innerHTML = '';
+                let totalSize = 0;
+
+                files.forEach((file, index) => {
+                    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                    totalSize += file.size;
+
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    fileItem.innerHTML = `
+                        <div class="flex-grow-1">
+                            <i class="fas fa-image me-2"></i>
+                            <span class="text-truncate" style="max-width: 200px; display: inline-block; vertical-align: middle;">${file.name}</span>
+                            <small class="text-muted ms-2">${fileSize} MB</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger remove-file" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    filesContainer.appendChild(fileItem);
+                });
+
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-file').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.closest('button').dataset.index);
+                        files.splice(index, 1);
+                        updateFileList();
+                        updateUI();
+                    });
+                });
+
+                // Update totals
+                totalFilesEl.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
+                totalSizeEl.textContent = `${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
+                
+                // Update original total size in savings section
+                originalTotalSizeEl.textContent = `${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
+                
+                // Show/hide file list
+                fileList.classList.toggle('d-none', files.length === 0);
+            }
+
+            function updateQualityValue() {
+                qualityValue.textContent = qualityRange.value;
+                updateEstimatedSavings();
+            }
+
+            function updateUI() {
+                compressBtn.disabled = files.length === 0;
+                clearFilesBtn.disabled = files.length === 0;
+                updateEstimatedSavings();
+            }
+
+            function updateEstimatedSavings() {
+                if (files.length === 0) return;
+                
+                const quality = parseInt(qualityRange.value) / 100;
+                const originalSize = files.reduce((sum, file) => sum + file.size, 0);
+                
+                // Simple estimation: higher quality = smaller reduction
+                const reductionRatio = 1 - (0.7 * (1 - quality));
+                const estimatedSize = originalSize * reductionRatio;
+                const savings = originalSize - estimatedSize;
+                const savingsPercent = (savings / originalSize * 100).toFixed(1);
+                
+                compressedTotalSizeEl.textContent = `${(estimatedSize / (1024 * 1024)).toFixed(2)} MB`;
+                savingsAmountEl.textContent = `${(savings / (1024 * 1024)).toFixed(2)} MB (${savingsPercent}%)`;
+                savingsProgress.style.width = `${savingsPercent}%`;
+                savingsProgress.textContent = `${savingsPercent}%`;
+            }
+
+            function clearFiles() {
+                files = [];
+                compressedFiles = [];
+                fileInput.value = '';
+                updateFileList();
+                updateUI();
+                resultsSection.classList.add('d-none');
+            }
+
+            async function compressImages() {
+                if (files.length === 0) return;
+                
+                compressBtn.disabled = true;
+                compressBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Compressing...';
+                
+                const quality = parseInt(qualityRange.value) / 100;
+                const maxWidth = document.getElementById('max-width').value || undefined;
+                const maxHeight = document.getElementById('max-height').value || undefined;
+                const preserveMetadata = document.getElementById('preserve-metadata').checked;
+                const outputFormat = document.querySelector('input[name="output-format"]:checked').value;
+                
+                compressedFiles = [];
+                
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const result = await compressImage(file, {
+                            quality,
+                            maxWidth: maxWidth ? parseInt(maxWidth) : undefined,
+                            maxHeight: maxHeight ? parseInt(maxHeight) : undefined,
+                            preserveMetadata,
+                            outputFormat: outputFormat === 'original' ? undefined : outputFormat
+                        });
+                        
+                        compressedFiles.push({
+                            original: file,
+                            compressed: result,
+                            fileName: outputFormat === 'original' ? 
+                                file.name : 
+                                file.name.replace(/\.[^/.]+$/, '') + '.' + outputFormat
+                        });
+                    }
+                    
+                    showResults();
+                    
+                } catch (error) {
+                    console.error('Compression error:', error);
+                    MultiTools.showNotification('An error occurred during compression', 'error');
+                } finally {
+                    compressBtn.disabled = false;
+                    compressBtn.innerHTML = '<i class="fas fa-compress-arrows-alt me-2"></i>Compress Images';
+                }
+            }
+
+            function compressImage(file, options) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            // Calculate new dimensions maintaining aspect ratio
+                            if (options.maxWidth && width > options.maxWidth) {
+                                height = Math.round((height * options.maxWidth) / width);
+                                width = options.maxWidth;
+                            }
+                            
+                            if (options.maxHeight && height > options.maxHeight) {
+                                width = Math.round((width * options.maxHeight) / height);
+                                height = options.maxHeight;
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Draw image with new dimensions
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // Convert to blob with specified format and quality
+                            let mimeType = file.type;
+                            if (options.outputFormat) {
+                                mimeType = `image/${options.outputFormat}`;
+                            }
+                            
+                            canvas.toBlob(
+                                (blob) => {
+                                    if (!blob) {
+                                        reject(new Error('Canvas toBlob failed'));
+                                        return;
+                                    }
+                                    
+                                    // Create a new file with the compressed blob
+                                    const compressedFile = new File(
+                                        [blob],
+                                        file.name,
+                                        { type: mimeType }
+                                    );
+                                    
+                                    resolve(compressedFile);
+                                },
+                                mimeType,
+                                options.quality
+                            );
+                        };
+                        
+                        img.onerror = () => reject(new Error('Failed to load image'));
+                        img.src = event.target.result;
+                    };
+                    
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function showResults() {
+                resultsContainer.innerHTML = '';
+                let totalOriginalSize = 0;
+                let totalCompressedSize = 0;
+                
+                compressedFiles.forEach((file, index) => {
+                    const originalSize = file.original.size;
+                    const compressedSize = file.compressed.size;
+                    const savings = originalSize - compressedSize;
+                    const savingsPercent = (savings / originalSize * 100).toFixed(1);
+                    
+                    totalOriginalSize += originalSize;
+                    totalCompressedSize += compressedSize;
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'card mb-3 result-card';
+                    resultItem.innerHTML = `
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <img src="${URL.createObjectURL(file.compressed)}" class="img-thumbnail" alt="Preview" style="max-height: 100px;">
+                                </div>
+                                <div class="col-md-5">
+                                    <h6 class="mb-1">${file.fileName}</h6>
+                                    <div class="small text-muted">
+                                        <div>Original: ${formatFileSize(originalSize)}</div>
+                                        <div>Compressed: ${formatFileSize(compressedSize)}</div>
+                                        <div class="text-success">Saved: ${formatFileSize(savings)} (${savingsPercent}%)</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 text-end">
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: ${100 - savingsPercent}%" 
+                                             aria-valuenow="${100 - savingsPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary download-btn" data-index="${index}">
+                                        <i class="fas fa-download me-1"></i> Download
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary copy-btn" data-index="${index}">
+                                        <i class="fas fa-copy me-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                
+                // Add event listeners for download and copy buttons
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.closest('button').dataset.index);
+                        downloadFile(compressedFiles[index].compressed, compressedFiles[index].fileName);
+                    });
+                });
+                
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const index = parseInt(e.target.closest('button').dataset.index);
+                        try {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({
+                                    [compressedFiles[index].compressed.type]: compressedFiles[index].compressed
+                                })
+                            ]);
+                            MultiTools.showNotification('Image copied to clipboard', 'success');
+                        } catch (err) {
+                            console.error('Failed to copy image: ', err);
+                            MultiTools.showNotification('Failed to copy image', 'error');
+                        }
+                    });
+                });
+                
+                // Show results section
+                resultsSection.classList.remove('d-none');
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function downloadFile(file, fileName) {
+                const url = URL.createObjectURL(file);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName || 'compressed-image';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            async function downloadAll() {
+                for (const file of compressedFiles) {
+                    await new Promise(resolve => {
+                        setTimeout(() => {
+                            downloadFile(file.compressed, file.fileName);
+                            resolve();
+                        }, 100); // Small delay to prevent browser from blocking multiple downloads
+                    });
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Initialize
+            updateUI();
+        });
+    </script>
+</body>
+</html>
