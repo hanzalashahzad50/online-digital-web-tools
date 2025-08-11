@@ -170,15 +170,15 @@ function loadFooter() {
                         </div>
                         <div class="col-lg-4 mb-4">
                             <h5>Contact Us</h5>
-                            <p><i class="fas fa-envelope me-2"></i>contact@multitoolshub.com</p>
-                            <p><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</p>
-                            <p><i class="fas fa-map-marker-alt me-2"></i>123 Tool Street, Web City</p>
+                            <p><i class="fas fa-envelope me-2"></i>hanzala550hanzala@gmail.com</p>
+                            <p><i class="fas fa-phone me-2"></i>03092284155</p>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Hajiwala</p>
                         </div>
                     </div>
                     <hr class="my-4">
                     <div class="row">
                         <div class="col-md-6">
-                            <p>&copy; 2024 Multi-Tools Hub. All rights reserved.</p>
+                            <p>&copy; 2025 Multi-Tools Hub. All rights reserved.</p>
                         </div>
                         <div class="col-md-6 text-md-end">
                             <a href="#" class="me-3">Privacy Policy</a>
